@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  frontend:
+    image: fe-travelplan
+    env_file:
+      - ./client/.env.sample
+    ports:
+      - 3000:3000
+
+  backend:
+    image: be-travelplan
+    env_file:
+      - ./server/.env.sample
+    ports:
+      - 5000:5000
+    depends_on:
+      - database
+
+
+  database:
+    container_name: mongoDBcompose
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin123
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+      
+      
