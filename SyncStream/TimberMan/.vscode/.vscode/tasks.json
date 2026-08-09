@@ -1,0 +1,32 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "type": "shell",
+        "label": "Build SFML Project",
+        "command": "/usr/bin/g++",
+        "args": [
+          "-fdiagnostics-color=always",
+          "-g",
+          "${file}",
+          "-o",
+          "${fileDirname}/${fileBasenameNoExtension}",
+          "-lsfml-graphics",
+          "-lsfml-window",
+          "-lsfml-system",
+          "-lsfml-audio",
+          "-lsfml-network"
+        ],
+        "options": {
+          "cwd": "${fileDirname}"
+        },
+        "problemMatcher": ["$gcc"],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "detail": "Task for building SFML project."
+      }
+    ]
+  }
+  
