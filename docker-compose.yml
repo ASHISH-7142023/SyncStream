@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: syncstream-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - syncstream-network
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: syncstream-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - syncstream-network
+
+  backend-1:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: syncstream-backend-1
+    ports:
+      - "8081:8080"
+    environment:
+      - PORT=8080
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/syncstream
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - JWT_SECRET=5573796e6353747265616d53757065725365637265744b65793230323623
+      - JWT_EXPIRATION=86400000
+      - FRONTEND_URL=http://localhost:5173
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - syncstream-network
+
+  backend-2:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: syncstream-backend-2
+    ports:
+      - "8082:8080"
+    environment:
+      - PORT=8080
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/syncstream
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - JWT_SECRET=5573796e6353747265616d53757065725365637265744b65793230323623
+      - JWT_EXPIRATION=86400000
+      - FRONTEND_URL=http://localhost:5173
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - syncstream-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: syncstream-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8081
+      - VITE_WS_URL=ws://localhost:8081/ws
+    depends_on:
+      - backend-1
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - syncstream-network
+
+networks:
+  syncstream-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  redis_data:
