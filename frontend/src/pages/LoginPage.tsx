@@ -121,11 +121,14 @@ const LoginPage: React.FC = () => {
           </div>
 
           {/* Floating Icons */}
-          <div className="absolute -left-6 top-1/2 w-12 h-12 bg-[#6d28d9]/20 border border-[#6d28d9]/30 rounded-xl flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(109,40,217,0.5)] animate-pulse">
-            <svg className="w-6 h-6 text-[#c4b5fd]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
+          <div className="absolute -left-6 top-1/2 w-12 h-12 bg-[#6d28d9]/20 border border-[#6d28d9]/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(109,40,217,0.5)] animate-bounce">
+            <svg className="w-5 h-5 text-[#c4b5fd]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
           </div>
-          <div className="absolute -right-4 bottom-1/4 w-10 h-10 bg-green-500/20 border border-green-500/30 rounded-xl flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.3)] animate-bounce" style={{ animationDuration: '3s' }}>
-            <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
+          <div className="absolute -right-4 bottom-1/4 w-10 h-10 bg-green-500/20 border border-green-500/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(34,197,94,0.3)] animate-pulse">
+            <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
+          </div>
+          <div className="absolute bottom-[-24px] left-1/3 w-12 h-12 bg-blue-500/20 border border-blue-500/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(59,130,246,0.3)] animate-bounce" style={{ animationDelay: '0.5s' }}>
+            <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
           </div>
         </div>
 
@@ -290,10 +293,9 @@ const LoginPage: React.FC = () => {
             <button 
               type="submit"
               disabled={submitting}
-              className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-base font-medium text-white btn-gradient focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6d28d9] focus:ring-offset-[#060e20] transition-all mt-6 disabled:opacity-50"
+              className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-base font-semibold text-white btn-gradient focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6d28d9] focus:ring-offset-[#060e20] transition-all mt-6 disabled:opacity-50"
             >
-              {submitting ? 'Authenticating...' : 'Log In'}
-              <svg className="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
+              {submitting ? 'Authenticating...' : 'Log In →'}
             </button>
           </form>
 

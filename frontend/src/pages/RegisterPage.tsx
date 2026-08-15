@@ -125,6 +125,17 @@ const RegisterPage: React.FC = () => {
                 </div>
               </div>
             </div>
+            {/* Floating Icons */}
+            <div className="absolute -left-6 top-1/2 w-12 h-12 bg-[#6366f1]/20 border border-[#6366f1]/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(99,102,241,0.5)] animate-bounce z-20">
+              <span className="text-white text-base">💬</span>
+            </div>
+            <div className="absolute -right-4 top-1/3 w-10 h-10 bg-[#10b981]/20 border border-[#10b981]/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(16,185,129,0.3)] animate-pulse z-20">
+              <span className="text-[#10b981] text-xs">⚡</span>
+            </div>
+            <div className="absolute bottom-[-24px] left-1/3 w-12 h-12 bg-blue-500/20 border border-blue-500/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(59,130,246,0.3)] animate-bounce z-20" style={{ animationDelay: '0.5s' }}>
+              <span className="text-blue-400 text-base">🛡️</span>
+            </div>
+
             {/* Decorative Glows */}
             <div className="absolute top-1/2 left-0 w-32 h-32 bg-[#6366f1]/20 blur-3xl rounded-full -translate-x-1/2 -translate-y-1/2"></div>
             <div className="absolute bottom-0 right-0 w-32 h-32 bg-[#10b981]/20 blur-3xl rounded-full translate-x-1/2 translate-y-1/2"></div>
@@ -320,21 +331,22 @@ const RegisterPage: React.FC = () => {
                       {showConfirmPassword ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
                     </button>
                     {password === confirmPassword && password.length > 0 && (
-                      <span className="text-[#10b981]">✓</span>
+                      <span className="text-[#10b981] font-semibold text-sm">✓</span>
                     )}
                   </div>
                 </div>
 
                 {/* Password Strength Meter */}
                 {password.length > 0 && (
-                  <div className="space-y-1.5 pt-1">
-                    <div className="flex gap-1 h-1.5">
-                      <div className={`flex-1 rounded-full ${strength >= 1 ? 'bg-[#10b981]' : 'bg-[#374151]'}`}></div>
-                      <div className={`flex-1 rounded-full ${strength >= 2 ? 'bg-[#10b981]' : 'bg-[#374151]'}`}></div>
-                      <div className={`flex-1 rounded-full ${strength >= 3 ? 'bg-[#10b981]' : 'bg-[#374151]'}`}></div>
-                      <div className={`flex-1 rounded-full ${strength >= 4 ? 'bg-[#10b981]' : 'bg-[#374151]'}`}></div>
+                  <div className="space-y-1.5 pt-1.5">
+                    <div className="flex gap-1.5 h-1">
+                      <div className={`flex-1 rounded ${strength >= 1 ? 'bg-green-500' : 'bg-zinc-800'}`}></div>
+                      <div className={`flex-1 rounded ${strength >= 2 ? 'bg-green-500' : 'bg-zinc-800'}`}></div>
+                      <div className={`flex-1 rounded ${strength >= 3 ? 'bg-green-500' : 'bg-zinc-800'}`}></div>
+                      <div className={`flex-1 rounded ${strength >= 4 ? 'bg-green-500' : 'bg-zinc-800'}`}></div>
+                      <div className="flex-1 rounded bg-zinc-800"></div>
                     </div>
-                    <p className={`text-[10px] font-semibold text-left ${strength >= 3 ? 'text-[#10b981]' : strength >= 2 ? 'text-yellow-500' : 'text-red-400'}`}>
+                    <p className={`text-[10px] font-semibold text-left ${strength >= 3 ? 'text-green-500' : strength >= 2 ? 'text-yellow-500' : 'text-red-400'}`}>
                       {strengthText} password
                     </p>
                   </div>
@@ -349,10 +361,10 @@ const RegisterPage: React.FC = () => {
                     id="terms" 
                     checked={agreeTerms}
                     onChange={(e) => setAgreeTerms(e.target.checked)}
-                    className="w-5 h-5 rounded bg-[#6366f1] border-transparent text-[#6366f1] focus:ring-[#6366f1] focus:ring-offset-[#12121a] focus:ring-offset-2"
+                    className="w-5 h-5 rounded bg-[#12121a] border-[#374151] text-[#6366f1] focus:ring-[#6366f1] focus:ring-offset-[#12121a]"
                   />
                 </div>
-                <div className="text-xs text-[#9ca3af] leading-tight">
+                <div className="text-xs text-[#9ca3af] leading-tight text-left">
                   <label htmlFor="terms">I agree to the <a className="text-[#6366f1] hover:underline" href="#terms">Terms of Service</a> and <a className="text-[#6366f1] hover:underline" href="#privacy">Privacy Policy</a></label>
                 </div>
               </div>
@@ -360,11 +372,14 @@ const RegisterPage: React.FC = () => {
               <button 
                 type="submit"
                 disabled={submitting}
-                className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-base font-medium text-white btn-gradient focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6366f1] focus:ring-offset-[#12121a] transition-all mt-6 disabled:opacity-50"
+                className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-lg text-base font-semibold text-white bg-[#6366f1] hover:bg-[#4f46e5] transition-all mt-6 disabled:opacity-50"
               >
                 {submitting ? 'Registering...' : 'Create Account'}
-                <svg className="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
               </button>
+
+              <div className="text-center text-[10px] text-zinc-500 mt-4 leading-normal">
+                By creating an account, you agree to our <a className="text-zinc-400 hover:underline" href="#terms">Terms of Service</a><br />and <a className="text-zinc-400 hover:underline" href="#privacy">Privacy Policy</a>.
+              </div>
             </form>
           </div>
         </section>

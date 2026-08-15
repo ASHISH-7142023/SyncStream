@@ -144,6 +144,17 @@ const LandingPage: React.FC = () => {
             </div>
 
             {/* Hero Right: Product chat preview mockup */}
+            {/* Floating Badges */}
+            <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-[#7C3AED]/20 border border-[#7C3AED]/30 flex items-center justify-center text-white shadow-lg shadow-[#7C3AED]/20 animate-bounce hidden sm:flex z-20">
+              💬
+            </div>
+            <div className="absolute -right-6 top-1/3 w-12 h-12 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center text-green-400 shadow-lg shadow-green-500/20 animate-pulse hidden sm:flex z-20">
+              ⚡
+            </div>
+            <div className="absolute bottom-[-24px] left-1/3 w-12 h-12 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-lg shadow-blue-500/20 animate-bounce hidden sm:flex z-20" style={{ animationDelay: '0.5s' }}>
+              🛡️
+            </div>
+
             <div className="relative lg:ml-auto w-full max-w-[800px] xl:max-w-[900px] rounded-2xl glass-panel shadow-2xl overflow-hidden flex flex-col md:flex-row transform lg:translate-x-12 xl:translate-x-24">
               
               {/* Mockup Sidebar */}
@@ -227,7 +238,7 @@ const LandingPage: React.FC = () => {
                 </div>
 
                 {/* Messages feed */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4 text-left">
+                <div className="flex-grow overflow-y-auto custom-scrollbar p-6 space-y-4 text-left">
                   <div className="flex gap-3">
                     <div className="w-8 h-8 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-bold shrink-0">AJ</div>
                     <div>
@@ -259,6 +270,39 @@ const LandingPage: React.FC = () => {
                       🚀
                     </button>
                   </div>
+                </div>
+              </div>
+
+              {/* Mockup Members Sidebar */}
+              <div className="w-60 bg-[#0b1326]/80 border-l border-white/5 flex flex-col h-[500px] hidden xl:flex text-left">
+                <div className="p-4 border-b border-white/5">
+                  <span className="text-xs font-semibold text-white">MEMBERS — 8</span>
+                </div>
+                <div className="flex-1 overflow-y-auto p-3 space-y-3">
+                  {[
+                    { name: 'Alex Johnson', status: 'Online', color: 'bg-green-500' },
+                    { name: 'Sarah Wilson', status: 'Online', color: 'bg-green-500' },
+                    { name: 'David Brown', status: 'Online', color: 'bg-green-500' },
+                    { name: 'Emily Davis', status: 'Away', color: 'bg-yellow-500' },
+                    { name: 'Michael Chen', status: 'Online', color: 'bg-green-500' },
+                    { name: 'Lisa Anderson', status: 'Offline', color: 'bg-gray-500' },
+                    { name: 'James Taylor', status: 'Offline', color: 'bg-gray-500' },
+                    { name: 'Rachel Kim', status: 'Offline', color: 'bg-gray-500' },
+                  ].map((m, i) => (
+                    <div key={i} className="flex items-center justify-between text-xs group">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#1b2336] flex items-center justify-center font-bold text-[9px] text-white">
+                          {m.name.slice(0, 2).toUpperCase()}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-white font-medium">{m.name}</span>
+                          <span className="text-[9px] text-gray-500 flex items-center gap-1">
+                            <span className={`w-1 h-1 rounded-full ${m.color}`}></span> {m.status}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
