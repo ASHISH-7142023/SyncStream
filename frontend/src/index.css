@@ -4,7 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root {
+html, body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -12,7 +12,14 @@ html, body, #root {
   font-family: 'Inter', sans-serif;
   color: #F8FAFC;
   overflow-x: hidden;
-  background-color: #040807; /* Fallback botanical dark-green background */
+  background-color: #040807; /* Shaded dark green background */
+}
+
+/* Ensure the React mount root is transparent to let the body background show through */
+#root {
+  width: 100%;
+  height: 100%;
+  background: transparent;
 }
 
 body {
@@ -25,12 +32,12 @@ body {
   min-height: 100vh;
 }
 
-/* Semi-transparent dark overlay to keep high contrast readability over botanical wallpaper */
+/* Shaded overlay layer for text contrast */
 body::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-color: rgba(4, 8, 7, 0.55); /* botanical shaded overlay */
+  background-color: rgba(4, 8, 7, 0.55);
   z-index: -1;
   pointer-events: none;
 }
@@ -54,26 +61,43 @@ body::before {
   background: rgba(255, 255, 255, 0.35);
 }
 
-/* Glassmorphism UI Classes (Frosted glass) */
+/* Glassmorphism UI Classes (Exactly matching reference card opacity) */
 .bg-glass {
-  background: rgba(15, 23, 42, 0.38); /* Slate transparent blend */
-  backdrop-filter: blur(24px) saturate(120%);
-  -webkit-backdrop-filter: blur(24px) saturate(120%);
+  background: rgba(15, 23, 22, 0.5); /* Slate transparent blend with leaf undertones */
+  backdrop-filter: blur(30px) saturate(110%);
+  -webkit-backdrop-filter: blur(30px) saturate(110%);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .bg-glass-heavy {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(32px) saturate(130%);
-  -webkit-backdrop-filter: blur(32px) saturate(130%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 16, 15, 0.7);
+  backdrop-filter: blur(40px) saturate(120%);
+  -webkit-backdrop-filter: blur(40px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .bg-glass-light {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* Premium Button style */
+.btn-premium {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  backdrop-filter: blur(10px);
+  border-radius: 9999px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-premium:hover {
+  background: #10B981;
+  color: #09090B;
+  border-color: transparent;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
 }
 
 /* Active status indicator animations */
