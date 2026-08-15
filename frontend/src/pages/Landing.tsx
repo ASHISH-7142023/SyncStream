@@ -1,29 +1,160 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Zap, Shield, Users, Server, Radio, Globe, Layers } from 'lucide-react';
+import { Server, Radio, Globe, Layers, ArrowRight, Play, Phone, Video, MoreHorizontal, Smile, Paperclip } from 'lucide-react';
+import gsap from 'gsap';
+
+interface MockMessage {
+  id: string;
+  sender: string;
+  avatar: string;
+  content: string;
+  time: string;
+  isSelf: boolean;
+  color: string;
+}
 
 const Landing: React.FC = () => {
   const { user } = useAuth();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const chatPlaygroundRef = useRef<HTMLDivElement | null>(null);
+  
+  // Interactive Chat Simulator State matching reference conversational styles
+  const [messages, setMessages] = useState<MockMessage[]>([
+    {
+      id: '1',
+      sender: 'Wealth',
+      avatar: 'W',
+      content: 'What\'s up?',
+      time: '2:45pm',
+      isSelf: false,
+      color: 'bg-gradient-to-tr from-pink-500 to-rose-500'
+    },
+    {
+      id: '2',
+      sender: 'You',
+      avatar: 'Y',
+      content: 'Good you?',
+      time: '2:45pm',
+      isSelf: true,
+      color: 'bg-emerald-600'
+    }
+  ]);
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [simStep, setSimStep] = useState(0);
+
+  const simulationScript = [
+    {
+      sender: 'Wealth',
+      avatar: 'W',
+      content: 'I\'m fine',
+      time: '2:46pm',
+      isSelf: false,
+      color: 'bg-gradient-to-tr from-pink-500 to-rose-500'
+    },
+    {
+      sender: 'Wealth',
+      avatar: 'W',
+      content: 'What you up to?',
+      time: '2:46pm',
+      isSelf: false,
+      color: 'bg-gradient-to-tr from-pink-500 to-rose-500'
+    },
+    {
+      sender: 'You',
+      avatar: 'Y',
+      content: 'I\'m in class',
+      time: '2:47pm',
+      isSelf: true,
+      color: 'bg-emerald-600'
+    },
+    {
+      sender: 'You',
+      avatar: 'Y',
+      content: 'Because I\'m sitting at the back',
+      time: '2:47pm',
+      isSelf: true,
+      color: 'bg-emerald-600'
+    }
+  ];
+
+  // GSAP Entrance Animations
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    const ctx = gsap.context(() => {
+      gsap.from('.swiss-header-el', {
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: 'power3.out'
+      });
+
+      gsap.from('.swiss-glass-panel', {
+        opacity: 0,
+        scale: 0.96,
+        duration: 0.9,
+        stagger: 0.1,
+        ease: 'power2.out'
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // Trigger GSAP stagger when new mock messages appear
+  useEffect(() => {
+    if (messages.length > 2) {
+      gsap.fromTo(
+        '.mock-msg-el:last-child',
+        { opacity: 0, y: 15, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.4)' }
+      );
+      
+      if (chatPlaygroundRef.current) {
+        chatPlaygroundRef.current.scrollTop = chatPlaygroundRef.current.scrollHeight;
+      }
+    }
+  }, [messages]);
+
+  const startSimulation = () => {
+    if (isSimulating || simStep >= simulationScript.length) return;
+    setIsSimulating(true);
+
+    const nextMsg = simulationScript[simStep];
+    
+    setTimeout(() => {
+      setMessages(prev => [...prev, {
+        id: `sim-${simStep}`,
+        ...nextMsg
+      }]);
+      setSimStep(prev => prev + 1);
+      setIsSimulating(false);
+    }, 1100);
+  };
+
+
 
   return (
-    <div className="min-h-screen bg-background text-text selection:bg-primary/30 selection:text-primary">
-      {/* Header */}
-      <header className="border-b border-border bg-surface/50 backdrop-blur-md sticky top-0 z-50 transition-all">
+    <div ref={containerRef} className="min-h-screen text-[#F8FAFC] flex flex-col font-sans relative z-10">
+      
+      {/* Floating Glassmorphic Header */}
+      <header className="border-b border-white/5 bg-slate-950/20 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-blue-500 flex items-center justify-center shadow-lg shadow-primary/20">
-              <Radio className="w-6 h-6 text-background stroke-[2.5]" />
+            <div className="w-9 h-9 rounded-full border border-white/20 flex items-center justify-center bg-white/5 backdrop-blur-md">
+              <Radio className="w-5 h-5 text-[#10B981] stroke-[2]" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-text-h bg-clip-text text-transparent bg-gradient-to-r from-text to-muted">
+            <span className="text-sm font-bold tracking-widest uppercase text-white">
               SyncStream
             </span>
           </div>
-          <nav className="flex items-center space-x-4">
+          <nav className="flex items-center space-x-6">
             {user ? (
               <Link
                 to="/dashboard"
-                className="px-5 py-2.5 rounded-xl bg-primary text-background font-medium hover:bg-primary/95 hover:shadow-lg hover:shadow-primary/25 transition-all text-sm"
+                className="px-5 py-2 text-xs uppercase tracking-wider font-semibold rounded-full border border-white/10 bg-white/10 hover:bg-white/20 transition-all"
               >
                 Go to Dashboard
               </Link>
@@ -31,13 +162,13 @@ const Landing: React.FC = () => {
               <>
                 <Link
                   to="/login"
-                  className="text-muted hover:text-text text-sm font-medium transition-colors"
+                  className="text-xs uppercase tracking-wider font-semibold text-zinc-400 hover:text-white transition-colors"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/register"
-                  className="px-5 py-2.5 rounded-xl bg-primary text-background font-medium hover:bg-primary/95 hover:shadow-lg hover:shadow-primary/25 transition-all text-sm"
+                  className="px-5 py-2 text-xs uppercase tracking-wider font-semibold rounded-full border border-white/10 bg-white/10 hover:bg-white/20 transition-all"
                 >
                   Get Started
                 </Link>
@@ -47,48 +178,46 @@ const Landing: React.FC = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-24 overflow-hidden">
-        {/* Glow Effects */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
-
-        <div className="max-w-5xl mx-auto px-6 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface/80 text-primary text-xs font-semibold mb-6 tracking-wide uppercase">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            STOMP WebSockets + Redis Pub/Sub Enabled
+      {/* Hero Container */}
+      <section className="max-w-7xl mx-auto px-6 py-12 md:py-20 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        {/* Left text column */}
+        <div className="lg:col-span-6 space-y-8 text-left">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-[#10B981] text-[10px] tracking-widest font-mono uppercase">
+            <span className="w-1.5 h-1.5 bg-[#10B981] rounded-full animate-status-pulse" />
+            STOMP WEBSOCKETS CLUSTER ACTIVE
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.1] max-w-4xl mx-auto">
-            Real-time collaboration. <br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-blue-400 to-indigo-500">
-              Without the waiting.
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.05] text-white swiss-header-el">
+            Real-time chat. <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-sky-400">
+              Frosted glass elegance.
             </span>
           </h1>
 
-          <p className="text-lg md:text-xl text-muted max-w-2xl mx-auto mb-10 leading-relaxed">
-            SyncStream connects people through instant, room-based communication powered by high-performance WebSockets and a multi-server distributed message broker.
+          <p className="text-sm text-zinc-300 max-w-lg leading-relaxed swiss-header-el">
+            SyncStream delivers dynamic conversation streams over a secure distributed WebSocket broker. Packaged in a stunning design inspired by luxury glassmorphic aesthetics.
           </p>
 
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+          <div className="flex flex-wrap gap-4 swiss-header-el">
             {user ? (
               <Link
                 to="/dashboard"
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-background font-semibold hover:bg-primary/95 hover:shadow-lg hover:shadow-primary/20 transition-all text-center"
+                className="px-8 py-4 text-xs font-bold uppercase tracking-widest rounded-full bg-[#10B981] text-slate-950 hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/10 flex items-center gap-2"
               >
-                Go to Dashboard
+                Go to Workspace <ArrowRight className="w-4 h-4" />
               </Link>
             ) : (
               <>
                 <Link
                   to="/register"
-                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-background font-semibold hover:bg-primary/95 hover:shadow-lg hover:shadow-primary/20 transition-all text-center"
+                  className="px-8 py-4 text-xs font-bold uppercase tracking-widest rounded-full bg-[#10B981] text-slate-950 hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/10 flex items-center gap-2"
                 >
-                  Create Free Account
+                  Create Free Account <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   to="/login"
-                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-surface border border-border text-text font-semibold hover:bg-border/30 hover:text-white transition-all text-center"
+                  className="px-8 py-4 text-xs font-bold uppercase tracking-widest rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-all"
                 >
                   Sign In
                 </Link>
@@ -96,144 +225,148 @@ const Landing: React.FC = () => {
             )}
           </div>
         </div>
-      </section>
 
-      {/* Product Preview / UI Mockup */}
-      <section className="pb-24 px-6">
-        <div className="max-w-5xl mx-auto rounded-2xl border border-border bg-surface/30 p-2 shadow-2xl relative">
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60 rounded-2xl pointer-events-none" />
-          <div className="border border-border/50 rounded-xl bg-background overflow-hidden flex flex-col h-[400px]">
-            {/* Fake Titlebar */}
-            <div className="bg-surface/80 border-b border-border px-4 py-3 flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-danger/70" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
-                <div className="w-3 h-3 rounded-full bg-success/70" />
-                <span className="text-xs text-muted font-medium ml-4"># Developers — SyncStream Workspace</span>
+        {/* Right Preview Column (The Chat App Preview matching reference) */}
+        <div className="lg:col-span-6 flex justify-center items-center relative swiss-glass-panel">
+          
+          <div className="w-full max-w-lg rounded-3xl bg-glass border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] overflow-hidden flex flex-col h-[460px]">
+            
+            {/* Header bar matching contact info style */}
+            <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between shrink-0 bg-white/5">
+              <div className="flex items-center space-x-3.5">
+                <div className="relative">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-pink-500 to-rose-500 flex items-center justify-center font-bold text-xs text-white">
+                    W
+                  </div>
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-slate-900 bg-[#10B981] animate-status-pulse" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-white uppercase tracking-wide">Wealth</div>
+                  <div className="text-[9px] text-zinc-400 font-medium">Online - Last seen 2:45pm</div>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-success animate-ping" />
-                <span className="text-xs text-muted">Connected to server-1</span>
+
+              <div className="flex items-center space-x-3 text-zinc-300">
+                <button className="p-1.5 hover:text-white transition-colors hover:bg-white/5 rounded-lg">
+                  <Phone className="w-4 h-4" />
+                </button>
+                <button className="p-1.5 hover:text-white transition-colors hover:bg-white/5 rounded-lg">
+                  <Video className="w-4 h-4" />
+                </button>
+                <button className="p-1.5 hover:text-white transition-colors hover:bg-white/5 rounded-lg">
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
               </div>
             </div>
-            
-            {/* Fake Workspace Area */}
-            <div className="flex-1 flex overflow-hidden">
-              {/* Fake Sidebar */}
-              <div className="w-48 bg-surface/50 border-r border-border p-4 space-y-4 hidden md:block">
-                <div>
-                  <div className="text-[10px] font-bold text-muted uppercase tracking-wider mb-2">Rooms</div>
-                  <div className="space-y-1">
-                    <div className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer">
-                      <span className="opacity-70">#</span> developers
-                    </div>
-                    <div className="text-xs font-medium text-muted hover:text-text px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer">
-                      <span className="opacity-70">#</span> general
-                    </div>
-                    <div className="text-xs font-medium text-muted hover:text-text px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer">
-                      <span className="opacity-70">#</span> gaming
+
+            {/* Conversation Flow Area */}
+            <div 
+              ref={chatPlaygroundRef} 
+              className="flex-1 p-6 overflow-y-auto space-y-4 scrollbar-thin"
+            >
+              {/* Date Separation Tag */}
+              <div className="flex justify-center my-2">
+                <span className="px-3 py-1 bg-white/5 backdrop-blur-md rounded-full text-[9px] font-semibold text-zinc-400 uppercase tracking-widest border border-white/5">
+                  Today
+                </span>
+              </div>
+
+              {messages.map((msg) => (
+                <div 
+                  key={msg.id} 
+                  className={`flex ${msg.isSelf ? 'justify-end' : 'justify-start'} mock-msg-el`}
+                >
+                  <div 
+                    className={`max-w-[70%] px-4 py-3 rounded-2xl text-xs leading-relaxed border ${
+                      msg.isSelf 
+                        ? 'bg-[#0d4734]/55 border-[#0d4734]/35 text-white rounded-tr-none shadow-md shadow-[#0d4734]/10' 
+                        : 'bg-white/10 border-white/5 text-white rounded-tl-none shadow-md'
+                    }`}
+                  >
+                    <p>{msg.content}</p>
+                    <div className={`text-[8px] font-mono mt-1 text-right ${msg.isSelf ? 'text-emerald-300' : 'text-zinc-400'}`}>
+                      {msg.time}
                     </div>
                   </div>
                 </div>
-              </div>
+              ))}
+
+              {isSimulating && (
+                <div className="flex items-center gap-1.5 text-[9px] text-zinc-400 pl-4">
+                  <span className="w-1 h-1 bg-[#10B981] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-1 h-1 bg-[#10B981] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1 h-1 bg-[#10B981] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  Transmitting packets...
+                </div>
+              )}
+            </div>
+
+            {/* Input Composer Panel */}
+            <div className="p-4 border-t border-white/5 bg-white/5 flex gap-2.5 items-center shrink-0">
+              <button className="p-2 text-zinc-400 hover:text-white transition-colors border border-white/5 rounded-full bg-white/5">
+                <Smile className="w-4 h-4" />
+              </button>
+              <button className="p-2 text-zinc-400 hover:text-white transition-colors border border-white/5 rounded-full bg-white/5">
+                <Paperclip className="w-4 h-4" />
+              </button>
               
-              {/* Fake Messages Feed */}
-              <div className="flex-1 p-6 flex flex-col justify-end space-y-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary flex items-center justify-center font-bold text-xs text-primary">A</div>
-                  <div>
-                    <div className="flex items-baseline space-x-2">
-                      <span className="text-xs font-semibold text-white">Ashish</span>
-                      <span className="text-[9px] text-muted">19:42</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">Welcome to the distributed room chat!</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-purple-500/20 border border-purple-500 flex items-center justify-center font-bold text-xs text-purple-400">R</div>
-                  <div>
-                    <div className="flex items-baseline space-x-2">
-                      <span className="text-xs font-semibold text-white">Rahul</span>
-                      <span className="text-[9px] text-muted">19:43</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">Whoa, WebSocket updates are instant. Let's fire up multiple servers.</p>
-                  </div>
-                </div>
-                <div className="text-xs italic text-muted flex items-center gap-2 pt-2 border-t border-border/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  Ashish is typing...
-                </div>
-              </div>
+              <input
+                type="text"
+                disabled
+                placeholder="TYPE YOUR MESSAGE HERE..."
+                className="flex-1 bg-white/5 border border-white/5 rounded-full px-4 py-2.5 text-[10px] text-white focus:outline-none placeholder-zinc-500 font-mono tracking-wider"
+              />
+
+              <button
+                onClick={startSimulation}
+                disabled={isSimulating || simStep >= simulationScript.length}
+                className="p-2.5 bg-white/10 hover:bg-[#10B981] text-zinc-300 hover:text-slate-950 rounded-full border border-white/5 hover:border-transparent transition-all disabled:opacity-30 disabled:pointer-events-none"
+                title={simStep === 0 ? "Simulate Websocket Stream" : "Simulate Next Frame"}
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Feature Cards Grid */}
-      <section className="py-24 border-y border-border/50 bg-surface/20">
+      {/* Structured Swiss / Glass Feature Cards */}
+      <section className="py-20 border-t border-white/5 bg-black/10 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Enterprise Messaging Features</h2>
-            <p className="text-muted max-w-xl mx-auto">SyncStream incorporates advanced architectural elements to support highly-scalable and reliable room chat deployments.</p>
+          <div className="text-center mb-16 max-w-xl mx-auto">
+            <span className="text-[10px] font-mono text-[#10B981] uppercase tracking-widest">ARCHITECTURE STATUS / 02</span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white uppercase tracking-tight mt-2">
+              Grid Performance
+            </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-8 rounded-2xl border border-border bg-surface/50 hover:border-primary/50 transition-all group">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:bg-primary group-hover:text-background transition-all">
-                <Radio className="w-6 h-6" />
+            <div className="p-8 rounded-3xl bg-glass hover:bg-glass-heavy transition-all border border-white/5 hover:border-[#10B981]/30 group">
+              <div className="w-11 h-11 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-[#10B981] mb-6">
+                <Globe className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-2">STOMP WebSockets</h3>
-              <p className="text-sm text-muted leading-relaxed">
+              <h3 className="text-md font-bold text-white uppercase tracking-wide">STOMP Socket Broker</h3>
+              <p className="text-xs text-zinc-400 leading-relaxed mt-2">
                 Connect over stable full-duplex TCP connections. Frame-based message protocol ensures clean client-server contract structures.
               </p>
             </div>
 
-            <div className="p-8 rounded-2xl border border-border bg-surface/50 hover:border-primary/50 transition-all group">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 mb-6 group-hover:bg-blue-500 group-hover:text-background transition-all">
-                <Layers className="w-6 h-6" />
+            <div className="p-8 rounded-3xl bg-glass hover:bg-glass-heavy transition-all border border-white/5 hover:border-[#10B981]/30 group">
+              <div className="w-11 h-11 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-teal-400 mb-6">
+                <Layers className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-2">Redis Pub/Sub Synchronicity</h3>
-              <p className="text-sm text-muted leading-relaxed">
+              <h3 className="text-md font-bold text-white uppercase tracking-wide">Redis Pub/Sub</h3>
+              <p className="text-xs text-zinc-400 leading-relaxed mt-2">
                 Run multiple backend API nodes simultaneously. Redis synchronizes message, typing, and presence streams dynamically across servers.
               </p>
             </div>
 
-            <div className="p-8 rounded-2xl border border-border bg-surface/50 hover:border-primary/50 transition-all group">
-              <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-6 group-hover:bg-indigo-500 group-hover:text-background transition-all">
-                <Shield className="w-6 h-6" />
+            <div className="p-8 rounded-3xl bg-glass hover:bg-glass-heavy transition-all border border-white/5 hover:border-[#10B981]/30 group">
+              <div className="w-11 h-11 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-sky-400 mb-6">
+                <Server className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-2">JWT & Room Authorization</h3>
-              <p className="text-sm text-muted leading-relaxed">
-                Secured REST and WebSocket endpoints. Connections carry signed web tokens verified at the handshake and channel subscription layer.
-              </p>
-            </div>
-
-            <div className="p-8 rounded-2xl border border-border bg-surface/50 hover:border-primary/50 transition-all group">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-6 group-hover:bg-emerald-500 group-hover:text-background transition-all">
-                <Users className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">Presence Tracker</h3>
-              <p className="text-sm text-muted leading-relaxed">
-                Monitor live user connections (ONLINE, AWAY, OFFLINE) with Redis session keys that expire automatically upon unexpected drops.
-              </p>
-            </div>
-
-            <div className="p-8 rounded-2xl border border-border bg-surface/50 hover:border-primary/50 transition-all group">
-              <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-400 mb-6 group-hover:bg-orange-500 group-hover:text-background transition-all">
-                <Zap className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">Auto-Reconnect & Sync</h3>
-              <p className="text-sm text-muted leading-relaxed">
-                Recover cleanly from drops. The client automatically reconnects, re-subscribes, and requests missing sequence numbers from the history API.
-              </p>
-            </div>
-
-            <div className="p-8 rounded-2xl border border-border bg-surface/50 hover:border-primary/50 transition-all group">
-              <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 mb-6 group-hover:bg-purple-500 group-hover:text-background transition-all">
-                <Server className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">MongoDB Persistence</h3>
-              <p className="text-sm text-muted leading-relaxed">
+              <h3 className="text-md font-bold text-white uppercase tracking-wide">MongoDB State</h3>
+              <p className="text-xs text-zinc-400 leading-relaxed mt-2">
                 No state is lost. All user profiles, metadata, room settings, and chat history are indexed and persisted securely.
               </p>
             </div>
@@ -241,49 +374,17 @@ const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Architecture Section */}
-      <section className="py-24 max-w-5xl mx-auto px-6">
-        <div className="border border-border rounded-3xl bg-surface/40 p-8 md:p-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-[80px]" />
-          <h2 className="text-3xl font-bold text-white mb-6">Production Architecture</h2>
-          <p className="text-muted mb-10 leading-relaxed max-w-2xl">
-            The frontend is fully optimized for Vite and served via Vercel Edge. The Java 21 Spring Boot engine runs on a persistent JVM server container supporting long-lived WebSocket connections, connected to MongoDB Atlas and Redis.
-          </p>
-
-          {/* Architecture Visual Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 text-center">
-            <div className="p-6 rounded-xl border border-border bg-background flex flex-col items-center">
-              <Globe className="w-8 h-8 text-primary mb-3" />
-              <span className="text-sm font-bold text-white">Vercel Edge</span>
-              <span className="text-xs text-muted mt-1">React + TypeScript SPA</span>
-            </div>
-            <div className="p-6 rounded-xl border border-border bg-background flex flex-col items-center relative">
-              <div className="hidden md:block absolute -left-4 top-1/2 -translate-y-1/2 text-primary font-bold text-lg">→</div>
-              <Server className="w-8 h-8 text-blue-400 mb-3" />
-              <span className="text-sm font-bold text-white">Spring Boot Node</span>
-              <span className="text-xs text-muted mt-1">REST API + STOMP Broker</span>
-              <div className="hidden md:block absolute -right-4 top-1/2 -translate-y-1/2 text-primary font-bold text-lg">→</div>
-            </div>
-            <div className="p-6 rounded-xl border border-border bg-background flex flex-col items-center">
-              <Layers className="w-8 h-8 text-indigo-400 mb-3" />
-              <span className="text-sm font-bold text-white">Data Layer</span>
-              <span className="text-xs text-muted mt-1">MongoDB Atlas & Redis Pub/Sub</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="border-t border-border bg-surface py-12">
+      <footer className="border-t border-white/5 py-12 bg-black/25">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
-              <Radio className="w-3.5 h-3.5 text-background" />
+          <div className="flex items-center space-x-3">
+            <div className="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center bg-white/5">
+              <Radio className="w-3.5 h-3.5 text-[#10B981]" />
             </div>
-            <span className="text-sm font-bold text-white">SyncStream</span>
+            <span className="text-xs font-extrabold uppercase tracking-widest text-white">SyncStream</span>
           </div>
-          <span className="text-xs text-muted">
-            &copy; 2026 SyncStream. Built with premium clean code guidelines.
+          <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+            &copy; 2026 SyncStream. Botanical glassmorphism index online.
           </span>
         </div>
       </footer>

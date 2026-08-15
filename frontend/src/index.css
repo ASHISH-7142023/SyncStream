@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -9,27 +9,105 @@ html, body, #root {
   padding: 0;
   width: 100%;
   height: 100%;
-  background-color: #09090B;
-  color: #F8FAFC;
   font-family: 'Inter', sans-serif;
+  color: #F8FAFC;
   overflow-x: hidden;
+  background-color: #040807; /* Fallback botanical dark-green background */
 }
 
-/* Custom premium scrollbars */
+body {
+  background-image: url('./assets/bg-palm.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Semi-transparent dark overlay to keep high contrast readability over botanical wallpaper */
+body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(4, 8, 7, 0.55); /* botanical shaded overlay */
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Custom premium scrollbars for glassmorphic elements */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090B;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272A;
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #38BDF8;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Glassmorphism UI Classes (Frosted glass) */
+.bg-glass {
+  background: rgba(15, 23, 42, 0.38); /* Slate transparent blend */
+  backdrop-filter: blur(24px) saturate(120%);
+  -webkit-backdrop-filter: blur(24px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.bg-glass-heavy {
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(32px) saturate(130%);
+  -webkit-backdrop-filter: blur(32px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.bg-glass-light {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Active status indicator animations */
+@keyframes breathing-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 8px 3px rgba(16, 185, 129, 0.2);
+  }
+}
+
+.animate-status-pulse {
+  animation: breathing-pulse 2.2s infinite ease-in-out;
+}
+
+/* Dynamic slide-in animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-slide-up {
+  animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Text highlights and selection */
+::selection {
+  background: rgba(16, 185, 129, 0.3);
+  color: #10B981;
 }
