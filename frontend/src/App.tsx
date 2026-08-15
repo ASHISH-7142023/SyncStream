@@ -1,22 +1,29 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
-import Landing from './pages/Landing';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Room from './pages/Room';
-import Profile from './pages/Profile';
+
+// Layout wrappers
+import PublicLayout from './layouts/PublicLayout';
+import AppLayout from './layouts/AppLayout';
+
+// Page components
+import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import DashboardPage from './pages/DashboardPage';
+import RoomsPage from './pages/RoomsPage';
+import RoomChatPage from './pages/RoomChatPage';
+import ProfilePage from './pages/ProfilePage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col justify-center items-center gap-4">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-        <span className="text-xs text-muted">Resuming your session...</span>
+      <div className="min-h-screen bg-[#09090B] flex flex-col justify-center items-center gap-4">
+        <div className="w-8 h-8 border-4 border-[#7C3AED] border-t-transparent rounded-full animate-spin" />
+        <span className="text-xs text-[#94A3B8]">Resuming your session...</span>
       </div>
     );
   }
@@ -28,29 +35,29 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return <>{children}</>;
 };
 
-const AuthenticatedLayout: React.FC = () => {
-  return (
-    <ProtectedRoute>
-      <SocketProvider>
-        <Outlet />
-      </SocketProvider>
-    </ProtectedRoute>
-  );
-};
-
 function AppContent() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        {/* Unauthenticated routes inside PublicLayout */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+        </Route>
         
-        {/* Authenticated routes sharing a single SocketProvider */}
-        <Route element={<AuthenticatedLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/rooms/:roomId" element={<Room />} />
-          <Route path="/profile" element={<Profile />} />
+        {/* Authenticated routes inside AppLayout sharing SocketProvider */}
+        <Route element={
+          <ProtectedRoute>
+            <SocketProvider>
+              <AppLayout />
+            </SocketProvider>
+          </ProtectedRoute>
+        }>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/rooms" element={<RoomsPage />} />
+          <Route path="/rooms/:roomId" element={<RoomChatPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

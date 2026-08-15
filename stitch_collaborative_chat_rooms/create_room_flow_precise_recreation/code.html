@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SyncStream - Create a New Room</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style data-purpose="custom-fonts">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0f111a;
+      color: #e2e8f0;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            app: {
+              bg: '#0f111a',
+              panel: '#151822',
+              card: '#1a1d27',
+              border: '#2e3346',
+              borderHover: '#4b5563',
+              primary: '#6b46c1',
+              primaryHover: '#553c9a',
+              text: '#f8fafc',
+              textMuted: '#94a3b8',
+              success: '#10b981',
+              danger: '#ef4444',
+            }
+          },
+          boxShadow: {
+            'glow': '0 0 15px rgba(107, 70, 193, 0.5)',
+            'inner-glow': 'inset 0 0 5px rgba(107, 70, 193, 0.2)',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-app-bg text-app-text p-6 flex flex-col items-center gap-8">
+<!-- BEGIN: Main Modal -->
+<div class="bg-app-panel rounded-xl border border-app-border w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col">
+<!-- Header -->
+<div class="px-6 py-5 border-b border-app-border flex justify-between items-start">
+<div>
+<h2 class="text-xl font-bold text-white mb-1">Create a New Room</h2>
+<p class="text-app-textMuted text-sm">Bring your team together in a dedicated space.</p>
+</div>
+<button class="text-app-textMuted hover:text-white transition-colors">
+<i class="fa-solid fa-xmark text-lg"></i>
+</button>
+</div>
+<div class="flex flex-1">
+<!-- Left Sidebar (Stepper) -->
+<div class="w-64 border-r border-app-border p-6 hidden md:block">
+<div class="relative">
+<!-- Connecting Line -->
+<div class="absolute left-4 top-5 bottom-5 w-px bg-app-border -z-10"></div>
+<!-- Steps -->
+<div class="space-y-8">
+<!-- Step 1: Active -->
+<div class="flex items-start gap-4">
+<div class="w-8 h-8 rounded-full bg-app-primary flex items-center justify-center text-white text-sm font-semibold shrink-0 shadow-glow relative z-10">
+                1
+              </div>
+<div>
+<h3 class="text-white font-medium text-sm">Room Details</h3>
+<p class="text-app-textMuted text-xs mt-0.5">Basic information</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-start gap-4">
+<div class="w-8 h-8 rounded-full bg-app-bg border border-app-border flex items-center justify-center text-app-textMuted text-sm font-semibold shrink-0 relative z-10">
+                2
+              </div>
+<div>
+<h3 class="text-app-textMuted font-medium text-sm">Privacy &amp; Access</h3>
+<p class="text-app-textMuted text-xs mt-0.5">Choose who can join</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex items-start gap-4">
+<div class="w-8 h-8 rounded-full bg-app-bg border border-app-border flex items-center justify-center text-app-textMuted text-sm font-semibold shrink-0 relative z-10">
+                3
+              </div>
+<div>
+<h3 class="text-app-textMuted font-medium text-sm">Advanced Settings</h3>
+<p class="text-app-textMuted text-xs mt-0.5">Optional configuration</p>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="flex items-start gap-4">
+<div class="w-8 h-8 rounded-full bg-app-bg border border-app-border flex items-center justify-center text-app-textMuted text-sm font-semibold shrink-0 relative z-10">
+                4
+              </div>
+<div>
+<h3 class="text-app-textMuted font-medium text-sm">Review</h3>
+<p class="text-app-textMuted text-xs mt-0.5">Confirm and create</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Content Area -->
+<div class="flex-1 p-6 md:p-8 flex flex-col gap-6">
+<!-- Top Section: Icon and Name -->
+<div class="flex gap-6 items-start">
+<!-- Room Icon Picker -->
+<div class="relative shrink-0">
+<div class="w-20 h-20 bg-app-card rounded-xl border border-app-border flex items-center justify-center text-app-primary text-3xl font-bold shadow-inner-glow">
+              #
+            </div>
+<button class="absolute -bottom-2 -right-2 w-8 h-8 bg-app-card border border-app-border rounded-full flex items-center justify-center text-app-textMuted hover:text-white hover:bg-app-border transition-colors text-xs">
+<i class="fa-solid fa-pencil"></i>
+</button>
+</div>
+<!-- Room Name Input -->
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1.5">
+<label class="text-sm font-medium text-white">Room Name <span class="text-app-danger">*</span></label>
+<span class="text-xs text-app-textMuted">15/50</span>
+</div>
+<div class="relative">
+<input class="w-full bg-app-bg border border-app-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-app-primary focus:ring-1 focus:ring-app-primary transition-all text-sm" placeholder="e.g. marketing-updates" type="text" value="product-roadmap"/>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 text-app-success">
+<i class="fa-solid fa-circle-check text-sm"></i>
+</div>
+</div>
+<p class="text-xs text-app-textMuted mt-1.5">Lowercase letters, numbers and hyphens only.</p>
+</div>
+</div>
+<!-- Description -->
+<div>
+<div class="flex justify-between items-center mb-1.5">
+<label class="text-sm font-medium text-white">Description</label>
+<span class="text-xs text-app-textMuted">63/250</span>
+</div>
+<textarea class="w-full bg-app-bg border border-app-border rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-app-primary focus:ring-1 focus:ring-app-primary transition-all resize-none" placeholder="What's this room about?" rows="3">Discuss roadmap initiatives, milestones and product strategy.</textarea>
+</div>
+<!-- Room Type -->
+<div>
+<label class="text-sm font-medium text-white block mb-3">Room Type</label>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Type: Private (Selected) -->
+<label class="relative flex flex-col p-4 bg-app-card border-2 border-app-primary rounded-xl cursor-pointer hover:bg-[#1f2330] transition-colors shadow-inner-glow">
+<input checked="" class="sr-only" name="roomType" type="radio"/>
+<div class="absolute top-3 right-3 text-app-primary bg-app-card rounded-full w-5 h-5 flex items-center justify-center">
+<i class="fa-solid fa-circle-check text-sm"></i>
+</div>
+<i class="fa-solid fa-lock text-app-primary text-xl mb-3"></i>
+<span class="font-medium text-white text-sm mb-1">Private</span>
+<span class="text-xs text-app-textMuted leading-relaxed">Only invited members can join.</span>
+</label>
+<!-- Type: Public -->
+<label class="relative flex flex-col p-4 bg-app-bg border border-app-border rounded-xl cursor-pointer hover:bg-app-card hover:border-app-borderHover transition-all">
+<input class="sr-only" name="roomType" type="radio"/>
+<i class="fa-solid fa-globe text-app-textMuted text-xl mb-3"></i>
+<span class="font-medium text-white text-sm mb-1">Public</span>
+<span class="text-xs text-app-textMuted leading-relaxed">Anyone in your workspace can join.</span>
+</label>
+<!-- Type: Restricted -->
+<label class="relative flex flex-col p-4 bg-app-bg border border-app-border rounded-xl cursor-pointer hover:bg-app-card hover:border-app-borderHover transition-all">
+<input class="sr-only" name="roomType" type="radio"/>
+<i class="fa-solid fa-shield-halved text-app-textMuted text-xl mb-3"></i>
+<span class="font-medium text-white text-sm mb-1">Restricted</span>
+<span class="text-xs text-app-textMuted leading-relaxed">Anyone can request to join.</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="px-6 py-4 border-t border-app-border flex justify-end gap-3 bg-app-panel">
+<button class="px-5 py-2 rounded-lg text-sm font-medium text-white border border-app-border hover:bg-app-card transition-colors">
+        Cancel
+      </button>
+<button class="px-6 py-2 rounded-lg text-sm font-medium text-white bg-app-primary hover:bg-app-primaryHover transition-colors flex items-center gap-2 shadow-glow">
+        Next
+        <i class="fa-solid fa-arrow-right text-xs"></i>
+</button>
+</div>
+</div>
+<!-- END: Main Modal -->
+<!-- BEGIN: Step Breakdown Row -->
+<div class="w-full max-w-7xl flex flex-wrap lg:flex-nowrap gap-4 justify-center items-stretch mt-4 opacity-80 scale-95 origin-top">
+<!-- Step 1 Details (Miniaturized) -->
+<div class="bg-app-panel rounded-xl border border-app-border w-80 p-5 flex flex-col gap-4 relative">
+<div class="absolute -top-3 -left-3 w-6 h-6 rounded-full bg-app-primary flex items-center justify-center text-white text-xs font-bold shadow-glow">1</div>
+<h4 class="font-semibold text-white text-sm">Room Details</h4>
+<!-- Mini Inputs -->
+<div class="flex gap-3">
+<div class="w-12 h-12 bg-app-card rounded-lg border border-app-border flex items-center justify-center text-app-primary text-xl font-bold shrink-0 relative">
+           #
+           <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-app-card border border-app-border rounded-full flex items-center justify-center text-[8px]"><i class="fa-solid fa-pencil"></i></div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between text-[10px] text-app-textMuted mb-1">
+<span>Room Name <span class="text-app-danger">*</span></span>
+<span>15/50</span>
+</div>
+<div class="bg-app-bg border border-app-border rounded px-2 py-1.5 text-xs text-white relative">
+             product-roadmap
+             <i class="fa-solid fa-circle-check text-app-success absolute right-2 top-2 text-[10px]"></i>
+</div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[10px] text-app-textMuted mb-1">
+<span>Description</span>
+<span>63/250</span>
+</div>
+<div class="bg-app-bg border border-app-border rounded px-2 py-1.5 text-[10px] text-app-textMuted">
+           Discuss roadmap initiatives, milestones and product strategy.
+         </div>
+</div>
+<div>
+<span class="text-[10px] text-app-textMuted mb-1.5 block">Room Type</span>
+<div class="flex gap-2">
+<div class="flex-1 bg-app-card border-2 border-app-primary rounded p-2 flex justify-center text-app-primary"><i class="fa-solid fa-lock text-sm"></i></div>
+<div class="flex-1 bg-app-bg border border-app-border rounded p-2 flex justify-center text-app-textMuted"><i class="fa-solid fa-globe text-sm"></i></div>
+<div class="flex-1 bg-app-bg border border-app-border rounded p-2 flex justify-center text-app-textMuted"><i class="fa-solid fa-shield-halved text-sm"></i></div>
+</div>
+</div>
+<!-- Mini Footer -->
+<div class="mt-auto pt-4 border-t border-app-border flex justify-end gap-2">
+<div class="px-3 py-1.5 rounded text-[10px] border border-app-border text-white">Cancel</div>
+<div class="px-3 py-1.5 rounded text-[10px] bg-app-primary text-white flex items-center gap-1">Next <i class="fa-solid fa-arrow-right text-[8px]"></i></div>
+</div>
+</div>
+<!-- Arrow -->
+<div class="flex items-center text-app-textMuted"><i class="fa-solid fa-chevron-right text-xl"></i></div>
+<!-- Step 2: Privacy & Access -->
+<div class="bg-app-panel rounded-xl border border-app-border w-80 p-5 flex flex-col gap-5 relative">
+<div class="absolute -top-3 -left-3 w-6 h-6 rounded-full bg-app-primary flex items-center justify-center text-white text-xs font-bold shadow-glow">2</div>
+<h4 class="font-semibold text-white text-sm">Privacy &amp; Access</h4>
+<div>
+<span class="text-xs font-medium text-white mb-3 block">Who can join this room?</span>
+<div class="space-y-4">
+<!-- Radio 1 -->
+<label class="flex gap-3 cursor-pointer">
+<div class="w-4 h-4 rounded-full border-2 border-app-primary flex items-center justify-center mt-0.5 shrink-0">
+<div class="w-2 h-2 rounded-full bg-app-primary"></div>
+</div>
+<div>
+<div class="text-xs font-medium text-white">Only invited members</div>
+<div class="text-[10px] text-app-textMuted">Admins and moderators can invite others.</div>
+</div>
+</label>
+<!-- Radio 2 -->
+<label class="flex gap-3 cursor-pointer opacity-60">
+<div class="w-4 h-4 rounded-full border-2 border-app-border flex items-center justify-center mt-0.5 shrink-0"></div>
+<div>
+<div class="text-xs font-medium text-white">Anyone in the workspace</div>
+<div class="text-[10px] text-app-textMuted">All workspace members can join.</div>
+</div>
+</label>
+<!-- Radio 3 -->
+<label class="flex gap-3 cursor-pointer opacity-60">
+<div class="w-4 h-4 rounded-full border-2 border-app-border flex items-center justify-center mt-0.5 shrink-0"></div>
+<div>
+<div class="text-xs font-medium text-white flex items-center gap-1">Anyone with the link <i class="fa-solid fa-circle-info text-[10px]"></i></div>
+<div class="text-[10px] text-app-textMuted">Anyone with the invite link can join.</div>
+</div>
+</label>
+</div>
+</div>
+<!-- Toggle -->
+<div class="flex items-center justify-between pt-4 border-t border-app-border">
+<div>
+<div class="text-xs font-medium text-white">Set as default for new members</div>
+<div class="text-[10px] text-app-textMuted">Automatically add new workspace members to this room.</div>
+</div>
+<div class="w-8 h-4 bg-app-border rounded-full relative cursor-pointer">
+<div class="absolute left-0.5 top-0.5 w-3 h-3 bg-app-textMuted rounded-full"></div>
+</div>
+</div>
+<!-- Mini Footer -->
+<div class="mt-auto pt-4 border-t border-app-border flex justify-between gap-2">
+<div class="px-3 py-1.5 rounded text-[10px] border border-app-border text-white flex items-center gap-1"><i class="fa-solid fa-arrow-left text-[8px]"></i> Back</div>
+<div class="px-3 py-1.5 rounded text-[10px] bg-app-primary text-white flex items-center gap-1">Next <i class="fa-solid fa-arrow-right text-[8px]"></i></div>
+</div>
+</div>
+<!-- Arrow -->
+<div class="flex items-center text-app-textMuted"><i class="fa-solid fa-chevron-right text-xl"></i></div>
+<!-- Step 3: Advanced Settings -->
+<div class="bg-app-panel rounded-xl border border-app-border w-80 p-5 flex flex-col gap-4 relative">
+<div class="absolute -top-3 -left-3 w-6 h-6 rounded-full bg-app-primary flex items-center justify-center text-white text-xs font-bold shadow-glow">3</div>
+<h4 class="font-semibold text-white text-sm">Advanced Settings</h4>
+<div class="space-y-4">
+<!-- Toggle Item -->
+<div class="flex items-center justify-between gap-2">
+<div class="flex gap-2 items-start">
+<i class="fa-solid fa-bullhorn text-app-textMuted text-xs mt-0.5"></i>
+<div>
+<div class="text-xs font-medium text-white">Only admins can post</div>
+<div class="text-[10px] text-app-textMuted">Only admins and moderators can send messages.</div>
+</div>
+</div>
+<div class="w-8 h-4 bg-app-border rounded-full relative cursor-pointer shrink-0">
+<div class="absolute left-0.5 top-0.5 w-3 h-3 bg-app-textMuted rounded-full"></div>
+</div>
+</div>
+<!-- Toggle Item -->
+<div class="flex items-center justify-between gap-2">
+<div class="flex gap-2 items-start">
+<i class="fa-solid fa-user-shield text-app-textMuted text-xs mt-0.5"></i>
+<div>
+<div class="text-xs font-medium text-white">Require approval to join</div>
+<div class="text-[10px] text-app-textMuted">Requests to join must be approved.</div>
+</div>
+</div>
+<div class="w-8 h-4 bg-app-primary rounded-full relative cursor-pointer shrink-0">
+<div class="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</div>
+<!-- Select Item -->
+<div class="flex items-center justify-between gap-2">
+<div class="flex gap-2 items-start">
+<i class="fa-solid fa-stopwatch text-app-textMuted text-xs mt-0.5"></i>
+<div>
+<div class="text-xs font-medium text-white">Slow mode</div>
+<div class="text-[10px] text-app-textMuted">Limit how often members can send messages.</div>
+</div>
+</div>
+<div class="bg-app-bg border border-app-border rounded px-2 py-1 text-[10px] text-white flex items-center gap-1 shrink-0">
+             10 sec <i class="fa-solid fa-chevron-down text-[8px]"></i>
+</div>
+</div>
+<!-- Toggle Item -->
+<div class="flex items-center justify-between gap-2">
+<div class="flex gap-2 items-start">
+<i class="fa-solid fa-user-large-slash text-app-textMuted text-xs mt-0.5"></i>
+<div>
+<div class="text-xs font-medium text-white">Age-restricted room</div>
+<div class="text-[10px] text-app-textMuted">Restrict access to verified adults only.</div>
+</div>
+</div>
+<div class="w-8 h-4 bg-app-border rounded-full relative cursor-pointer shrink-0">
+<div class="absolute left-0.5 top-0.5 w-3 h-3 bg-app-textMuted rounded-full"></div>
+</div>
+</div>
+<!-- Toggle Item -->
+<div class="flex items-center justify-between gap-2">
+<div class="flex gap-2 items-start">
+<i class="fa-solid fa-clock-rotate-left text-app-textMuted text-xs mt-0.5"></i>
+<div>
+<div class="text-xs font-medium text-white">Enable message history</div>
+<div class="text-[10px] text-app-textMuted">New members can see previous messages.</div>
+</div>
+</div>
+<div class="w-8 h-4 bg-app-primary rounded-full relative cursor-pointer shrink-0">
+<div class="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Mini Footer -->
+<div class="mt-auto pt-4 border-t border-app-border flex justify-between gap-2">
+<div class="px-3 py-1.5 rounded text-[10px] border border-app-border text-white flex items-center gap-1"><i class="fa-solid fa-arrow-left text-[8px]"></i> Back</div>
+<div class="px-3 py-1.5 rounded text-[10px] bg-app-primary text-white flex items-center gap-1">Next <i class="fa-solid fa-arrow-right text-[8px]"></i></div>
+</div>
+</div>
+<!-- Arrow -->
+<div class="flex items-center text-app-textMuted"><i class="fa-solid fa-chevron-right text-xl"></i></div>
+<!-- Step 4: Review -->
+<div class="bg-app-panel rounded-xl border border-app-border w-80 p-5 flex flex-col gap-4 relative">
+<div class="absolute -top-3 -left-3 w-6 h-6 rounded-full bg-app-primary flex items-center justify-center text-white text-xs font-bold shadow-glow">4</div>
+<h4 class="font-semibold text-white text-sm">Review</h4>
+<div class="flex gap-4">
+<div class="space-y-4 flex-1">
+<!-- Review Item -->
+<div class="flex gap-2">
+<i class="fa-solid fa-hashtag text-app-textMuted text-[10px] mt-0.5 w-3"></i>
+<div>
+<div class="text-[10px] font-medium text-white">Room Name</div>
+<div class="text-[10px] text-app-textMuted">product-roadmap</div>
+</div>
+</div>
+<!-- Review Item -->
+<div class="flex gap-2">
+<i class="fa-solid fa-align-left text-app-textMuted text-[10px] mt-0.5 w-3"></i>
+<div>
+<div class="text-[10px] font-medium text-white">Description</div>
+<div class="text-[10px] text-app-textMuted leading-tight">Discuss roadmap initiatives, milestones and product strategy.</div>
+</div>
+</div>
+<!-- Review Item -->
+<div class="flex gap-2">
+<i class="fa-solid fa-lock text-app-textMuted text-[10px] mt-0.5 w-3"></i>
+<div>
+<div class="text-[10px] font-medium text-white">Type</div>
+<div class="text-[10px] text-app-textMuted">Private</div>
+</div>
+</div>
+<!-- Review Item -->
+<div class="flex gap-2">
+<i class="fa-solid fa-user-group text-app-textMuted text-[10px] mt-0.5 w-3"></i>
+<div>
+<div class="text-[10px] font-medium text-white">Who can join</div>
+<div class="text-[10px] text-app-textMuted">Only invited members</div>
+</div>
+</div>
+<!-- Review Item -->
+<div class="flex gap-2">
+<i class="fa-solid fa-gear text-app-textMuted text-[10px] mt-0.5 w-3"></i>
+<div>
+<div class="text-[10px] font-medium text-white">Advanced Settings</div>
+<div class="text-[10px] text-app-textMuted">2 settings enabled</div>
+</div>
+</div>
+</div>
+<!-- Big Icon Summary -->
+<div class="w-20 shrink-0 flex items-center justify-center">
+<div class="w-16 h-16 bg-app-card rounded-lg border border-app-border flex items-center justify-center text-app-primary text-2xl font-bold relative shadow-inner-glow">
+              #
+              <!-- Confetti deco -->
+<div class="absolute -top-1 -left-1 w-1 h-1 bg-yellow-400 rounded-full"></div>
+<div class="absolute top-2 -right-2 w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
+<div class="absolute -bottom-1 left-2 w-1 h-1 bg-pink-400 rounded-full"></div>
+<div class="absolute -bottom-2 -right-2 w-6 h-6 bg-app-success rounded-full flex items-center justify-center text-white border-2 border-app-panel text-[10px]">
+<i class="fa-solid fa-check"></i>
+</div>
+</div>
+</div>
+</div>
+<!-- Mini Footer -->
+<div class="mt-auto pt-4 border-t border-app-border flex justify-between gap-2">
+<div class="px-3 py-1.5 rounded text-[10px] border border-app-border text-white flex items-center gap-1"><i class="fa-solid fa-arrow-left text-[8px]"></i> Back</div>
+<div class="px-3 py-1.5 rounded text-[10px] bg-app-success hover:bg-emerald-600 transition-colors text-white flex items-center gap-1 font-medium">
+<i class="fa-solid fa-check text-[8px]"></i> Create Room
+         </div>
+</div>
+<!-- Toast Notification -->
+<div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-max max-w-full text-center">
+<div class="inline-flex items-center gap-2 px-3 py-1.5 bg-app-success/10 border border-app-success/20 rounded-md text-[10px] text-app-success">
+            Room "product-roadmap" created successfully! <i class="fa-solid fa-circle-check"></i>
+</div>
+</div>
+</div>
+</div>
+<!-- END: Step Breakdown Row -->
+</body></html>

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Workspace Home - SyncStream</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            bg: {
+              main: '#0B0E14',
+              sidebar: '#11151E',
+              card: '#161B26',
+              hover: '#1E2433',
+            },
+            accent: {
+              purple: '#6B46C1',
+              purpleLight: '#805AD5',
+              green: '#48BB78',
+              blue: '#4299E1',
+            },
+            text: {
+              main: '#F7FAFC',
+              muted: '#A0AEC0',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-scrollbars">
+    /* Custom Scrollbar for Sidebar */
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-bg-main text-text-main font-sans h-screen flex overflow-hidden selection:bg-accent-purple selection:text-white">
+<!-- BEGIN: Left Sidebar -->
+<aside class="w-64 bg-bg-sidebar border-r border-gray-800 flex flex-col h-full flex-shrink-0">
+<!-- Logo area -->
+<div class="h-16 flex items-center justify-between px-4 shrink-0">
+<a class="flex items-center gap-2 text-xl font-bold tracking-tight text-white" href="#">
+<div class="w-8 h-8 bg-gradient-to-br from-accent-purple to-accent-purpleLight rounded-lg flex items-center justify-center shadow-lg shadow-accent-purple/20">
+<i class="fa-solid fa-bolt text-white text-sm"></i>
+</div>
+        SyncStream
+      </a>
+<button class="text-text-muted hover:text-white transition-colors">
+<i class="fa-solid fa-angles-left text-sm"></i>
+</button>
+</div>
+<!-- Navigation Area -->
+<nav class="flex-1 overflow-y-auto scrollbar-hide py-4 px-3 flex flex-col gap-6">
+<!-- Main Nav -->
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 bg-gradient-to-r from-accent-purple/20 to-transparent border-l-2 border-accent-purpleLight text-white rounded-r-lg group" href="#">
+<i class="fa-solid fa-house w-5 text-accent-purpleLight"></i>
+<span class="font-medium text-sm">Home</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<i class="fa-solid fa-comment-dots w-5 group-hover:text-white transition-colors"></i>
+<span class="font-medium text-sm">Threads</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<div class="flex items-center gap-3">
+<i class="fa-regular fa-message w-5 group-hover:text-white transition-colors"></i>
+<span class="font-medium text-sm">Direct Messages</span>
+</div>
+<span class="bg-accent-purpleLight text-white text-xs font-bold px-2 py-0.5 rounded-full">3</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<i class="fa-solid fa-at w-5 group-hover:text-white transition-colors"></i>
+<span class="font-medium text-sm">Mentions</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<i class="fa-regular fa-bookmark w-5 group-hover:text-white transition-colors"></i>
+<span class="font-medium text-sm">Saved Messages</span>
+</a>
+</div>
+<!-- Rooms Nav -->
+<div>
+<div class="flex items-center justify-between px-3 mb-2">
+<h3 class="text-xs font-semibold text-text-muted uppercase tracking-wider">Rooms</h3>
+<button class="text-text-muted hover:text-white transition-colors p-1 rounded-md hover:bg-bg-hover">
+<i class="fa-solid fa-plus text-xs"></i>
+</button>
+</div>
+<div class="space-y-0.5">
+<a class="flex items-center justify-between px-3 py-1.5 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<div class="flex items-center gap-3">
+<span class="text-accent-purpleLight font-bold w-4 text-center">#</span>
+<span class="text-sm">general</span>
+</div>
+<div class="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<span class="text-gray-500 font-bold w-4 text-center group-hover:text-gray-400">#</span>
+<span class="text-sm">developers</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<span class="text-gray-500 font-bold w-4 text-center group-hover:text-gray-400">#</span>
+<span class="text-sm">design-team</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<span class="text-gray-500 font-bold w-4 text-center group-hover:text-gray-400">#</span>
+<span class="text-sm">product-updates</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<span class="text-gray-500 font-bold w-4 text-center group-hover:text-gray-400">#</span>
+<span class="text-sm">marketing</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<span class="text-gray-500 font-bold w-4 text-center group-hover:text-gray-400">#</span>
+<span class="text-sm">random</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<span class="text-gray-500 font-bold w-4 text-center group-hover:text-gray-400">#</span>
+<span class="text-sm">help-support</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Upgrade Pro Banner -->
+<div class="p-4 mt-auto shrink-0">
+<div class="bg-bg-card rounded-xl p-4 border border-gray-800">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-8 h-8 rounded-lg bg-accent-purple/20 flex items-center justify-center text-accent-purpleLight">
+<i class="fa-solid fa-bolt"></i>
+</div>
+<h4 class="font-semibold text-accent-purpleLight text-sm">Upgrade to Pro</h4>
+</div>
+<p class="text-xs text-text-muted mb-4 leading-relaxed">Get more storage, file sharing and advanced features.</p>
+<button class="w-full py-2 bg-gradient-to-r from-accent-purple to-accent-purpleLight hover:from-accent-purpleLight hover:to-accent-purple text-white rounded-lg text-sm font-semibold transition-all shadow-md shadow-accent-purple/20">
+          Upgrade Now
+        </button>
+</div>
+</div>
+</aside>
+<!-- END: Left Sidebar -->
+<!-- BEGIN: Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+<!-- BEGIN: Top Header -->
+<header class="h-16 flex items-center justify-between px-8 border-b border-gray-800 bg-bg-main shrink-0">
+<!-- Search Bar -->
+<div class="flex-1 max-w-xl relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<i class="fa-solid fa-magnifying-glass text-text-muted group-focus-within:text-accent-purple transition-colors"></i>
+</div>
+<input class="w-full bg-bg-sidebar border border-gray-800 text-sm rounded-lg pl-10 pr-12 py-2 text-white placeholder-text-muted focus:outline-none focus:border-accent-purple/50 focus:ring-1 focus:ring-accent-purple/50 transition-all" placeholder="Search rooms, messages, or users..." type="text"/>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+<div class="flex items-center gap-1 text-[10px] font-mono text-text-muted bg-bg-card border border-gray-700 px-1.5 py-0.5 rounded">
+<span>⌘</span><span>K</span>
+</div>
+</div>
+</div>
+<!-- Right Actions -->
+<div class="flex items-center gap-6 ml-8">
+<button class="text-text-muted hover:text-white transition-colors relative">
+<i class="fa-regular fa-bell"></i>
+<span class="absolute top-0 right-0 w-2 h-2 bg-accent-purpleLight rounded-full border border-bg-main"></span>
+</button>
+<button class="text-text-muted hover:text-white transition-colors">
+<i class="fa-regular fa-circle-question"></i>
+</button>
+<!-- User Profile Dropdown -->
+<button class="flex items-center gap-3 hover:bg-bg-sidebar p-1 pr-2 rounded-lg transition-colors border border-transparent hover:border-gray-800">
+<img alt="Alex Johnson" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_yJoaRRtrqeW1MO3ew_t9Nn9uZGJ8rvBJg94ffw3nLpINKlpNLhvpj59ioLJ60EFbE6ZEpI6m7ptFHrIesnHx3S_uMnWV6D6ssBfpPZdEasvARQRE0SFm0PuvIcwyffg-Sy1mTY2oaQvKFDGnWpmWVa8TzDqsXYNicD3Q6EHTkjiBVUNmUd0WPM6_cZKZfJqG-WKYOXc4GxWddvkyvDxJLXZ2h3Je3ALyp7bTlM1LPJe5Kb9JsaGL"/>
+<div class="text-left hidden md:block">
+<div class="text-sm font-semibold leading-none mb-1">Alex Johnson</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-accent-green"></span>
+<span class="text-xs text-text-muted">Online</span>
+</div>
+</div>
+<i class="fa-solid fa-chevron-down text-xs text-text-muted ml-2"></i>
+</button>
+</div>
+</header>
+<!-- END: Top Header -->
+<!-- BEGIN: Dashboard Content -->
+<div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+<div class="max-w-6xl mx-auto space-y-8">
+<!-- Welcome Row -->
+<div class="flex items-end justify-between">
+<div>
+<h1 class="text-3xl font-bold mb-2 flex items-center gap-2">Welcome back, Alex! <span class="text-2xl animate-waving-hand origin-bottom-right">👋</span></h1>
+<p class="text-text-muted">Here's what's happening in your workspace today.</p>
+</div>
+<button class="px-4 py-2 bg-accent-purpleLight hover:bg-accent-purple text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-lg shadow-accent-purple/20">
+<i class="fa-solid fa-plus"></i> Create Room
+          </button>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Stat Card 1 -->
+<div class="bg-bg-card border border-gray-800 rounded-xl p-5 flex items-start gap-4 hover:border-gray-700 transition-colors">
+<div class="w-12 h-12 rounded-lg bg-accent-purple/10 flex items-center justify-center shrink-0">
+<i class="fa-solid fa-user-group text-accent-purpleLight text-xl"></i>
+</div>
+<div>
+<p class="text-sm text-text-muted mb-1">Total Rooms</p>
+<h3 class="text-2xl font-bold mb-1">12</h3>
+<p class="text-xs text-accent-green font-medium flex items-center gap-1">
+                2 <span class="text-text-muted font-normal">new this week</span> <i class="fa-solid fa-arrow-up text-[10px]"></i>
+</p>
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-bg-card border border-gray-800 rounded-xl p-5 flex items-start gap-4 hover:border-gray-700 transition-colors">
+<div class="w-12 h-12 rounded-lg bg-accent-green/10 flex items-center justify-center shrink-0">
+<div class="w-4 h-4 bg-accent-green rounded-full shadow-[0_0_10px_rgba(72,187,120,0.5)]"></div>
+</div>
+<div>
+<p class="text-sm text-text-muted mb-1">Online Now</p>
+<h3 class="text-2xl font-bold mb-1">24</h3>
+<p class="text-xs text-accent-green font-medium flex items-center gap-1">
+                +5 <span class="text-text-muted font-normal">from yesterday</span>
+</p>
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-bg-card border border-gray-800 rounded-xl p-5 flex items-start gap-4 hover:border-gray-700 transition-colors">
+<div class="w-12 h-12 rounded-lg bg-accent-blue/10 flex items-center justify-center shrink-0">
+<i class="fa-solid fa-message text-accent-blue text-xl"></i>
+</div>
+<div>
+<p class="text-sm text-text-muted mb-1">Messages Today</p>
+<h3 class="text-2xl font-bold mb-1">342</h3>
+<p class="text-xs text-accent-green font-medium flex items-center gap-1">
+                +18% <span class="text-text-muted font-normal">from yesterday</span>
+</p>
+</div>
+</div>
+<!-- Stat Card 4 -->
+<div class="bg-bg-card border border-gray-800 rounded-xl p-5 flex items-start gap-4 hover:border-gray-700 transition-colors">
+<div class="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center shrink-0">
+<i class="fa-solid fa-file-lines text-orange-500 text-xl"></i>
+</div>
+<div>
+<p class="text-sm text-text-muted mb-1">Files Shared</p>
+<h3 class="text-2xl font-bold mb-1">48</h3>
+<p class="text-xs text-accent-green font-medium flex items-center gap-1">
+                +8% <span class="text-text-muted font-normal">from yesterday</span>
+</p>
+</div>
+</div>
+</div>
+<!-- Main Dashboard Columns -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Recent Activity Column -->
+<div class="lg:col-span-2 bg-bg-card border border-gray-800 rounded-xl flex flex-col h-[500px]">
+<div class="p-5 border-b border-gray-800 flex items-center justify-between shrink-0">
+<h2 class="font-semibold text-lg">Recent Activity</h2>
+<a class="text-sm text-accent-purpleLight hover:text-accent-purple transition-colors" href="#">View all</a>
+</div>
+<div class="flex-1 overflow-y-auto p-2">
+<!-- Activity Item 1 -->
+<div class="flex gap-4 p-3 hover:bg-bg-hover rounded-lg transition-colors group cursor-pointer">
+<img alt="Sarah Wilson" class="w-10 h-10 rounded-full shrink-0 object-cover mt-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJmNexr12VYSWnvutnLhVU3AG5ThmfMSHOYIHklSHobAwavwb6G4u1zZY5coCtunftKSSl9CP4_eE8E4-rF291BZJVrIE9sR8OWiuot-mkOlVyW6BneJQ-HCQqcloIn7qHHTZ2xvhGnxk_aiq8BPbMiocfDFVf1axHHqn1XMLQXyo0hcng1yPq7Tp1kH9YAnUNGhqxhmF_ZE7qopttxdF236UE8TsivhFUzx5KDFTk8QMNnXt6i_QA"/>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<p class="text-sm font-medium truncate">
+                      Sarah Wilson <span class="text-text-muted font-normal mx-1">in</span> <a class="text-accent-purpleLight hover:underline" href="#">#developers</a>
+</p>
+<div class="flex items-center gap-3 shrink-0">
+<span class="text-xs text-text-muted group-hover:text-gray-300">10:32 AM</span>
+<div class="w-2 h-2 rounded-full bg-accent-blue"></div>
+</div>
+</div>
+<p class="text-sm text-text-muted truncate">Updated the authentication flow. Please review!</p>
+</div>
+</div>
+<!-- Activity Item 2 -->
+<div class="flex gap-4 p-3 hover:bg-bg-hover rounded-lg transition-colors group cursor-pointer">
+<img alt="David Brown" class="w-10 h-10 rounded-full shrink-0 object-cover mt-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrrgSUW3aZpbxy2Q17rIPgMOLrPiOFmW6f7Q6X5vFBAGWRQoBAQBavPhJ1Z4ksclRQdAukBZnOjNsBKWVO6gUCl6x6KTSeBjHYh-Q4ORsevTp_RS3JD9hQ-5X68pgMgsAKDgUaZHlac_HaQoM0RUkUrUMwqlLCrZjoA1li_d4_xr2LX_kkkdSImkz26oNn3fKmBuHjBQhE_S_IvAxaMssKcOtOBa64xlTL-ds2Jk3HaSN7Ux1EMj2_"/>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<p class="text-sm font-medium truncate">
+                      David Brown <span class="text-text-muted font-normal mx-1">in</span> <a class="text-accent-purpleLight hover:underline" href="#">#product-updates</a>
+</p>
+<div class="flex items-center gap-3 shrink-0">
+<span class="text-xs text-text-muted group-hover:text-gray-300">9:45 AM</span>
+<div class="w-2 h-2 rounded-full bg-accent-blue"></div>
+</div>
+</div>
+<p class="text-sm text-text-muted truncate">We just launched the new dashboard 🎉</p>
+</div>
+</div>
+<!-- Activity Item 3 -->
+<div class="flex gap-4 p-3 hover:bg-bg-hover rounded-lg transition-colors group cursor-pointer">
+<img alt="Emily Davis" class="w-10 h-10 rounded-full shrink-0 object-cover mt-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiMDjuxILIX7TleHUqYWDt3GJEr7w0QUZ0o41HpsaEEjHFalbrDC2H8VWNFh9DKkqWQ127uoBX5AWNFoohrDryMam6f_mvZms1JbkK2G6JOwCQXHapYer3trvPaYBXaH-b9NSDPc2CpRSZvZVkn_mE3d_Cwu2dObTKFvIoYPKLkAFTPdPEXp-TwvOW7WOkLAAp3_oyHJWT3UXflCyhs0VNoY6yP0A0Jlph9EGTw7SPZIkvN0UcnJa7"/>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<p class="text-sm font-medium truncate">
+                      Emily Davis <span class="text-text-muted font-normal mx-1">in</span> <a class="text-accent-purpleLight hover:underline" href="#">#design-team</a>
+</p>
+<div class="flex items-center gap-3 shrink-0">
+<span class="text-xs text-text-muted group-hover:text-gray-300">9:21 AM</span>
+<div class="w-2 h-2 rounded-full bg-accent-blue"></div>
+</div>
+</div>
+<p class="text-sm text-text-muted truncate">Here's the new design system we discussed.</p>
+</div>
+</div>
+<!-- Activity Item 4 -->
+<div class="flex gap-4 p-3 hover:bg-bg-hover rounded-lg transition-colors group cursor-pointer">
+<img alt="Michael Chen" class="w-10 h-10 rounded-full shrink-0 object-cover mt-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaMQvDP9FsmWzhKv4fHViugmBosBbkce2b_tOPkb-9-vud2U9Oz_23HEQQl-eIKGLxVfQYJ3jNrx44N4lBNuTMyf_eAQRHCwS0a-YBkKHwQcMW7BRY87AAC6Rgiz0TxQQ9DxF1A_dWt3nGGp4hSzZU-399rydkVYx5RX7P0F3yFRCG-0I2A6dTTmBgBxfpibA4Cq_yXw1MMe-rjiXaADPZZmR8PX-WEhv0QVkcDb-wEkzjrFibnDfw"/>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<p class="text-sm font-medium truncate">
+                      Michael Chen <span class="text-text-muted font-normal mx-1">in</span> <a class="text-accent-purpleLight hover:underline" href="#">#general</a>
+</p>
+<div class="flex items-center gap-3 shrink-0">
+<span class="text-xs text-text-muted group-hover:text-gray-300">8:15 AM</span>
+</div>
+</div>
+<p class="text-sm text-text-muted truncate">Good morning everyone! ☕</p>
+</div>
+</div>
+<!-- Activity Item 5 -->
+<div class="flex gap-4 p-3 hover:bg-bg-hover rounded-lg transition-colors group cursor-pointer">
+<img alt="Lisa Anderson" class="w-10 h-10 rounded-full shrink-0 object-cover mt-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBl2N0U7iur62sq98u5vA45p0keQ1su_pUFAjsfbHxaHer4-AH05Y680Rcd_shAJYnZOy3ABoYorCIIzDs4nG2cVQkCqmO3DbfOaKwDp5UNIK5FUF5lenqlqVxEnnEJPE_jj1-mVHyQ8D8tPNJNDWEIIVWu9CRVorazMQSCT2OZluztoORknwc4L377dzESAN404M0l8yX_7GWxUTbea1jJrFfDf97T9JPVl5k7Z4GcfGlq3SaJdeBh"/>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<p class="text-sm font-medium truncate">
+                      Lisa Anderson <span class="text-text-muted font-normal mx-1">in</span> <a class="text-accent-purpleLight hover:underline" href="#">#developers</a>
+</p>
+<div class="flex items-center gap-3 shrink-0">
+<span class="text-xs text-text-muted group-hover:text-gray-300">Yesterday</span>
+</div>
+</div>
+<p class="text-sm text-text-muted truncate">Bug fix: Resolved payment gateway issue.</p>
+</div>
+</div>
+</div>
+<div class="p-3 border-t border-gray-800 shrink-0">
+<button class="w-full py-2.5 text-sm font-medium text-accent-purpleLight hover:text-white hover:bg-bg-hover rounded-lg transition-colors">
+                Load more
+              </button>
+</div>
+</div>
+<!-- Right Column (Rooms & Members) -->
+<div class="flex flex-col gap-6 h-[500px]">
+<!-- Your Rooms -->
+<div class="bg-bg-card border border-gray-800 rounded-xl flex flex-col flex-1 min-h-0">
+<div class="p-5 border-b border-gray-800 flex items-center justify-between shrink-0">
+<h2 class="font-semibold text-lg">Your Rooms</h2>
+<a class="text-sm text-accent-purpleLight hover:text-accent-purple transition-colors" href="#">View all</a>
+</div>
+<div class="flex-1 overflow-y-auto p-3 space-y-1">
+<!-- Room 1 -->
+<a class="flex items-center gap-3 p-3 hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<div class="w-10 h-10 rounded-lg bg-indigo-900/50 flex items-center justify-center text-indigo-400 shrink-0">
+<i class="fa-solid fa-hashtag"></i>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-medium text-sm truncate group-hover:text-white">general</p>
+<p class="text-xs text-text-muted truncate">Company wide announcements...</p>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<i class="fa-regular fa-user text-xs text-text-muted"></i>
+<span class="text-xs text-text-muted">24</span>
+<div class="w-1.5 h-1.5 rounded-full bg-accent-green ml-1"></div>
+</div>
+</a>
+<!-- Room 2 -->
+<a class="flex items-center gap-3 p-3 hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<div class="w-10 h-10 rounded-lg bg-emerald-900/50 flex items-center justify-center text-emerald-400 shrink-0">
+<i class="fa-solid fa-hashtag"></i>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-medium text-sm truncate group-hover:text-white">developers</p>
+<p class="text-xs text-text-muted truncate">Development discussions &amp; updates</p>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<i class="fa-regular fa-user text-xs text-text-muted"></i>
+<span class="text-xs text-text-muted">18</span>
+<div class="w-1.5 h-1.5 rounded-full bg-accent-green ml-1"></div>
+</div>
+</a>
+<!-- Room 3 -->
+<a class="flex items-center gap-3 p-3 hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<div class="w-10 h-10 rounded-lg bg-fuchsia-900/50 flex items-center justify-center text-fuchsia-400 shrink-0">
+<i class="fa-solid fa-hashtag"></i>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-medium text-sm truncate group-hover:text-white">design-team</p>
+<p class="text-xs text-text-muted truncate">UI/UX design conversations</p>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<i class="fa-regular fa-user text-xs text-text-muted"></i>
+<span class="text-xs text-text-muted">12</span>
+<div class="w-1.5 h-1.5 rounded-full bg-accent-green ml-1"></div>
+</div>
+</a>
+<!-- Room 4 -->
+<a class="flex items-center gap-3 p-3 hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<div class="w-10 h-10 rounded-lg bg-amber-900/50 flex items-center justify-center text-amber-400 shrink-0">
+<i class="fa-solid fa-hashtag"></i>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-medium text-sm truncate group-hover:text-white">product-updates</p>
+<p class="text-xs text-text-muted truncate">Product roadmap &amp; updates</p>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<i class="fa-regular fa-user text-xs text-text-muted"></i>
+<span class="text-xs text-text-muted">9</span>
+<div class="w-1.5 h-1.5 rounded-full bg-accent-green ml-1"></div>
+</div>
+</a>
+<!-- Room 5 -->
+<a class="flex items-center gap-3 p-3 hover:bg-bg-hover rounded-lg transition-colors group" href="#">
+<div class="w-10 h-10 rounded-lg bg-blue-900/50 flex items-center justify-center text-blue-400 shrink-0">
+<i class="fa-solid fa-hashtag"></i>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-medium text-sm truncate group-hover:text-white">random</p>
+<p class="text-xs text-text-muted truncate">Random chats &amp; fun</p>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<i class="fa-regular fa-user text-xs text-text-muted"></i>
+<span class="text-xs text-text-muted">15</span>
+<div class="w-1.5 h-1.5 rounded-full bg-accent-green ml-1"></div>
+</div>
+</a>
+</div>
+</div>
+<!-- Online Members -->
+<div class="bg-bg-card border border-gray-800 rounded-xl shrink-0 p-5">
+<div class="flex items-center justify-between mb-4">
+<h2 class="font-semibold text-lg">Online Members</h2>
+<a class="text-sm text-accent-purpleLight hover:text-accent-purple transition-colors" href="#">View all</a>
+</div>
+<div class="flex items-center gap-[-8px]"> <!-- Negative gap for overlapping -->
+<div class="relative group cursor-pointer -mr-2">
+<img alt="Member" class="w-10 h-10 rounded-full border-2 border-bg-card object-cover relative z-10 hover:z-50 transition-transform hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0JnNl-X9XaGfBkDGg2-CZYOHBeiGXzq90gvVuW4CnfL8VsD7YYOOkYjS4qG8-j8R8boA47VSl4pcYVfI8LT-udwjR8_X5RcYUF0LiWd4YrnxZXTcaRl4ZgQ2lFkv67OC_SGxe_gEFz-ULzRzK_lQmFe79ai7w_iqqkHm6HbdNKsr07irLJ7mka8qaJQgnNragDXq7XkNDnUz0x7yEuFlU99EFPN632_PN8mljdd95WR0IqT_UEscN"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-accent-green border-2 border-bg-card rounded-full z-20"></div>
+</div>
+<div class="relative group cursor-pointer -mr-2">
+<img alt="Member" class="w-10 h-10 rounded-full border-2 border-bg-card object-cover relative z-10 hover:z-50 transition-transform hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaAB0JLit4-Br8CZKZuqylpWdeGM1yQT8tll1fKeE1UzTu-L_mDY3xDxpd5Adq55nofMEcUjwFrQpuA81-D-nvjDnc0r5gMq1RPrFP4B3sw5l9Wa2nxl9N-OwbYs7tXzV55H46hb71DEQKd-ORp98iW_ugxTa4J1GmOY6Cmyre6W5EKnTI5vbzUqsisSOk4bojpGnMC1Vl0lv-r7ByttOChU7PJdfNyYCaWd36oRKlYfgzEzst10iN"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-accent-green border-2 border-bg-card rounded-full z-20"></div>
+</div>
+<div class="relative group cursor-pointer -mr-2">
+<img alt="Member" class="w-10 h-10 rounded-full border-2 border-bg-card object-cover relative z-10 hover:z-50 transition-transform hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdizsHsQziMCtFoi2BPahspAFA9BaWvxrmcOL04Q5xVbGY54GoqEXO3iPDwZB9A6WpzXalWNlmJOMBDoKsPTqix8HASOCpoQuDIo9Sf1L_Otuv280tst_9UMNxYAGKRYZCNc_MdJMk3YQ3LPwdWPiIG5ki7ajQCd8pvoFODFYfwMN9cnvfP0MxxaJDd7v--dcGuFaQW_j7O9yH_RaivcKKoJFqGM7SbEWegGijaUWIJdOuVeXlIdGF"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-accent-green border-2 border-bg-card rounded-full z-20"></div>
+</div>
+<div class="relative group cursor-pointer -mr-2">
+<img alt="Member" class="w-10 h-10 rounded-full border-2 border-bg-card object-cover relative z-10 hover:z-50 transition-transform hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiHRLTzO0_-7k20ZSHRz2LtJJuIu-G3AEvgnEoNPGwE1TAhHqnM-wG8_8NPWkKx5ghAn_CHhS_C9Pk0E-LmoBidaLxiZDRLTuiaGzhaKd8Wv-UdBfyRIv-eFI6LPBwl9FJmEnYau9lgWMrR60NOTTQKfgytInTuGTkgNE-JMlRkU1KLI90pL-gtCt_VXZ06EU-N7sF_n_hBFP-3CMruYF57-RB2-wN5HvaXuqYzM1wFhY65zkCZoyS"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-accent-green border-2 border-bg-card rounded-full z-20"></div>
+</div>
+<div class="relative group cursor-pointer -mr-2">
+<img alt="Member" class="w-10 h-10 rounded-full border-2 border-bg-card object-cover relative z-10 hover:z-50 transition-transform hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALHnalnEr5UN17t6YX2jSd1s0RiZpjIE5-U_VUURMaEmNJ2ENNxShud_UODvFPey1iTIJFynXyXwWa9uxaMqnNiCJHz6EVHefPRXpDNeQS_X_07b-WWlyiqZqUoqcuJBLDzqRh6KBY_vTv-W80F5LFdRPMTzFViLgrqBFZppL1DykiYbqrcRtGD1IvDegXBs9cT358igPXxsCl0hjrVDWgsDEus68E-4Ijq8VPEGM6w4lV-nFg7Ky-"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-orange-500 border-2 border-bg-card rounded-full z-20"></div>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-bg-card bg-bg-sidebar flex items-center justify-center text-xs font-medium text-text-muted relative z-10 ml-2">
+                  +19
+                </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Tip Banner -->
+<div class="bg-bg-card border border-gray-800 rounded-lg p-3 flex items-center justify-between text-sm">
+<div class="flex items-center gap-3">
+<i class="fa-regular fa-lightbulb text-accent-purpleLight"></i>
+<p>
+<span class="font-semibold">Tip:</span> Use 
+              <span class="bg-bg-sidebar border border-gray-700 px-1.5 py-0.5 rounded text-xs mx-1 font-mono">⌘ K</span> 
+              to quickly search across rooms, messages, and members.
+            </p>
+</div>
+<button class="text-text-muted hover:text-white transition-colors p-1">
+<i class="fa-solid fa-xmark"></i>
+</button>
+</div>
+</div>
+</div>
+<!-- END: Dashboard Content -->
+</main>
+<!-- END: Main Content Area -->
+<style>
+    @keyframes wave {
+      0% { transform: rotate(0deg); }
+      10% { transform: rotate(14deg); }
+      20% { transform: rotate(-8deg); }
+      30% { transform: rotate(14deg); }
+      40% { transform: rotate(-4deg); }
+      50% { transform: rotate(10deg); }
+      60% { transform: rotate(0deg); }
+      100% { transform: rotate(0deg); }
+    }
+    .animate-waving-hand {
+      animation: wave 2.5s infinite;
+      display: inline-block;
+    }
+    
+    /* custom scrollbar for main area */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #1E2433;
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background-color: #2d3748;
+    }
+  </style>
+</body></html>
