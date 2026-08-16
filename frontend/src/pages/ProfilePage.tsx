@@ -17,6 +17,7 @@ const ProfilePage: React.FC = () => {
   }>();
 
   const [activeTab, setActiveTab] = useState<'Overview' | 'Activity' | 'Rooms' | 'Preferences' | 'Security'>('Overview');
+  const [showAllBadges, setShowAllBadges] = useState(false);
   const [bio, setBio] = useState('Passionate about building scalable, real-time applications. I love clean code, great UX, and collaborating with amazing teams.');
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [tempBio, setTempBio] = useState(bio);
@@ -300,105 +301,261 @@ const ProfilePage: React.FC = () => {
                 </div>
               </section>
 
-              {/* Grid sections */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                {/* About me */}
-                <div className="space-y-6">
+              {/* Tab Content Switching */}
+              {activeTab === 'Overview' && (
+                <>
+                  {/* Grid sections */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    
+                    {/* About me */}
+                    <div className="space-y-6">
+                      <section className="glass-panel rounded-2xl p-6">
+                        <h3 className="text-base font-semibold text-white mb-4">About Me</h3>
+                        {isEditingBio ? (
+                          <div className="space-y-3">
+                            <textarea 
+                              value={tempBio}
+                              onChange={(e) => setTempBio(e.target.value)}
+                              className="w-full bg-obsidian-900 border border-obsidian-750 text-white rounded px-3 py-2 text-sm focus:outline-none focus:border-purple-500 resize-none outline-none"
+                              rows={3}
+                            />
+                            <div className="flex gap-2">
+                              <button onClick={handleSaveBio} className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded cursor-pointer transition-colors">Save</button>
+                              <button onClick={() => setIsEditingBio(false)} className="px-3 py-1.5 bg-transparent border border-obsidian-600 text-slate-300 text-xs font-semibold rounded cursor-pointer">Cancel</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <p className="text-sm text-slate-400 leading-relaxed mb-5">{bio}</p>
+                            <button onClick={() => setIsEditingBio(true)} className="px-4 py-2 bg-obsidian-700 hover:bg-obsidian-600 text-slate-300 text-xs font-medium rounded-lg border border-obsidian-600 transition-colors cursor-pointer">
+                              Edit About
+                            </button>
+                          </>
+                        )}
+                      </section>
+
+                      {/* Badges */}
+                      <section className="glass-panel rounded-2xl p-6">
+                        <div className="flex items-center justify-between mb-5">
+                          <h3 className="text-base font-semibold text-white">Badges</h3>
+                          <button onClick={() => setShowAllBadges(true)} className="text-xs font-medium text-purple-400 hover:text-purple-300 cursor-pointer">View all</button>
+                        </div>
+                        <div className="grid grid-cols-4 gap-4">
+                          {badges.map((badge, i) => (
+                            <div key={i} className="flex flex-col items-center text-center group cursor-pointer" onClick={() => setShowAllBadges(true)}>
+                              <div className="w-12 h-12 mb-2 bg-obsidian-700 rounded-xl flex items-center justify-center text-lg shadow-lg hover:scale-110 transition-transform">
+                                {badge.icon}
+                              </div>
+                              <span className="text-[11px] font-semibold text-slate-200 block leading-tight">{badge.title}</span>
+                              <span className="text-[9px] text-slate-500 mt-0.5">{badge.desc}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    </div>
+
+                    {/* Right grid column */}
+                    <div className="space-y-6">
+                      {/* Top Rooms */}
+                      <section className="glass-panel rounded-2xl p-6">
+                        <div className="flex items-center justify-between mb-5">
+                          <h3 className="text-base font-semibold text-white">Top Rooms</h3>
+                          <button onClick={() => setActiveTab('Rooms')} className="text-xs font-medium text-purple-400 hover:text-purple-300 cursor-pointer">View all</button>
+                        </div>
+                        <div className="space-y-3">
+                          {topRooms.map((room, i) => (
+                            <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-obsidian-800/50 border border-transparent hover:border-obsidian-600 transition-colors group cursor-pointer" onClick={() => setActiveTab('Rooms')}>
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded bg-purple-500/10 text-purple-400 flex items-center justify-center text-sm font-bold">#</div>
+                                <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">{room.name}</span>
+                              </div>
+                              <span className="text-xs text-slate-500">{room.count}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    </div>
+
+                  </div>
+
+                  {/* Recent Activity */}
                   <section className="glass-panel rounded-2xl p-6">
-                    <h3 className="text-base font-semibold text-white mb-4">About Me</h3>
-                    {isEditingBio ? (
-                      <div className="space-y-3">
-                        <textarea 
-                          value={tempBio}
-                          onChange={(e) => setTempBio(e.target.value)}
-                          className="w-full bg-obsidian-900 border border-obsidian-750 text-white rounded px-3 py-2 text-sm focus:outline-none focus:border-purple-500 resize-none"
-                          rows={3}
-                        />
-                        <div className="flex gap-2">
-                          <button onClick={handleSaveBio} className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded">Save</button>
-                          <button onClick={() => setIsEditingBio(false)} className="px-3 py-1.5 bg-transparent border border-obsidian-600 text-slate-300 text-xs font-semibold rounded">Cancel</button>
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-base font-semibold text-white">Recent Activity</h3>
+                      <button onClick={() => setActiveTab('Activity')} className="text-xs font-medium text-purple-400 hover:text-purple-300 cursor-pointer">View all</button>
+                    </div>
+                    <div className="space-y-6">
+                      {recentActivity.map((act, i) => (
+                        <div key={i} className="flex gap-4">
+                          <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center flex-shrink-0 mt-1 text-purple-400 text-lg">
+                            {act.type === 'chat' ? '💬' : act.type === 'join' ? '🚪' : '➕'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-4">
+                              <p className="text-sm text-slate-300">
+                                {act.text}
+                              </p>
+                              <span className="text-xs text-slate-500 whitespace-nowrap">{act.time}</span>
+                            </div>
+                            {act.desc && <p className="text-sm text-slate-500 mt-1">{act.desc}</p>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                </>
+              )}
+
+              {activeTab === 'Activity' && (
+                <section className="glass-panel rounded-2xl p-6 text-left">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-base font-semibold text-white">Recent Activity Logs</h3>
+                  </div>
+                  <div className="space-y-6 max-h-[450px] overflow-y-auto scrollbar-thin pr-2">
+                    {[
+                      { text: 'Sent a message in #developers', time: '2m ago', desc: "Reacted to Sarah Wilson's message with 👍", type: 'chat' },
+                      { text: 'Joined #marketing', time: '1h ago', desc: 'Started participating in the conversation', type: 'join' },
+                      { text: 'Invited David Brown to #product-updates', time: '2h ago', desc: 'Sent an invitation link', type: 'invite' },
+                      { text: 'Created #help-support room', time: '1d ago', desc: 'Set up room configurations for general user inquiries', type: 'create' },
+                      { text: 'Updated profile picture', time: '2d ago', desc: 'Uploaded new avatar image', type: 'profile' },
+                      { text: 'Enabled Two-Factor Authentication', time: '3d ago', desc: 'Configured Authenticator App', type: 'security' },
+                    ].map((act, i) => (
+                      <div key={i} className="flex gap-4 border-b border-white/5 pb-4 last:border-0 last:pb-0">
+                        <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center flex-shrink-0 mt-1 text-purple-400 text-lg">
+                          {act.type === 'chat' ? '💬' : act.type === 'join' ? '🚪' : act.type === 'invite' ? '➕' : act.type === 'create' ? '📁' : act.type === 'security' ? '🔑' : '👤'}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-4">
+                            <p className="text-sm font-semibold text-slate-200">
+                              {act.text}
+                            </p>
+                            <span className="text-xs text-slate-500 whitespace-nowrap">{act.time}</span>
+                          </div>
+                          {act.desc && <p className="text-xs text-slate-400 mt-1 leading-relaxed">{act.desc}</p>}
                         </div>
                       </div>
-                    ) : (
-                      <>
-                        <p className="text-sm text-slate-400 leading-relaxed mb-5">{bio}</p>
-                        <button onClick={() => setIsEditingBio(true)} className="px-4 py-2 bg-obsidian-700 hover:bg-obsidian-600 text-slate-300 text-xs font-medium rounded-lg border border-obsidian-600 transition-colors">
-                          Edit About
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {activeTab === 'Rooms' && (
+                <section className="glass-panel rounded-2xl p-6 text-left">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-base font-semibold text-white">Active Rooms ({rooms.length})</h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {rooms.map((room) => (
+                      <div 
+                        key={room.id}
+                        onClick={() => navigate(`/rooms/${room.id}`)}
+                        className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-purple-500/30 hover:bg-white/10 transition-all cursor-pointer flex items-center justify-between group"
+                      >
+                        <div className="flex items-center gap-3 truncate">
+                          <div className="w-10 h-10 bg-purple-600/15 text-[#a78bfa] rounded-lg flex items-center justify-center font-bold text-sm shrink-0">
+                            #
+                          </div>
+                          <div className="truncate">
+                            <span className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">#{room.name}</span>
+                            <p className="text-xs text-slate-500 truncate leading-relaxed mt-0.5">{room.description || 'No description provided.'}</p>
+                          </div>
+                        </div>
+                        <div className="text-[#a78bfa] text-xs shrink-0 pl-2">
+                          Enter →
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {activeTab === 'Preferences' && (
+                <section className="glass-panel rounded-2xl p-6 text-left">
+                  <h3 className="text-base font-semibold text-white mb-6">User Preferences</h3>
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                      <div>
+                        <h4 className="text-sm font-semibold text-white mb-1">Appearance Theme</h4>
+                        <p className="text-xs text-slate-400 leading-relaxed">Customize your app interface layout styling.</p>
+                      </div>
+                      <select className="bg-obsidian-900 border border-[#2e3346] text-white text-xs rounded-lg px-3 py-2 focus:ring-1 focus:ring-purple-500 outline-none">
+                        <option>Dark Obsidian (Default)</option>
+                        <option>Frosted Glass Light</option>
+                        <option>Midnight Blue</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                      <div>
+                        <h4 className="text-sm font-semibold text-white mb-1">Desktop Notifications</h4>
+                        <p className="text-xs text-slate-400 leading-relaxed">Receive status alerts on new room notifications.</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer select-none">
+                        <input type="checkbox" defaultChecked className="sr-only peer" />
+                        <div className="w-9 h-5 bg-obsidian-750 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                      <div>
+                        <h4 className="text-sm font-semibold text-white mb-1">Sound Effects</h4>
+                        <p className="text-xs text-slate-400 leading-relaxed">Play audible alerts on incoming messages.</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer select-none">
+                        <input type="checkbox" defaultChecked className="sr-only peer" />
+                        <div className="w-9 h-5 bg-obsidian-750 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-sm font-semibold text-white mb-1">Language & Localization</h4>
+                        <p className="text-xs text-slate-400 leading-relaxed">Set your preferred display and messaging language.</p>
+                      </div>
+                      <select className="bg-obsidian-900 border border-[#2e3346] text-white text-xs rounded-lg px-3 py-2 focus:ring-1 focus:ring-purple-500 outline-none">
+                        <option>English (US)</option>
+                        <option>Deutsch</option>
+                        <option>Español</option>
+                        <option>Français</option>
+                      </select>
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              {activeTab === 'Security' && (
+                <section className="glass-panel rounded-2xl p-6 text-left">
+                  <h3 className="text-base font-semibold text-white mb-6">Security Settings</h3>
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="text-sm font-semibold text-white mb-4">Change Password</h4>
+                      <div className="space-y-4 max-w-md">
+                        <div>
+                          <label className="text-xs text-slate-400 block mb-1">Current Password</label>
+                          <input type="password" placeholder="••••••••" className="w-full bg-obsidian-900 border border-white/5 text-xs text-white rounded-lg px-3 py-2 focus:border-purple-500 outline-none" />
+                        </div>
+                        <div>
+                          <label className="text-xs text-slate-400 block mb-1">New Password</label>
+                          <input type="password" placeholder="••••••••" className="w-full bg-obsidian-900 border border-white/5 text-xs text-white rounded-lg px-3 py-2 focus:border-purple-500 outline-none" />
+                        </div>
+                        <button className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer">
+                          Update Password
                         </button>
-                      </>
-                    )}
-                  </section>
-
-                  {/* Badges */}
-                  <section className="glass-panel rounded-2xl p-6">
-                    <div className="flex items-center justify-between mb-5">
-                      <h3 className="text-base font-semibold text-white">Badges</h3>
-                      <button className="text-xs font-medium text-purple-400 hover:text-purple-300">View all</button>
-                    </div>
-                    <div className="grid grid-cols-4 gap-4">
-                      {badges.map((badge, i) => (
-                        <div key={i} className="flex flex-col items-center text-center group cursor-pointer">
-                          <div className="w-12 h-12 mb-2 bg-obsidian-700 rounded-xl flex items-center justify-center text-lg shadow-lg hover:scale-110 transition-transform">
-                            {badge.icon}
-                          </div>
-                          <span className="text-[11px] font-semibold text-slate-200 block leading-tight">{badge.title}</span>
-                          <span className="text-[9px] text-slate-500 mt-0.5">{badge.desc}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                </div>
-
-                {/* Right grid column */}
-                <div className="space-y-6">
-                  {/* Top Rooms */}
-                  <section className="glass-panel rounded-2xl p-6">
-                    <div className="flex items-center justify-between mb-5">
-                      <h3 className="text-base font-semibold text-white">Top Rooms</h3>
-                      <button className="text-xs font-medium text-purple-400 hover:text-purple-300">View all</button>
-                    </div>
-                    <div className="space-y-3">
-                      {topRooms.map((room, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-obsidian-800/50 border border-transparent hover:border-obsidian-600 transition-colors group cursor-pointer">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded bg-purple-500/10 text-purple-400 flex items-center justify-center text-sm font-bold">#</div>
-                            <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">{room.name}</span>
-                          </div>
-                          <span className="text-xs text-slate-500">{room.count}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                </div>
-
-              </div>
-
-              {/* Recent Activity */}
-              <section className="glass-panel rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-base font-semibold text-white">Recent Activity</h3>
-                  <button className="text-xs font-medium text-purple-400 hover:text-purple-300">View all</button>
-                </div>
-                <div className="space-y-6">
-                  {recentActivity.map((act, i) => (
-                    <div key={i} className="flex gap-4">
-                      <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center flex-shrink-0 mt-1 text-purple-400 text-lg">
-                        {act.type === 'chat' ? '💬' : act.type === 'join' ? '🚪' : '➕'}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-4">
-                          <p className="text-sm text-slate-300">
-                            {act.text}
-                          </p>
-                          <span className="text-xs text-slate-500 whitespace-nowrap">{act.time}</span>
-                        </div>
-                        {act.desc && <p className="text-sm text-slate-500 mt-1">{act.desc}</p>}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </section>
+
+                    <div className="border-t border-white/5 pt-6 flex items-center justify-between">
+                      <div>
+                        <h4 className="text-sm font-semibold text-white mb-1">Two-Factor Authentication (2FA)</h4>
+                        <p className="text-xs text-slate-400 leading-relaxed">Secures account using mobile verification apps.</p>
+                      </div>
+                      <button className="px-4 py-2 bg-red-600/20 hover:bg-red-600/35 border border-red-500/30 text-red-200 text-xs font-semibold rounded-lg transition-colors cursor-pointer">
+                        Disable 2FA
+                      </button>
+                    </div>
+                  </div>
+                </section>
+              )}
 
             </div>
 
@@ -502,6 +659,45 @@ const ProfilePage: React.FC = () => {
         </div>
 
       </main>
+
+      {showAllBadges && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm cursor-pointer"
+          onClick={() => setShowAllBadges(false)}
+        >
+          <div 
+            className="bg-[#151723] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl relative text-left cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setShowAllBadges(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white hover:bg-white/15 w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer text-base"
+              title="Close modal"
+            >
+              ✕
+            </button>
+            <h3 className="text-base font-bold text-white mb-4">All Badges</h3>
+            <div className="grid grid-cols-2 gap-4 max-h-[300px] overflow-y-auto scrollbar-thin pr-1">
+              {[
+                { title: 'Early Adopter', desc: 'Joined early', icon: '🚀' },
+                { title: 'Helpful User', desc: '25+ reactions', icon: '⚡' },
+                { title: 'Community Member', desc: 'Active in 10+ rooms', icon: '👥' },
+                { title: 'Supporter', desc: 'Helps others', icon: '🛡️' },
+                { title: 'Conversation Starter', desc: 'Created a thread', icon: '💬' },
+                { title: 'Super Sender', desc: '100+ messages sent', icon: '🔥' },
+                { title: 'Night Owl', desc: 'Active past midnight', icon: '🦉' },
+                { title: 'Bug Hunter', desc: 'Reported an issue', icon: '🐛' },
+              ].map((badge, i) => (
+                <div key={i} className="bg-white/5 border border-white/5 p-3 rounded-xl flex flex-col items-center text-center">
+                  <div className="text-2xl mb-2">{badge.icon}</div>
+                  <span className="text-xs font-semibold text-white block">{badge.title}</span>
+                  <span className="text-[10px] text-slate-400 mt-1 leading-tight">{badge.desc}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
