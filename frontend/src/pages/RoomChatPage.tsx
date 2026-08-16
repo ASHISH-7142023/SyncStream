@@ -32,6 +32,7 @@ const RoomChatPage: React.FC = () => {
   const [loadingRoom, setLoadingRoom] = useState(true);
   const [memberList, setMemberList] = useState<Member[]>([]);
   const [pinnedClosed, setPinnedClosed] = useState(false);
+  const [showMembersSidebar, setShowMembersSidebar] = useState(true);
   const [localReactions, setLocalReactions] = useState<Record<string, { emoji: string; count: number; active: boolean }[]>>({});
 
   const feedEndRef = useRef<HTMLDivElement | null>(null);
@@ -303,6 +304,29 @@ const RoomChatPage: React.FC = () => {
                 </div>
               )}
             </div>
+
+            <div className="flex items-center gap-1 border-l border-white/5 pl-4 shrink-0">
+              <button className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-colors" title="Search">
+                <i className="fa-solid fa-magnifying-glass text-xs"></i>
+              </button>
+              <button 
+                onClick={() => setPinnedClosed(!pinnedClosed)}
+                className={`p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-colors ${!pinnedClosed ? 'text-[#a78bfa]' : ''}`}
+                title="Pinned Messages"
+              >
+                <i className="fa-solid fa-thumbtack text-xs"></i>
+              </button>
+              <button 
+                onClick={() => setShowMembersSidebar(!showMembersSidebar)}
+                className={`p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-colors ${showMembersSidebar ? 'text-[#a78bfa]' : ''}`}
+                title="Toggle Members Panel"
+              >
+                <i className="fa-solid fa-users text-xs"></i>
+              </button>
+              <button className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-colors" title="More Options">
+                <i className="fa-solid fa-ellipsis-vertical text-xs"></i>
+              </button>
+            </div>
           </div>
         </header>
 
@@ -327,11 +351,19 @@ const RoomChatPage: React.FC = () => {
 
         {/* Chat Message Logs */}
         <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6 scrollbar-thin">
-          {roomMessages.map((msg: any) => {
+          {roomMessages.map((msg: any, idx: number) => {
             const reactions = localReactions[msg.id] || [];
             const isMention = msg.content?.includes(`@${user?.username}`);
             return (
-              <div key={msg.id || msg.sequenceNumber} className="flex gap-4 group text-left">
+              <React.Fragment key={msg.id || msg.sequenceNumber}>
+                {idx === roomMessages.length - 2 && roomMessages.length > 2 && (
+                  <div className="flex items-center my-2 shrink-0 w-full select-none">
+                    <div className="flex-grow h-px bg-purple-500/20"></div>
+                    <span className="mx-4 text-[9px] font-bold tracking-widest text-[#a78bfa] uppercase bg-[#0f111a] px-2">New Messages</span>
+                    <div className="flex-grow h-px bg-purple-500/20"></div>
+                  </div>
+                )}
+                <div className="flex gap-4 group text-left">
                 <div className="w-10 h-10 rounded-full bg-[#8b5cf6]/20 text-[#a78bfa] flex items-center justify-center font-bold text-sm shrink-0 select-none mt-1">
                   {msg.sender?.slice(0, 2).toUpperCase() || 'US'}
                 </div>
@@ -375,6 +407,7 @@ const RoomChatPage: React.FC = () => {
                   </div>
                 </div>
               </div>
+            </React.Fragment>
             );
           })}
           
@@ -439,103 +472,124 @@ const RoomChatPage: React.FC = () => {
       </main>
 
       {/* Right Sidebar: Collapsible presence list */}
-      <aside className="w-72 bg-[#151723] flex flex-col border-l border-white/5 flex-shrink-0 text-left">
-        <div className="h-16 flex items-center justify-between px-4 border-b border-white/5 shrink-0">
-          <h2 className="font-medium text-white">Members <span className="text-text-muted text-sm font-normal">({memberList.length})</span></h2>
-          <button className="flex items-center gap-1.5 text-xs text-brand-300 bg-brand-900/30 hover:bg-brand-900/50 border border-brand-800/50 px-3 py-1.5 rounded-lg transition-colors">
-            Invite
-          </button>
-        </div>
-        
-        <div className="p-4 border-b border-white/5 shrink-0">
-          <div className="relative flex items-center">
-            <svg className="absolute left-3 text-text-muted" fill="none" height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
-            <input className="w-full bg-[#1a1d2d] border border-white/5 text-sm rounded-lg pl-9 pr-4 py-2 focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition-all placeholder-text-muted/60 text-white outline-none" placeholder="Search members..." type="text"/>
+      {showMembersSidebar && (
+        <aside className="w-72 bg-[#151723] flex flex-col border-l border-white/5 flex-shrink-0 text-left font-sans">
+          <div className="h-16 flex items-center justify-between px-4 border-b border-white/5 shrink-0">
+            <h2 className="font-medium text-white flex items-center gap-1.5">
+              Members <span className="text-text-muted text-sm font-normal">({memberList.length})</span>
+            </h2>
+            <div className="flex items-center gap-2">
+              <button className="flex items-center gap-1.5 text-xs text-brand-300 bg-brand-900/30 hover:bg-brand-900/50 border border-brand-800/50 px-3 py-1.5 rounded-lg transition-colors">
+                Invite
+              </button>
+              <button 
+                onClick={() => setShowMembersSidebar(false)}
+                className="text-text-muted hover:text-white p-1 transition-colors"
+                title="Close Sidebar"
+              >
+                ✕
+              </button>
+            </div>
           </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin">
-          {onlineMembers.length > 0 && (
-            <div>
-              <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide cursor-pointer hover:text-text transition-colors">
-                Online — <span className="text-status-online">{onlineMembers.length}</span>
-              </div>
-              <ul className="space-y-3">
-                {onlineMembers.map(m => (
-                  <li key={m.id} className="flex items-center justify-between group cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <div className="relative">
-                        <div className="w-8 h-8 rounded-full bg-[#8b5cf6] flex items-center justify-center font-bold text-xs text-white">
-                          {m.username.slice(0, 2).toUpperCase()}
-                        </div>
-                        <span className="absolute bottom-0 right-0 w-2 h-2 bg-status-online border-2 border-surface-container rounded-full"></span>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium flex items-center gap-1.5">
-                          {m.username} {m.username === user?.username && <span className="text-text-muted text-xs font-normal">(You)</span>}
-                        </div>
-                        <div className="text-xs text-text-muted">Online</div>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+          
+          <div className="p-4 border-b border-white/5 shrink-0">
+            <div className="relative flex items-center">
+              <svg className="absolute left-3 text-text-muted" fill="none" height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
+              <input className="w-full bg-[#1a1d2d] border border-white/5 text-sm rounded-lg pl-9 pr-4 py-2 focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition-all placeholder-text-muted/60 text-white outline-none" placeholder="Search members..." type="text"/>
             </div>
-          )}
+          </div>
 
-          {awayMembers.length > 0 && (
-            <div>
-              <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide">
-                Away — <span className="text-status-away">{awayMembers.length}</span>
-              </div>
-              <ul className="space-y-3">
-                {awayMembers.map(m => (
-                  <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-70">
-                    <div className="flex items-center gap-3">
-                      <div className="relative">
-                        <div className="w-8 h-8 rounded-full bg-[#3b4155] flex items-center justify-center font-bold text-xs text-white">
-                          {m.username.slice(0, 2).toUpperCase()}
+          <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin">
+            {onlineMembers.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide cursor-pointer hover:text-text transition-colors">
+                  Online — <span className="text-status-online">{onlineMembers.length}</span>
+                </div>
+                <ul className="space-y-3">
+                  {onlineMembers.map(m => (
+                    <li key={m.id} className="flex items-center justify-between group cursor-pointer">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <div className="w-8 h-8 rounded-full bg-[#8b5cf6] flex items-center justify-center font-bold text-xs text-white">
+                            {m.username.slice(0, 2).toUpperCase()}
+                          </div>
+                          <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-[#151723] rounded-full"></span>
                         </div>
-                        <span className="absolute bottom-0 right-0 w-2 h-2 bg-status-away border-2 border-surface-container rounded-full"></span>
+                        <div>
+                          <div className="text-sm font-medium flex items-center gap-1.5">
+                            <span className="text-white">{m.username}</span>
+                            {m.username === user?.username && (
+                              <>
+                                <span className="text-text-muted text-xs font-normal">(You)</span>
+                                <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
+                              </>
+                            )}
+                          </div>
+                          <div className="text-xs text-text-muted">Online</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-sm font-medium text-white">{m.username}</div>
-                        <div className="text-xs text-text-muted">Away</div>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-3 text-xs text-[#a78bfa] hover:underline cursor-pointer">View all online ({onlineMembers.length})</div>
+              </div>
+            )}
 
-          {offlineMembers.length > 0 && (
-            <div>
-              <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide">
-                Offline — <span className="text-status-offline">{offlineMembers.length}</span>
-              </div>
-              <ul className="space-y-3">
-                {offlineMembers.map(m => (
-                  <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-50 grayscale">
-                    <div className="flex items-center gap-3">
-                      <div className="relative">
-                        <div className="w-8 h-8 rounded-full bg-[#1a1d2d] flex items-center justify-center font-bold text-xs text-white">
-                          {m.username.slice(0, 2).toUpperCase()}
+            {awayMembers.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide">
+                  Away — <span className="text-status-away">{awayMembers.length}</span>
+                </div>
+                <ul className="space-y-3">
+                  {awayMembers.map(m => (
+                    <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-70">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <div className="w-8 h-8 rounded-full bg-[#3b4155] flex items-center justify-center font-bold text-xs text-white">
+                            {m.username.slice(0, 2).toUpperCase()}
+                          </div>
+                          <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-away border-2 border-[#151723] rounded-full"></span>
                         </div>
-                        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-offline border-2 border-surface-container rounded-full"></span>
+                        <div>
+                          <div className="text-sm font-medium text-white">{m.username}</div>
+                          <div className="text-xs text-text-muted">Away</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-sm font-medium text-white">{m.username}</div>
-                        <div className="text-xs text-text-muted">Offline</div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {offlineMembers.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide">
+                  Offline — <span className="text-status-offline">{offlineMembers.length}</span>
+                </div>
+                <ul className="space-y-3">
+                  {offlineMembers.map(m => (
+                    <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-50 grayscale">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <div className="w-8 h-8 rounded-full bg-[#1a1d2d] flex items-center justify-center font-bold text-xs text-white">
+                            {m.username.slice(0, 2).toUpperCase()}
+                          </div>
+                          <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-offline border-2 border-[#151723] rounded-full"></span>
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-white">{m.username}</div>
+                          <div className="text-xs text-text-muted">Offline</div>
+                        </div>
                       </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      </aside>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-3 text-xs text-[#a78bfa] hover:underline cursor-pointer">View all offline ({offlineMembers.length})</div>
+              </div>
+            )}
+          </div>
+        </aside>
+      )}
 
       {/* Footer bar */}
       <footer className="absolute bottom-0 left-0 right-0 h-10 bg-surface-dim border-t border-white/5 flex items-center justify-between px-4 text-xs text-text-muted z-20 shrink-0 select-none">

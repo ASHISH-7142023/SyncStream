@@ -276,10 +276,20 @@ const RoomsPage: React.FC = () => {
                           <div className="text-xs text-dim">Online</div>
                         </div>
                         <div className="text-right min-w-[4rem] hidden sm:block">
-                          <div className="text-bright">5m ago</div>
+                          <div className="text-bright">{isDevelopers ? '5m ago' : room.name.toLowerCase() === 'general' ? '2m ago' : '1h ago'}</div>
                           <div className="text-xs text-dim">Last active</div>
                         </div>
                       </div>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Options trigger
+                        }}
+                        className="p-2 rounded-lg text-dim hover:text-bright hover:bg-surface-200 transition-colors ml-2 shrink-0 z-10"
+                        title="Options"
+                      >
+                        <i className="fa-solid fa-ellipsis-vertical text-sm"></i>
+                      </button>
                     </div>
                   );
                 })}
@@ -292,6 +302,22 @@ const RoomsPage: React.FC = () => {
                   </div>
                 )}
               </div>
+
+              {/* Pagination footer */}
+              {filteredRooms.length > 0 && (
+                <div className="flex items-center justify-between border-t border-[#28292d] pt-4 mt-6 text-sm shrink-0">
+                  <span className="text-dim">Showing 1 to {filteredRooms.length} of {filteredRooms.length} rooms</span>
+                  <div className="flex items-center gap-2">
+                    <button className="p-1.5 rounded-lg border border-[#28292d] text-dim hover:text-bright hover:bg-surface-200 transition-colors">
+                      <i className="fa-solid fa-chevron-left text-xs"></i>
+                    </button>
+                    <button className="px-3 py-1 rounded-lg bg-[#6366f1] text-white font-semibold text-xs">1</button>
+                    <button className="p-1.5 rounded-lg border border-[#28292d] text-dim hover:text-bright hover:bg-surface-200 transition-colors">
+                      <i className="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                  </div>
+                </div>
+              )}
 
             </div>
 
@@ -322,6 +348,19 @@ const RoomsPage: React.FC = () => {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Create a New Room sidebar shortcut */}
+              <div className="bg-[#121316] border border-[#28292d] rounded-2xl p-5">
+                <h2 className="font-semibold text-base mb-1 text-bright">Create a New Room</h2>
+                <p className="text-xs text-dim mb-4 leading-relaxed">Bring your team together in a dedicated space.</p>
+                <button 
+                  onClick={onOpenCreateModal}
+                  className="w-full py-2 bg-[#6366f1] hover:bg-[#4f46e5] text-white rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20"
+                >
+                  <svg fill="none" height="14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                  Create Room
+                </button>
               </div>
 
               <div className="bg-[#121316] border border-[#28292d] rounded-2xl p-5">

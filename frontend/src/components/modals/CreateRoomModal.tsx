@@ -385,22 +385,22 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
               <div className="space-y-4">
                 <span className="text-sm font-semibold text-white block mb-2">Review Room Settings</span>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#1a1d27] p-5 rounded-xl border border-[#2e3346]">
-                  <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                  <div className="bg-[#1a1d27] p-5 rounded-xl border border-[#2e3346] space-y-4">
                     <div>
                       <div className="text-[10px] text-[#94a3b8] uppercase font-bold">Room Name</div>
-                      <div className="text-sm text-white font-semibold">#{roomName}</div>
+                      <div className="text-sm text-white font-semibold flex items-center gap-1.5">
+                        <span className="text-[#6b46c1] font-bold">#</span>{roomName}
+                      </div>
                     </div>
                     <div>
                       <div className="text-[10px] text-[#94a3b8] uppercase font-bold">Description</div>
-                      <div className="text-xs text-white">{description || 'No description provided.'}</div>
+                      <div className="text-xs text-white">{description || 'Discuss roadmap initiatives, milestones and product strategy.'}</div>
                     </div>
                     <div>
                       <div className="text-[10px] text-[#94a3b8] uppercase font-bold">Room Type</div>
                       <div className="text-xs text-white">{roomType}</div>
                     </div>
-                  </div>
-                  <div className="space-y-4">
                     <div>
                       <div className="text-[10px] text-[#94a3b8] uppercase font-bold">Access level</div>
                       <div className="text-xs text-white">{privacyJoin}</div>
@@ -415,16 +415,42 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
                       </div>
                     </div>
                   </div>
+
+                  <div className="bg-[#1a1d27] p-5 rounded-xl border border-[#2e3346] flex flex-col items-center justify-center text-center">
+                    <div className="relative w-28 h-28 bg-[#151822] rounded-2xl border-2 border-dashed border-[#6b46c1]/40 flex items-center justify-center text-[#6b46c1] text-5xl font-bold mb-4 shadow-[0_0_20px_rgba(107,70,193,0.15)]">
+                      #
+                      <span className="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 rounded-full border-4 border-[#1a1d27] flex items-center justify-center text-white text-[10px]">
+                        ✓
+                      </span>
+                    </div>
+                    <button 
+                      onClick={handleSubmit}
+                      disabled={submitting}
+                      className="w-full py-2.5 px-4 rounded-xl bg-green-500 hover:bg-green-600 text-white text-sm font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)] disabled:opacity-50"
+                    >
+                      {submitting ? 'Creating...' : '✓ Create Room'}
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
 
             {/* STEP 5: Success screen */}
             {step === 5 && (
-              <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
-                <span className="text-5xl">🎉</span>
-                <h3 className="text-lg font-bold text-white">Room created successfully!</h3>
-                <p className="text-xs text-[#94a3b8] max-w-sm">The channel <span className="text-[#6b46c1] font-semibold">#{roomName}</span> is now active. You can start sending messages and invite members.</p>
+              <div className="flex flex-col items-center justify-center py-8 text-center space-y-6">
+                <div className="w-16 h-16 bg-green-500/10 border border-green-500/20 text-green-400 rounded-full flex items-center justify-center text-3xl shadow-lg shadow-green-500/10">
+                  ✓
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold text-white">Room created successfully!</h3>
+                  <p className="text-xs text-[#94a3b8] max-w-sm">The channel <span className="text-[#6b46c1] font-semibold">#{roomName}</span> is now active. You can start sending messages and invite members.</p>
+                </div>
+                
+                {/* Success alert banner */}
+                <div className="w-full max-w-md bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-semibold py-3 px-4 rounded-lg flex items-center justify-between">
+                  <span>Room "{roomName}" created successfully!</span>
+                  <span>✓</span>
+                </div>
               </div>
             )}
 

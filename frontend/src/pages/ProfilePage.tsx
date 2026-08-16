@@ -222,8 +222,15 @@ const ProfilePage: React.FC = () => {
                           <i className="fa-solid fa-pen text-[10px]"></i> Edit Profile
                         </button>
                       </div>
-                      <div className="flex items-center justify-center sm:justify-start gap-2 text-slate-400 mb-3">
+                      <div className="flex items-center justify-center sm:justify-start gap-2 text-[#94a3b8] mb-3">
                         <span className="text-sm">@{user ? user.username.toLowerCase() : 'alexjohnson'}</span>
+                        <button 
+                          className="text-slate-500 hover:text-white transition-colors cursor-pointer p-0.5" 
+                          title="Copy Username" 
+                          onClick={() => navigator.clipboard.writeText(user ? `@${user.username.toLowerCase()}` : '@alexjohnson')}
+                        >
+                          <i className="fa-regular fa-copy text-xs"></i>
+                        </button>
                       </div>
                       <p className="text-slate-300 font-medium mb-1">Full Stack Developer at SyncStream</p>
                       <p className="text-slate-400 text-sm mb-4">Building real-time experiences 🚀</p>
@@ -246,19 +253,31 @@ const ProfilePage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Stats Summary */}
-                  <div className="flex sm:flex-col md:flex-row items-center gap-6 md:gap-8 pt-6 md:pt-0 border-t md:border-t-0 md:border-l border-obsidian-600/50 md:pl-8 w-full md:w-auto justify-around md:justify-start">
+                  {/* Stats Summary Grid */}
+                  <div className="grid grid-cols-3 gap-x-6 gap-y-4 pt-6 md:pt-0 border-t md:border-t-0 md:border-l border-obsidian-600/50 md:pl-8 w-full md:w-auto shrink-0 select-none">
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-white mb-1">34</p>
-                      <p className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Rooms</p>
+                      <p className="text-xl font-bold text-white mb-0.5">34</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Rooms</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-white mb-1">128</p>
-                      <p className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Messages</p>
+                      <p className="text-xl font-bold text-white mb-0.5">128</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Messages</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-white mb-1">56</p>
-                      <p className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Threads</p>
+                      <p className="text-xl font-bold text-white mb-0.5">56</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Threads</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xl font-bold text-white mb-0.5">24</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Mentions</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xl font-bold text-white mb-0.5">18</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Reactions</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xl font-bold text-white mb-0.5">7</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Bookmarks</p>
                     </div>
                   </div>
                 </div>
@@ -434,13 +453,28 @@ const ProfilePage: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-xs text-slate-500 mb-1">Username</p>
-                    <p className="text-xs text-slate-300">@{user ? user.username.toLowerCase() : 'alexjohnson'}</p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-slate-300">@{user ? user.username.toLowerCase() : 'alexjohnson'}</p>
+                      <button 
+                        className="text-slate-500 hover:text-white transition-colors cursor-pointer" 
+                        title="Copy Username" 
+                        onClick={() => navigator.clipboard.writeText(user ? `@${user.username.toLowerCase()}` : '@alexjohnson')}
+                      >
+                        <i className="fa-regular fa-copy text-xs"></i>
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <p className="text-xs text-slate-500 mb-1">Password</p>
                     <div className="flex items-center justify-between">
-                      <p className="text-xs text-slate-350 tracking-widest">••••••••••</p>
-                      <button className="text-xs font-medium text-purple-400 hover:text-purple-300">Change</button>
+                      <p className="text-xs text-slate-355 tracking-widest">••••••••••</p>
+                      <button className="text-xs font-semibold text-purple-400 hover:text-purple-300">Change</button>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 mb-1">Two-Factor Authentication</p>
+                    <div className="flex items-center justify-between">
+                      <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold rounded uppercase tracking-wide">Enabled</span>
                     </div>
                   </div>
                 </div>
@@ -448,16 +482,17 @@ const ProfilePage: React.FC = () => {
 
               <section className="glass-panel rounded-2xl p-6">
                 <h3 className="text-base font-semibold text-white mb-5">Connections</h3>
-                <div className="flex items-center -space-x-1.5">
+                <div className="flex items-center -space-x-1.5 animate-pulse">
                   {['SW', 'DB', 'ED', 'MC'].map((initial, i) => (
                     <div key={i} className="w-8 h-8 rounded-full border-2 border-obsidian-800 bg-[#262631] flex items-center justify-center font-bold text-[9px] text-white">
                       {initial}
                     </div>
                   ))}
-                  <div className="w-8 h-8 rounded-full border-2 border-obsidian-800 bg-obsidian-700 flex items-center justify-center text-[8px] text-slate-300 font-semibold">
+                  <div className="w-8 h-8 rounded-full border-2 border-obsidian-800 bg-obsidian-700 flex items-center justify-center text-[8px] text-slate-300 font-semibold font-sans">
                     +12
                   </div>
                 </div>
+                <p className="text-xs text-slate-400 mt-4 leading-none">You have 18 connections</p>
               </section>
 
             </div>

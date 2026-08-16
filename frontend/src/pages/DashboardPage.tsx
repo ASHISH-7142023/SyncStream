@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -16,11 +16,13 @@ const DashboardPage: React.FC = () => {
     onOpenCreateModal: () => void;
   }>();
 
+  const [showTip, setShowTip] = useState(true);
+
   const stats = [
     { 
       title: 'Total Rooms', 
       value: rooms.length.toString(), 
-      subtext: '2 new this week', 
+      subtext: '2 new this week ↑', 
       icon: <i className="fa-solid fa-user-group text-accent-purpleLight text-xl"></i>, 
       color: 'bg-accent-purple/10' 
     },
@@ -104,7 +106,7 @@ const DashboardPage: React.FC = () => {
               </button>
             </div>
             <div className="space-y-0.5">
-              {rooms.map((r, idx) => (
+              {rooms.map((r) => (
                 <button 
                   key={r.id} 
                   onClick={() => navigate(`/rooms/${r.id}`)}
@@ -114,7 +116,7 @@ const DashboardPage: React.FC = () => {
                     <span className="text-accent-purpleLight font-bold w-4 text-center">#</span>
                     <span className="text-sm truncate">{r.name}</span>
                   </div>
-                  {idx === 0 && <div className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></div>}
+                  {r.name === 'general' && <div className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></div>}
                 </button>
               ))}
               {rooms.length === 0 && (
@@ -184,14 +186,28 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
           
-          <div className="flex items-center gap-6 ml-8">
+          <div className="flex items-center gap-5 ml-8">
             <button className="text-text-muted hover:text-white transition-colors relative">
-              <i className="fa-regular fa-bell"></i>
-              <span className="absolute top-0 right-0 w-2 h-2 bg-accent-purpleLight rounded-full border border-bg-main"></span>
+              <i className="fa-regular fa-bell text-base"></i>
+              <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-accent-purpleLight rounded-full border border-bg-main"></span>
             </button>
             <button className="text-text-muted hover:text-white transition-colors" onClick={() => navigate('/profile')}>
-              <i className="fa-regular fa-circle-question"></i>
+              <i className="fa-regular fa-circle-question text-base"></i>
             </button>
+            
+            <div className="flex items-center gap-3 pl-4 border-l border-gray-800 cursor-pointer group" onClick={() => navigate('/profile')}>
+              <div className="relative shrink-0">
+                <div className="w-8 h-8 rounded-full bg-[#6B46C1] flex items-center justify-center font-bold text-xs text-white shadow-md">
+                  {user ? user.username.slice(0, 2).toUpperCase() : 'AJ'}
+                </div>
+                <span className="absolute bottom-0 right-0 w-2 h-2 bg-accent-green border border-bg-main rounded-full"></span>
+              </div>
+              <div className="text-left hidden md:block">
+                <div className="text-xs font-semibold text-white leading-none mb-0.5">{user ? user.username : 'Alex Johnson'}</div>
+                <div className="text-[9px] text-[#48BB78] font-medium leading-none">Online</div>
+              </div>
+              <i className="fa-solid fa-chevron-down text-[10px] text-text-muted group-hover:text-white transition-colors"></i>
+            </div>
           </div>
         </header>
 
@@ -293,9 +309,11 @@ const DashboardPage: React.FC = () => {
                             <p className="font-semibold text-sm truncate group-hover:text-white">{room.name}</p>
                             <p className="text-xs text-text-muted truncate">{room.description || 'Join conversations'}</p>
                           </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <i className="fa-regular fa-user text-xs text-text-muted"></i>
-                            <span className="text-xs text-text-muted">18</span>
+                          <div className="flex items-center gap-3 shrink-0">
+                            <span className="text-xs text-text-muted flex items-center gap-1">
+                              <i className="fa-regular fa-user text-[10px]"></i> {idx === 0 ? '24' : idx === 1 ? '18' : '12'}
+                            </span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent-green shadow-[0_0_8px_rgba(72,187,120,0.4)]"></span>
                           </div>
                         </div>
                       );
@@ -330,16 +348,24 @@ const DashboardPage: React.FC = () => {
             </div>
 
             {/* Tip Banner */}
-            <div className="bg-bg-card border border-gray-800 rounded-lg p-3 flex items-center justify-between text-sm shrink-0">
-              <div className="flex items-center gap-3">
-                <i className="fa-regular fa-lightbulb text-accent-purpleLight"></i>
-                <p>
-                  <span className="font-semibold">Tip:</span> Use 
-                  <span className="bg-bg-sidebar border border-gray-700 px-1.5 py-0.5 rounded text-xs mx-1 font-mono">⌘ K</span> 
-                  to quickly search across rooms, messages, and members.
-                </p>
+            {showTip && (
+              <div className="bg-bg-card border border-gray-800 rounded-lg p-3 flex items-center justify-between text-sm shrink-0">
+                <div className="flex items-center gap-3">
+                  <i className="fa-regular fa-lightbulb text-accent-purpleLight"></i>
+                  <p>
+                    <span className="font-semibold">Tip:</span> Use 
+                    <span className="bg-bg-sidebar border border-gray-700 px-1.5 py-0.5 rounded text-xs mx-1 font-mono">⌘ K</span> 
+                    to quickly search across rooms, messages, and members.
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setShowTip(false)}
+                  className="text-text-muted hover:text-white transition-colors p-1"
+                >
+                  ✕
+                </button>
               </div>
-            </div>
+            )}
 
           </div>
         </div>
