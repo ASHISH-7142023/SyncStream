@@ -22,6 +22,7 @@ const RoomsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'All' | 'Joined' | 'Public' | 'Archived'>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('Recently Active');
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   const handleJoinAndNavigate = async (room: Room) => {
     try {
@@ -58,13 +59,33 @@ const RoomsPage: React.FC = () => {
   return (
     <div className="h-screen flex overflow-hidden text-sm selection:bg-brand selection:text-white bg-surface text-bright font-sans">
       
+      {/* Sidebar Backdrop for Mobile */}
+      {showMobileSidebar && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden cursor-pointer"
+          onClick={() => setShowMobileSidebar(false)}
+        />
+      )}
+
       {/* Left Sidebar */}
-      <aside className="w-64 flex-shrink-0 bg-[#121316] border-r border-[#28292d] flex flex-col h-full hidden md:flex transition-all duration-300 text-left">
-        <div className="h-16 flex items-center px-4 shrink-0 gap-3 border-b border-[#28292d] cursor-pointer" onClick={() => navigate('/dashboard')}>
-          <div className="w-8 h-8 rounded-lg brand-gradient flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
-            <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="m9 10 2 2 4-4"></path></svg>
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-64 bg-[#121316] border-r border-[#28292d] flex flex-col h-full shrink-0 text-left transition-transform duration-300 ease-in-out
+        md:relative md:translate-x-0 md:flex md:z-0
+        ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+        <div className="h-16 flex items-center justify-between px-4 shrink-0 border-b border-[#28292d]">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
+            <div className="w-8 h-8 rounded-lg brand-gradient flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+              <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="m9 10 2 2 4-4"></path></svg>
+            </div>
+            <span className="font-bold text-lg tracking-tight brand-text-gradient">SyncStream</span>
           </div>
-          <span className="font-bold text-lg tracking-tight brand-text-gradient">SyncStream</span>
+          <button 
+            onClick={() => setShowMobileSidebar(false)}
+            className="md:hidden p-1 text-dim hover:text-bright hover:bg-white/10 rounded cursor-pointer"
+          >
+            ✕
+          </button>
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-6 scrollbar-hide">
@@ -159,8 +180,15 @@ const RoomsPage: React.FC = () => {
         
         {/* Top Header */}
         <header className="h-16 shrink-0 flex items-center justify-between px-6 border-b border-[#28292d] bg-surface/80 backdrop-blur-md z-10">
-          <div className="flex-1 max-w-2xl">
-            <div className="relative group">
+          <div className="flex items-center gap-3 flex-1 max-w-2xl">
+            <button 
+              onClick={() => setShowMobileSidebar(true)}
+              className="md:hidden p-2 text-dim hover:text-bright hover:bg-white/5 rounded-lg transition-colors shrink-0 cursor-pointer"
+              title="Open Sidebar"
+            >
+              <i className="fa-solid fa-bars text-lg"></i>
+            </button>
+            <div className="relative group w-full">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg className="text-dim group-focus-within:text-brand transition-colors" fill="none" height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
               </div>

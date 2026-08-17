@@ -18,6 +18,7 @@ const ProfilePage: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'Overview' | 'Activity' | 'Rooms' | 'Preferences' | 'Security'>('Overview');
   const [showAllBadges, setShowAllBadges] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [bio, setBio] = useState('Passionate about building scalable, real-time applications. I love clean code, great UX, and collaborating with amazing teams.');
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [tempBio, setTempBio] = useState(bio);
@@ -52,16 +53,34 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="h-screen flex overflow-hidden font-sans bg-obsidian-900 text-white selection:bg-purple-600 selection:text-white">
       
+      {/* Sidebar Backdrop for Mobile */}
+      {showMobileSidebar && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden cursor-pointer"
+          onClick={() => setShowMobileSidebar(false)}
+        />
+      )}
+
       {/* Left Sidebar */}
-      <aside className="w-64 bg-obsidian-900 border-r border-obsidian-700 flex flex-col h-full flex-shrink-0 text-left">
-        <div className="h-16 flex items-center px-6 cursor-pointer" onClick={() => navigate('/dashboard')}>
-          <div className="flex items-center gap-3">
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-64 bg-obsidian-900 border-r border-obsidian-700 flex flex-col h-full shrink-0 text-left transition-transform duration-300 ease-in-out
+        md:relative md:translate-x-0 md:flex md:z-0
+        ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+        <div className="h-16 flex items-center justify-between px-6 border-b border-obsidian-700">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
             <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center relative">
               <i className="fa-solid fa-comment-dots text-white text-lg"></i>
               <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-purple-400 rounded-full border-2 border-obsidian-900"></div>
             </div>
             <span className="text-xl font-bold text-white tracking-tight">SyncStream</span>
           </div>
+          <button 
+            onClick={() => setShowMobileSidebar(false)}
+            className="md:hidden p-1 text-slate-400 hover:text-white hover:bg-white/10 rounded cursor-pointer"
+          >
+            ✕
+          </button>
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-8 scrollbar-hide">
@@ -151,8 +170,15 @@ const ProfilePage: React.FC = () => {
         
         {/* Top Header Bar */}
         <header className="h-16 border-b border-obsidian-700 bg-obsidian-900/50 backdrop-blur-md flex items-center justify-between px-6 flex-shrink-0 z-20">
-          <div className="flex-1 max-w-xl">
-            <div className="relative group">
+          <div className="flex items-center gap-3 flex-1 max-w-xl">
+            <button 
+              onClick={() => setShowMobileSidebar(true)}
+              className="md:hidden p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors shrink-0 cursor-pointer"
+              title="Open Sidebar"
+            >
+              <i className="fa-solid fa-bars text-lg"></i>
+            </button>
+            <div className="relative group w-full">
               <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-400 transition-colors"></i>
               <input className="w-full bg-obsidian-700 border border-obsidian-600 rounded-lg pl-10 pr-12 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all" placeholder="Search rooms, messages, or users..." type="text"/>
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
