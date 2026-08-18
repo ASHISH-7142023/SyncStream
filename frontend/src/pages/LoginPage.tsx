@@ -166,9 +166,9 @@ const LoginPage: React.FC = () => {
         <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none lg:hidden"></div>
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#6d28d9]/10 rounded-full blur-[100px] pointer-events-none lg:hidden"></div>
         
-        <div className="w-full max-w-md glass-panel p-8 sm:p-10 rounded-2xl relative z-10 shadow-2xl text-left">
+        <div className="w-full max-w-md glass-panel p-8 sm:p-10 rounded-2xl relative z-10 shadow-2xl text-left animate-fade-in-up">
           {/* Mobile Logo */}
-          <div className="flex lg:hidden items-center justify-center gap-3 mb-8 cursor-pointer" onClick={() => navigate('/')}>
+          <div className="flex lg:hidden items-center justify-center gap-3 mb-8 cursor-pointer animate-fade-in-up animation-delay-100" onClick={() => navigate('/')}>
             <SyncStreamLogo className="w-8 h-8" />
             <span className="text-xl font-bold tracking-tight text-white">SyncStream</span>
           </div>
@@ -293,7 +293,7 @@ const LoginPage: React.FC = () => {
             <button 
               type="submit"
               disabled={submitting}
-              className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-base font-semibold text-white btn-gradient focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6d28d9] focus:ring-offset-[#060e20] transition-all mt-6 disabled:opacity-50"
+              className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-base font-semibold text-white btn-gradient focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6d28d9] focus:ring-offset-[#060e20] transition-all hover:scale-[1.02] active:scale-[0.98] mt-6 disabled:opacity-50 cursor-pointer"
             >
               {submitting ? 'Authenticating...' : 'Log In →'}
             </button>

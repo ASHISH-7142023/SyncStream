@@ -172,7 +172,7 @@ const RegisterPage: React.FC = () => {
 
         {/* RIGHT COLUMN: Registration Form */}
         <section className="w-full max-w-md mx-auto text-left">
-          <div className="bg-[#12121a] border border-[#374151] rounded-3xl p-8 lg:p-10 shadow-2xl">
+          <div className="bg-[#12121a] border border-[#374151] rounded-3xl p-8 lg:p-10 shadow-2xl animate-fade-in-up">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold mb-2">Create your account</h2>
               <p className="text-sm text-[#9ca3af]">Already have an account? <Link className="text-[#6366f1] hover:underline" to="/login">Log in</Link></p>
@@ -372,7 +372,7 @@ const RegisterPage: React.FC = () => {
               <button 
                 type="submit"
                 disabled={submitting}
-                className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-lg text-base font-semibold text-white bg-[#6366f1] hover:bg-[#4f46e5] transition-all mt-6 disabled:opacity-50"
+                className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-lg text-base font-semibold text-white bg-[#6366f1] hover:bg-[#4f46e5] transition-all hover:scale-[1.02] active:scale-[0.98] mt-6 disabled:opacity-50 cursor-pointer"
               >
                 {submitting ? 'Registering...' : 'Create Account'}
               </button>

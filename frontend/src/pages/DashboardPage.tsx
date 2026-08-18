@@ -244,24 +244,24 @@ const DashboardPage: React.FC = () => {
           <div className="max-w-6xl mx-auto space-y-8">
             
             {/* Welcome Row */}
-            <div className="flex items-end justify-between gap-4">
+            <div className="flex items-end justify-between gap-4 animate-fade-in-up">
               <div>
                 <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">Welcome back, {user ? user.username : 'Alex'}! <span className="text-2xl animate-waving-hand origin-bottom-right">👋</span></h1>
                 <p className="text-text-muted text-sm">Here's what's happening in your workspace today.</p>
               </div>
               <button 
                 onClick={onOpenCreateModal}
-                className="px-4 py-2.5 bg-accent-purpleLight hover:bg-accent-purple text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shadow-lg shadow-accent-purple/20 shrink-0"
+                className="px-4 py-2.5 bg-accent-purpleLight hover:bg-accent-purple text-white rounded-lg text-sm font-medium transition-all flex items-center gap-2 shadow-lg shadow-accent-purple/20 shrink-0 hover:scale-[1.03] active:scale-[0.97] cursor-pointer"
               >
                 <i className="fa-solid fa-plus text-xs"></i> Create Room
               </button>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in-up animation-delay-100">
               {stats.map((stat, i) => (
-                <div key={i} className="bg-bg-card border border-gray-800 rounded-xl p-5 flex items-start gap-4 hover:border-gray-700 transition-colors">
-                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${stat.color}`}>
+                <div key={i} className="bg-bg-card border border-gray-800 rounded-xl p-5 flex items-start gap-4 hover:border-accent-purple/30 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 hover:shadow-lg hover:shadow-accent-purple/5 cursor-pointer">
+                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${stat.color} transition-transform duration-300 group-hover:scale-110`}>
                     {stat.icon}
                   </div>
                   <div>
@@ -276,18 +276,18 @@ const DashboardPage: React.FC = () => {
             </div>
 
             {/* 2 Column Details Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in-up animation-delay-200">
               
               {/* Recent Activity */}
               <div className="lg:col-span-2 bg-bg-card border border-gray-800 rounded-xl flex flex-col h-[500px]">
                 <div className="p-5 border-b border-gray-800 flex items-center justify-between shrink-0">
                   <h2 className="font-semibold text-lg">Recent Activity</h2>
-                  <button className="text-sm text-accent-purpleLight hover:text-accent-purple transition-colors">View all</button>
+                  <button className="text-sm text-accent-purpleLight hover:text-accent-purple transition-colors cursor-pointer">View all</button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-2 scrollbar-thin">
                   {recentActivity.map((act, i) => (
-                    <div key={i} className="flex gap-4 p-3 hover:bg-bg-hover rounded-lg transition-colors group cursor-pointer">
-                      <div className="w-10 h-10 rounded-full bg-accent-purple flex items-center justify-center font-bold text-sm text-white shrink-0">
+                    <div key={i} className="flex gap-4 p-3 hover:bg-bg-hover rounded-lg transition-colors group cursor-pointer hover:translate-x-1 transition-transform">
+                      <div className="w-10 h-10 rounded-full bg-accent-purple flex items-center justify-center font-bold text-sm text-white shrink-0 group-hover:scale-105 transition-transform">
                         {act.user.slice(0, 2).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -306,7 +306,7 @@ const DashboardPage: React.FC = () => {
                   ))}
                 </div>
                 <div className="p-3 border-t border-gray-800 shrink-0">
-                  <button className="w-full py-2.5 text-sm font-medium text-accent-purpleLight hover:text-white hover:bg-bg-hover rounded-lg transition-colors">
+                  <button className="w-full py-2.5 text-sm font-medium text-accent-purpleLight hover:text-white hover:bg-bg-hover rounded-lg transition-colors cursor-pointer">
                     Load more
                   </button>
                 </div>
@@ -319,7 +319,7 @@ const DashboardPage: React.FC = () => {
                 <div className="bg-bg-card border border-gray-800 rounded-xl flex flex-col flex-1 min-h-0">
                   <div className="p-5 border-b border-gray-800 flex items-center justify-between shrink-0">
                     <h2 className="font-semibold text-lg">Your Rooms</h2>
-                    <button onClick={() => navigate('/rooms')} className="text-sm text-accent-purpleLight hover:text-accent-purple transition-colors">View all</button>
+                    <button onClick={() => navigate('/rooms')} className="text-sm text-accent-purpleLight hover:text-accent-purple transition-colors cursor-pointer">View all</button>
                   </div>
                   <div className="flex-1 overflow-y-auto p-3 space-y-1 scrollbar-thin">
                     {rooms.slice(0, 5).map((room, idx) => {
@@ -328,9 +328,9 @@ const DashboardPage: React.FC = () => {
                         <div 
                           key={room.id}
                           onClick={() => navigate(`/rooms/${room.id}`)}
-                          className="flex items-center gap-3 p-3 hover:bg-bg-hover rounded-lg transition-colors group cursor-pointer"
+                          className="flex items-center gap-3 p-3 hover:bg-bg-hover rounded-lg transition-all group cursor-pointer hover:translate-x-1 hover:scale-[1.02] active:scale-[0.98]"
                         >
-                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold shrink-0 ${colorClass}`}>
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold shrink-0 ${colorClass} group-hover:rotate-6 transition-transform`}>
                             #
                           </div>
                           <div className="flex-grow min-w-0">

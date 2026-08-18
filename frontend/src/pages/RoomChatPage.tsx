@@ -332,42 +332,42 @@ const RoomChatPage: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-1 border-l border-white/5 pl-4 shrink-0">
-              <button className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-colors" title="Search">
+              <button className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer" title="Search">
                 <i className="fa-solid fa-magnifying-glass text-xs"></i>
               </button>
               <button 
                 onClick={() => setPinnedClosed(!pinnedClosed)}
-                className={`p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-colors ${!pinnedClosed ? 'text-[#a78bfa]' : ''}`}
+                className={`p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer ${!pinnedClosed ? 'text-[#a78bfa]' : ''}`}
                 title="Pinned Messages"
               >
                 <i className="fa-solid fa-thumbtack text-xs"></i>
               </button>
               <button 
                 onClick={() => setShowMembersSidebar(!showMembersSidebar)}
-                className={`p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-colors ${showMembersSidebar ? 'text-[#a78bfa]' : ''}`}
+                className={`p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer ${showMembersSidebar ? 'text-[#a78bfa]' : ''}`}
                 title="Toggle Members Panel"
               >
                 <i className="fa-solid fa-users text-xs"></i>
               </button>
-              <button className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-colors" title="More Options">
+              <button className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer" title="More Options">
                 <i className="fa-solid fa-ellipsis-vertical text-xs"></i>
               </button>
             </div>
           </div>
         </header>
-
+ 
         {/* Pinned Message */}
         {!pinnedClosed && (
-          <div className="px-6 py-2 shrink-0">
-            <div className="bg-[#1f2233] rounded-xl p-3 flex items-center justify-between text-sm border border-white/5 text-left">
+          <div className="px-6 py-2 shrink-0 animate-scale-in">
+            <div className="bg-[#1f2233] rounded-xl p-3 flex items-center justify-between text-sm border border-white/5 text-left hover:border-[#a78bfa]/20 transition-all hover:scale-[1.01] active:scale-[0.99] duration-300">
               <div className="flex items-center gap-3">
                 <svg className="text-brand-400 text-[#a78bfa]" fill="none" height="14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="17" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.68V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.68a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
                 <span className="text-[#a78bfa] font-medium">Pinned</span>
                 <span className="text-text-muted text-xs">Project Roadmap Q2 is now available in the docs.</span>
               </div>
               <div className="flex items-center gap-3">
-                <a href="#docs" className="text-xs bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg transition-colors text-text-muted font-semibold">View Doc</a>
-                <button onClick={() => setPinnedClosed(true)} className="text-text-muted hover:text-text transition-colors">
+                <a href="#docs" className="text-xs bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg transition-colors text-text-muted font-semibold hover:scale-[1.03] active:scale-[0.97] transition-all">View Doc</a>
+                <button onClick={() => setPinnedClosed(true)} className="text-text-muted hover:text-white transition-all hover:scale-115 active:scale-90 cursor-pointer">
                   ✕
                 </button>
               </div>
