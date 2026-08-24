@@ -1,0 +1,33 @@
+# SyncStream Root GitIgnore
+
+# Database folders
+data/
+
+# Portable developer tools
+jdk/
+maven/
+redis/
+
+# Zipped downloads
+*.zip
+*.tar.gz
+
+# Environment and Secret files
+.env
+.env.local
+.env.*.local
+*.env
+frontend/.env
+backend/.env
+
+# Build outputs
+target/
+backend/target/
+frontend/dist/
+frontend/dist-ssr/
+node_modules/
+frontend/node_modules/
+
+# OS specific files
+.DS_Store
+Thumbs.db
