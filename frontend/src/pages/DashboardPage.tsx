@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -18,6 +18,31 @@ const DashboardPage: React.FC = () => {
 
   const [showTip, setShowTip] = useState(true);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Keydown listener for hotkeys (Ctrl+K or Cmd+K focuses search, Esc blurs/clears)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      if (e.key === 'Escape') {
+        searchInputRef.current?.blur();
+        setSearchQuery('');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const filteredRooms = rooms.filter(r => 
+    r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (r.description && r.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   const stats = [
     { 
@@ -125,7 +150,7 @@ const DashboardPage: React.FC = () => {
               </button>
             </div>
             <div className="space-y-0.5">
-              {rooms.map((r) => (
+              {filteredRooms.map((r) => (
                 <button 
                   key={r.id} 
                   onClick={() => navigate(`/rooms/${r.id}`)}
@@ -138,8 +163,8 @@ const DashboardPage: React.FC = () => {
                   {r.name === 'general' && <div className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></div>}
                 </button>
               ))}
-              {rooms.length === 0 && (
-                <div className="px-3 py-2 text-xs text-text-muted italic">No rooms joined</div>
+              {filteredRooms.length === 0 && (
+                <div className="px-3 py-2 text-xs text-text-muted italic">No matching rooms</div>
               )}
             </div>
           </div>
@@ -155,7 +180,7 @@ const DashboardPage: React.FC = () => {
               <h4 className="font-semibold text-accent-purpleLight text-sm">Upgrade to Pro</h4>
             </div>
             <p className="text-xs text-text-muted mb-4 leading-relaxed">Get more storage, file sharing and advanced features.</p>
-            <button className="w-full py-2 bg-gradient-to-r from-accent-purple to-accent-purpleLight hover:from-accent-purpleLight hover:to-accent-purple text-white rounded-lg text-sm font-semibold transition-all shadow-md shadow-accent-purple/20">
+            <button onClick={() => setShowUpgradeModal(true)} className="w-full py-2 bg-gradient-to-r from-accent-purple to-accent-purpleLight hover:from-accent-purpleLight hover:to-accent-purple text-white rounded-lg text-sm font-semibold transition-all shadow-md shadow-accent-purple/20">
               Upgrade Now
             </button>
           </div>
@@ -205,9 +230,24 @@ const DashboardPage: React.FC = () => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i className="fa-solid fa-magnifying-glass text-text-muted group-focus-within:text-accent-purple transition-colors"></i>
               </div>
-              <input className="w-full bg-bg-sidebar border border-gray-800 text-sm rounded-lg pl-10 pr-12 py-2 text-white placeholder-text-muted focus:outline-none focus:border-accent-purple/50 focus:ring-1 focus:ring-accent-purple/50 transition-all" placeholder="Search rooms, messages, or users..." type="text"/>
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <div className="flex items-center gap-1 text-[10px] font-mono text-text-muted bg-bg-card border border-gray-700 px-1.5 py-0.5 rounded">
+              <input 
+                ref={searchInputRef}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-bg-sidebar border border-gray-800 text-sm rounded-lg pl-10 pr-12 py-2 text-white placeholder-text-muted focus:outline-none focus:border-accent-purple/50 focus:ring-1 focus:ring-accent-purple/50 transition-all" 
+                placeholder="Search rooms, messages, or users..." 
+                type="text"
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center gap-2">
+                {searchQuery && (
+                  <button 
+                    onClick={() => setSearchQuery('')}
+                    className="text-text-muted hover:text-white text-xs cursor-pointer px-1 hover:bg-white/10 rounded"
+                  >
+                    ✕
+                  </button>
+                )}
+                <div className="flex items-center gap-1 text-[10px] font-mono text-text-muted bg-bg-card border border-gray-700 px-1.5 py-0.5 rounded pointer-events-none">
                   <span>⌘</span><span>K</span>
                 </div>
               </div>
@@ -215,10 +255,40 @@ const DashboardPage: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-5 ml-8">
-            <button className="text-text-muted hover:text-white transition-colors relative">
-              <i className="fa-regular fa-bell text-base"></i>
-              <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-accent-purpleLight rounded-full border border-bg-main"></span>
-            </button>
+            <div className="relative">
+              <button 
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="text-text-muted hover:text-white transition-colors relative p-1.5 rounded-full hover:bg-white/5 cursor-pointer"
+              >
+                <i className="fa-regular fa-bell text-base"></i>
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent-purpleLight rounded-full border border-bg-main"></span>
+              </button>
+              
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-bg-card border border-gray-800 rounded-xl shadow-2xl z-50 p-4 animate-scale-in">
+                  <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-800">
+                    <h4 className="font-semibold text-sm text-white">Notifications</h4>
+                    <button onClick={() => setShowNotifications(false)} className="text-xs text-accent-purpleLight hover:underline cursor-pointer">Mark all read</button>
+                  </div>
+                  <div className="space-y-3 max-h-60 overflow-y-auto">
+                    <div className="flex gap-3 text-xs leading-relaxed hover:bg-bg-hover p-1.5 rounded transition-colors cursor-pointer">
+                      <div className="w-2 h-2 mt-1.5 rounded-full bg-accent-purpleLight shrink-0"></div>
+                      <div>
+                        <p className="text-white"><strong>Sarah Wilson</strong> mentioned you in <strong>#developers</strong></p>
+                        <p className="text-[10px] text-text-muted mt-0.5">5 mins ago</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 text-xs leading-relaxed hover:bg-bg-hover p-1.5 rounded transition-colors cursor-pointer">
+                      <div className="w-2 h-2 mt-1.5 rounded-full bg-accent-purpleLight shrink-0"></div>
+                      <div>
+                        <p className="text-white">New room <strong>#product-updates</strong> was created by <strong>David</strong></p>
+                        <p className="text-[10px] text-text-muted mt-0.5">1 hour ago</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
             <button className="text-text-muted hover:text-white transition-colors" onClick={() => navigate('/profile')}>
               <i className="fa-regular fa-circle-question text-base"></i>
             </button>
@@ -286,11 +356,22 @@ const DashboardPage: React.FC = () => {
                 </div>
                 <div className="flex-1 overflow-y-auto p-2 scrollbar-thin">
                   {recentActivity.map((act, i) => (
-                    <div key={i} className="flex gap-4 p-3 hover:bg-bg-hover rounded-lg transition-colors group cursor-pointer hover:translate-x-1 transition-transform">
+                    <div 
+                      key={i} 
+                      onClick={() => {
+                        const targetRoom = rooms.find(r => r.name.toLowerCase() === act.room.toLowerCase());
+                        if (targetRoom) {
+                          navigate(`/rooms/${targetRoom.id}`);
+                        } else {
+                          navigate('/rooms');
+                        }
+                      }}
+                      className="flex gap-4 p-3 hover:bg-bg-hover rounded-lg transition-colors group cursor-pointer hover:translate-x-1 transition-transform"
+                    >
                       <div className="w-10 h-10 rounded-full bg-accent-purple flex items-center justify-center font-bold text-sm text-white shrink-0 group-hover:scale-105 transition-transform">
                         {act.user.slice(0, 2).toUpperCase()}
                       </div>
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-grow min-w-0">
                         <div className="flex items-center justify-between mb-1">
                           <p className="text-sm font-medium truncate">
                             {act.user} <span className="text-text-muted font-normal mx-1">in</span> <span className="text-accent-purpleLight font-semibold">#{act.room}</span>
@@ -321,8 +402,8 @@ const DashboardPage: React.FC = () => {
                     <h2 className="font-semibold text-lg">Your Rooms</h2>
                     <button onClick={() => navigate('/rooms')} className="text-sm text-accent-purpleLight hover:text-accent-purple transition-colors cursor-pointer">View all</button>
                   </div>
-                  <div className="flex-1 overflow-y-auto p-3 space-y-1 scrollbar-thin">
-                    {rooms.slice(0, 5).map((room, idx) => {
+                  <div className="flex-grow overflow-y-auto p-3 space-y-1 scrollbar-thin">
+                    {filteredRooms.slice(0, 5).map((room, idx) => {
                       const colorClass = roomColors[idx % roomColors.length];
                       return (
                         <div 
@@ -346,8 +427,8 @@ const DashboardPage: React.FC = () => {
                         </div>
                       );
                     })}
-                    {rooms.length === 0 && (
-                      <div className="text-center py-12 text-xs text-text-muted italic">No rooms joined</div>
+                    {filteredRooms.length === 0 && (
+                      <div className="text-center py-12 text-xs text-text-muted italic">No matching rooms</div>
                     )}
                   </div>
                 </div>
@@ -399,6 +480,59 @@ const DashboardPage: React.FC = () => {
         </div>
 
       </main>
+
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md animate-fade-in">
+          <div className="bg-bg-card border border-gray-800 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl relative animate-scale-in text-left">
+            <button 
+              onClick={() => setShowUpgradeModal(false)}
+              className="absolute top-4 right-4 text-text-muted hover:text-white text-sm cursor-pointer"
+            >
+              ✕
+            </button>
+            <div className="w-12 h-12 rounded-xl bg-accent-purple/20 flex items-center justify-center text-accent-purpleLight text-xl mb-4">
+              <i className="fa-solid fa-gem animate-bounce text-yellow-400"></i>
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">Upgrade to SyncStream Pro</h3>
+            <p className="text-sm text-text-muted mb-6 leading-relaxed">
+              Unlock unlimited rooms, high-fidelity file sharing (up to 100MB), custom themes, and full message history search.
+            </p>
+            <div className="bg-bg-sidebar border border-gray-800 rounded-xl p-4 mb-6">
+              <div className="flex justify-between items-baseline mb-2">
+                <span className="text-sm text-white font-medium">Pro Plan</span>
+                <div className="text-right">
+                  <span className="text-2xl font-bold text-white">$9</span>
+                  <span className="text-xs text-text-muted">/month</span>
+                </div>
+              </div>
+              <ul className="text-xs text-text-muted space-y-2">
+                <li>✓ Unlimited Rooms & Channels</li>
+                <li>✓ 100MB File Attachments</li>
+                <li>✓ Priority WebSocket routing</li>
+                <li>✓ Custom styling themes</li>
+              </ul>
+            </div>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => {
+                  alert('Thank you for trying SyncStream! This is a demo checkout flow.');
+                  setShowUpgradeModal(false);
+                }}
+                className="flex-1 py-2.5 bg-gradient-to-r from-accent-purple to-accent-purpleLight hover:from-accent-purpleLight hover:to-accent-purple text-white font-semibold rounded-lg text-sm shadow-lg shadow-accent-purple/35 transition-all text-center cursor-pointer"
+              >
+                Proceed to Checkout
+              </button>
+              <button 
+                onClick={() => setShowUpgradeModal(false)}
+                className="px-4 py-2.5 bg-bg-sidebar border border-gray-800 text-text-muted hover:text-white rounded-lg text-sm transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
