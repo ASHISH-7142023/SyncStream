@@ -70,7 +70,7 @@ const LandingPage: React.FC = () => {
             {/* Logo */}
             <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
               <SyncStreamLogo className="w-8 h-8" />
-              <img src="/name.png" alt="SyncStream" className="h-5 object-contain" />
+              <img src="/name.png" alt="SyncStream" className="h-6 w-auto object-contain" />
             </div>
             
             {/* Desktop Nav */}

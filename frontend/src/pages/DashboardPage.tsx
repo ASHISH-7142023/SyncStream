@@ -112,7 +112,7 @@ const DashboardPage: React.FC = () => {
         <div className="h-16 flex items-center justify-between px-4 shrink-0">
           <div className="flex items-center gap-2 text-xl font-bold tracking-tight text-white cursor-pointer" onClick={() => navigate('/dashboard')}>
             <SyncStreamLogo className="w-8 h-8" />
-            <img src="/name.png" alt="SyncStream" className="h-5 object-contain" />
+            <img src="/name.png" alt="SyncStream" className="h-6 w-auto object-contain" />
           </div>
           <button 
             onClick={() => setShowMobileSidebar(false)}

@@ -48,7 +48,7 @@ const LoginPage: React.FC = () => {
         <div className="relative z-10 text-left">
           <div className="flex items-center gap-3 mb-8 cursor-pointer" onClick={() => navigate('/')}>
             <SyncStreamLogo className="w-10 h-10" />
-            <img src="/name.png" alt="SyncStream" className="h-6 object-contain" />
+            <img src="/name.png" alt="SyncStream" className="h-8 w-auto object-contain" />
           </div>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1b2336]/80 border border-white/10 text-sm text-[#94a3b8] mb-8">
             <span className="w-2 h-2 rounded-full bg-green-500"></span>
