@@ -83,13 +83,22 @@ const LoginPage: React.FC = () => {
               {/* Sidebar */}
               <div className="w-1/3 flex flex-col gap-2">
                 <div className="text-[10px] text-[#94a3b8] font-bold tracking-wider mb-1">ROOMS</div>
-                <div className="px-2 py-1.5 rounded-lg bg-[#6d28d9]/20 text-[#ddd6fe] text-xs font-semibold flex items-center gap-2">
+                <div 
+                  onClick={() => alert("Log in to start chatting in these rooms!")}
+                  className="px-2 py-1.5 rounded-lg bg-[#6d28d9]/20 text-[#ddd6fe] text-xs font-semibold flex items-center gap-2 cursor-pointer"
+                >
                   <span className="text-[#c4b5fd]">#</span> general
                 </div>
-                <div className="px-2 py-1.5 rounded-lg hover:bg-[#252d41] text-[#94a3b8] text-xs flex items-center gap-2 transition-colors cursor-pointer">
+                <div 
+                  onClick={() => alert("Log in to start chatting in these rooms!")}
+                  className="px-2 py-1.5 rounded-lg hover:bg-[#252d41] text-[#94a3b8] text-xs flex items-center gap-2 transition-colors cursor-pointer"
+                >
                   <span>#</span> developers
                 </div>
-                <div className="px-2 py-1.5 rounded-lg hover:bg-[#252d41] text-[#94a3b8] text-xs flex items-center gap-2 transition-colors cursor-pointer">
+                <div 
+                  onClick={() => alert("Log in to start chatting in these rooms!")}
+                  className="px-2 py-1.5 rounded-lg hover:bg-[#252d41] text-[#94a3b8] text-xs flex items-center gap-2 transition-colors cursor-pointer"
+                >
                   <span>#</span> design
                 </div>
               </div>
