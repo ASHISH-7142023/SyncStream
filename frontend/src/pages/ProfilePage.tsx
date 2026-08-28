@@ -601,7 +601,7 @@ const ProfilePage: React.FC = () => {
                 <h3 className="text-base font-semibold text-white mb-6">Profile Completion</h3>
                 <div className="flex items-center gap-5 mb-6">
                   <div className="relative w-16 h-16 flex-shrink-0">
-                    <svg className="w-full h-full" viewBox="0 0 100 100">
+                    <svg className="w-full h-full -rotate-90 origin-center" viewBox="0 0 100 100">
                       <circle className="text-obsidian-700 stroke-current" cx="50" cy="50" fill="transparent" r="40" strokeWidth="8"></circle>
                       <circle className="text-purple-500 stroke-current" cx="50" cy="50" fill="transparent" r="40" strokeWidth="8" strokeDasharray="251.2" strokeDashoffset="50.24" strokeLinecap="round"></circle>
                     </svg>
