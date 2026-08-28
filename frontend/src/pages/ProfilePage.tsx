@@ -43,6 +43,22 @@ const ProfilePage: React.FC = () => {
     document.documentElement.setAttribute('data-theme', newTheme);
   };
 
+  const [is2faEnabled, setIs2faEnabled] = useState(true);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(true);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+
+  const handleUpdatePassword = () => {
+    if (!currentPassword || !newPassword) {
+      alert('Please fill in both current and new password fields.');
+      return;
+    }
+    alert('Password updated successfully!');
+    setCurrentPassword('');
+    setNewPassword('');
+  };
+
 
   const badges = [
     { title: 'Early Adopter', desc: 'Joined early', icon: '🚀' },
@@ -542,7 +558,12 @@ const ProfilePage: React.FC = () => {
                           <p className="text-xs text-slate-400 leading-relaxed">Receive status alerts on new room notifications.</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer select-none">
-                          <input type="checkbox" defaultChecked className="sr-only peer" />
+                          <input 
+                            type="checkbox" 
+                            checked={notificationsEnabled}
+                            onChange={(e) => setNotificationsEnabled(e.target.checked)}
+                            className="sr-only peer" 
+                          />
                           <div className="w-9 h-5 bg-obsidian-750 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
                         </label>
                       </div>
@@ -553,7 +574,12 @@ const ProfilePage: React.FC = () => {
                           <p className="text-xs text-slate-400 leading-relaxed">Play audible alerts on incoming messages.</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer select-none">
-                          <input type="checkbox" defaultChecked className="sr-only peer" />
+                          <input 
+                            type="checkbox" 
+                            checked={soundEffectsEnabled}
+                            onChange={(e) => setSoundEffectsEnabled(e.target.checked)}
+                            className="sr-only peer" 
+                          />
                           <div className="w-9 h-5 bg-obsidian-750 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
                         </label>
                       </div>
@@ -585,13 +611,28 @@ const ProfilePage: React.FC = () => {
                         <div className="space-y-4 max-w-md">
                           <div>
                             <label className="text-xs text-slate-400 block mb-1">Current Password</label>
-                            <input type="password" placeholder="••••••••" className="w-full bg-obsidian-900 border border-white/5 text-xs text-white rounded-lg px-3 py-2 focus:border-purple-500 outline-none" />
+                            <input 
+                              type="password" 
+                              placeholder="••••••••" 
+                              value={currentPassword}
+                              onChange={(e) => setCurrentPassword(e.target.value)}
+                              className="w-full bg-obsidian-900 border border-white/5 text-xs text-white rounded-lg px-3 py-2 focus:border-purple-500 outline-none" 
+                            />
                           </div>
                           <div>
                             <label className="text-xs text-slate-400 block mb-1">New Password</label>
-                            <input type="password" placeholder="••••••••" className="w-full bg-obsidian-900 border border-white/5 text-xs text-white rounded-lg px-3 py-2 focus:border-purple-500 outline-none" />
+                            <input 
+                              type="password" 
+                              placeholder="••••••••" 
+                              value={newPassword}
+                              onChange={(e) => setNewPassword(e.target.value)}
+                              className="w-full bg-obsidian-900 border border-white/5 text-xs text-white rounded-lg px-3 py-2 focus:border-purple-500 outline-none" 
+                            />
                           </div>
-                          <button className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-lg transition-all hover:scale-[1.03] active:scale-[0.97] cursor-pointer">
+                          <button 
+                            onClick={handleUpdatePassword}
+                            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-lg transition-all hover:scale-[1.03] active:scale-[0.97] cursor-pointer"
+                          >
                             Update Password
                           </button>
                         </div>
@@ -602,8 +643,18 @@ const ProfilePage: React.FC = () => {
                           <h4 className="text-sm font-semibold text-white mb-1">Two-Factor Authentication (2FA)</h4>
                           <p className="text-xs text-slate-400 leading-relaxed">Secures account using mobile verification apps.</p>
                         </div>
-                        <button className="px-4 py-2 bg-red-600/20 hover:bg-red-600/35 border border-red-500/30 text-red-200 text-xs font-semibold rounded-lg transition-all hover:scale-[1.03] active:scale-[0.97] cursor-pointer">
-                          Disable 2FA
+                        <button 
+                          onClick={() => {
+                            setIs2faEnabled(!is2faEnabled);
+                            alert(is2faEnabled ? 'Two-Factor Authentication disabled.' : 'Two-Factor Authentication enabled.');
+                          }}
+                          className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all hover:scale-[1.03] active:scale-[0.97] cursor-pointer ${
+                            is2faEnabled 
+                              ? 'bg-red-600/20 hover:bg-red-600/35 border border-red-500/30 text-red-200' 
+                              : 'bg-emerald-600/20 hover:bg-emerald-600/35 border border-emerald-500/30 text-emerald-200'
+                          }`}
+                        >
+                          {is2faEnabled ? 'Disable 2FA' : 'Enable 2FA'}
                         </button>
                       </div>
                     </div>
@@ -679,13 +730,17 @@ const ProfilePage: React.FC = () => {
                     <p className="text-xs text-slate-500 mb-1">Password</p>
                     <div className="flex items-center justify-between">
                       <p className="text-xs text-slate-355 tracking-widest">••••••••••</p>
-                      <button className="text-xs font-semibold text-purple-400 hover:text-purple-300">Change</button>
+                      <button onClick={() => setActiveTab('Security')} className="text-xs font-semibold text-purple-400 hover:text-purple-300">Change</button>
                     </div>
                   </div>
                   <div>
                     <p className="text-xs text-slate-500 mb-1">Two-Factor Authentication</p>
                     <div className="flex items-center justify-between">
-                      <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold rounded uppercase tracking-wide">Enabled</span>
+                      <span className={`px-2 py-0.5 text-[10px] font-semibold rounded uppercase tracking-wide ${
+                        is2faEnabled ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
+                      }`}>
+                        {is2faEnabled ? 'Enabled' : 'Disabled'}
+                      </span>
                     </div>
                   </div>
                 </div>
