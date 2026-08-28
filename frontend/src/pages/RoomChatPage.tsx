@@ -35,6 +35,7 @@ const RoomChatPage: React.FC = () => {
   const [showMembersSidebar, setShowMembersSidebar] = useState(true);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [localReactions, setLocalReactions] = useState<Record<string, { emoji: string; count: number; active: boolean }[]>>({});
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const feedEndRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<any>(null);
@@ -259,7 +260,10 @@ const RoomChatPage: React.FC = () => {
               </div>
               <h4 className="font-medium text-[#a78bfa] text-sm mb-1">Upgrade to Pro</h4>
               <p className="text-xs text-text-muted mb-4 leading-relaxed">Unlock unlimited history and features.</p>
-              <button className="w-full bg-[#8b5cf6] hover:bg-[#7c3aed] text-white text-sm font-medium py-2 px-4 rounded-xl transition-colors">
+              <button 
+                onClick={() => alert("Redirecting to Pro Payment Gateway...")}
+                className="w-full bg-[#8b5cf6] hover:bg-[#7c3aed] text-white text-sm font-medium py-2 px-4 rounded-xl transition-colors cursor-pointer"
+              >
                 Upgrade Now
               </button>
             </div>
@@ -309,8 +313,13 @@ const RoomChatPage: React.FC = () => {
               <div className="flex items-center gap-2">
                 <span className="text-xl text-text-muted">#</span>
                 <h1 className="text-lg font-semibold text-white">{room ? room.name : 'developers'}</h1>
-                <button className="text-text-muted hover:text-brand-400 transition-colors">
-                  <svg fill="none" height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <button 
+                  onClick={() => setIsFavorite(!isFavorite)}
+                  className={`transition-all hover:scale-115 active:scale-90 cursor-pointer ${
+                    isFavorite ? 'text-amber-400' : 'text-text-muted hover:text-brand-400'
+                  }`}
+                >
+                  <svg fill={isFavorite ? 'currentColor' : 'none'} height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                 </button>
               </div>
               <span className="text-xs text-text-muted">{room?.description || 'Development discussions & updates'}</span>
@@ -332,7 +341,11 @@ const RoomChatPage: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-1 border-l border-white/5 pl-4 shrink-0">
-              <button className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer" title="Search">
+              <button 
+                onClick={() => alert("Search Messages: Type a keyword in the chat box or use Ctrl+F to find specific phrases.")}
+                className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer" 
+                title="Search"
+              >
                 <i className="fa-solid fa-magnifying-glass text-xs"></i>
               </button>
               <button 
@@ -349,7 +362,11 @@ const RoomChatPage: React.FC = () => {
               >
                 <i className="fa-solid fa-users text-xs"></i>
               </button>
-              <button className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer" title="More Options">
+              <button 
+                onClick={() => alert(`Room Details for #${room?.name || 'developers'}: \nType: Public \nMembers: ${memberList.length}`)}
+                className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer" 
+                title="More Options"
+              >
                 <i className="fa-solid fa-ellipsis-vertical text-xs"></i>
               </button>
             </div>
@@ -477,14 +494,34 @@ const RoomChatPage: React.FC = () => {
                 <button type="button" className="p-2 hover:bg-white/5 rounded-lg transition-colors">
                   <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg>
                 </button>
-                <button type="button" className="p-2 hover:bg-white/5 rounded-lg transition-colors font-serif font-bold text-sm">Aa</button>
-                <button type="button" className="p-2 hover:bg-white/5 rounded-lg transition-colors">
+                <button 
+                  onClick={() => alert("Rich text formatting tools: Use standard Markdown tags like **bold**, *italic*, or `code` to format your messages.")}
+                  type="button" 
+                  className="p-2 hover:bg-white/5 rounded-lg transition-colors font-serif font-bold text-sm cursor-pointer"
+                >
+                  Aa
+                </button>
+                <button 
+                  onClick={() => alert("Emoji Picker: You can click the thumbs up 👍 or fire 🔥 reaction icons beneath any message.")}
+                  type="button" 
+                  className="p-2 hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+                >
                   <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" x2="9.01" y1="9" y2="9"></line><line x1="15" x2="15.01" y1="9" y2="9"></line></svg>
                 </button>
-                <button type="button" className="p-2 hover:bg-white/5 rounded-lg transition-colors font-bold">@</button>
+                <button 
+                  onClick={() => alert("Mentions list: Type @ followed by a member name (e.g. @Sarah) to notify them in the chat.")}
+                  type="button" 
+                  className="p-2 hover:bg-white/5 rounded-lg transition-colors font-bold cursor-pointer"
+                >
+                  @
+                </button>
               </div>
               <div className="flex items-center gap-2">
-                <button type="button" className="p-2 hover:bg-white/5 rounded-lg transition-colors text-text-muted">
+                <button 
+                  onClick={() => alert("Attachment upload: Drag and drop files directly into the composer or upgrade to Pro to share files up to 100MB.")}
+                  type="button" 
+                  className="p-2 hover:bg-white/5 rounded-lg transition-colors text-text-muted cursor-pointer"
+                >
                   <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
                 </button>
                 <button type="submit" disabled={!inputText.trim()} className="bg-brand-600 hover:bg-brand-500 text-white p-2 rounded-xl transition-colors shadow-lg shadow-brand-500/20 disabled:opacity-40">
@@ -505,7 +542,10 @@ const RoomChatPage: React.FC = () => {
               Members <span className="text-text-muted text-sm font-normal">({memberList.length})</span>
             </h2>
             <div className="flex items-center gap-2">
-              <button className="flex items-center gap-1.5 text-xs text-brand-300 bg-brand-900/30 hover:bg-brand-900/50 border border-brand-800/50 px-3 py-1.5 rounded-lg transition-colors">
+              <button 
+                onClick={() => alert(`Invite Link: Share this temporary access URL: https://syncstream.dev/invite/room-${roomId}`)}
+                className="flex items-center gap-1.5 text-xs text-brand-300 bg-brand-900/30 hover:bg-brand-900/50 border border-brand-800/50 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              >
                 Invite
               </button>
               <button 
@@ -528,7 +568,10 @@ const RoomChatPage: React.FC = () => {
           <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin">
             {onlineMembers.length > 0 && (
               <div>
-                <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide cursor-pointer hover:text-text transition-colors">
+                <div 
+                  onClick={() => alert("Online Members: " + onlineMembers.map(m => m.username).join(', '))}
+                  className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide cursor-pointer hover:text-white transition-colors"
+                >
                   Online — <span className="text-status-online">{onlineMembers.length}</span>
                 </div>
                 <ul className="space-y-3">
@@ -557,7 +600,12 @@ const RoomChatPage: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                <div className="mt-3 text-xs text-[#a78bfa] hover:underline cursor-pointer">View all online ({onlineMembers.length})</div>
+                <div 
+                  onClick={() => alert("Online Members: " + onlineMembers.map(m => m.username).join(', '))}
+                  className="mt-3 text-xs text-[#a78bfa] hover:underline cursor-pointer"
+                >
+                  View all online ({onlineMembers.length})
+                </div>
               </div>
             )}
 
@@ -610,7 +658,12 @@ const RoomChatPage: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                <div className="mt-3 text-xs text-[#a78bfa] hover:underline cursor-pointer">View all offline ({offlineMembers.length})</div>
+                <div 
+                  onClick={() => alert("Offline Members: " + offlineMembers.map(m => m.username).join(', '))}
+                  className="mt-3 text-xs text-[#a78bfa] hover:underline cursor-pointer"
+                >
+                  View all offline ({offlineMembers.length})
+                </div>
               </div>
             )}
           </div>
