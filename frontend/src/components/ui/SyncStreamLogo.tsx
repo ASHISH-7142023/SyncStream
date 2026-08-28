@@ -10,7 +10,7 @@ export const SyncStreamLogo: React.FC<SyncStreamLogoProps> = ({
 }) => {
   return (
     <img 
-      src="/logo.png" 
+      src="/logo.png?v=2" 
       alt="SyncStream Logo" 
       className={`rounded-lg object-cover shrink-0 shadow-md ${className}`}
     />
