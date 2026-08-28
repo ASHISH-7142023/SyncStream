@@ -139,7 +139,10 @@ const RoomsPage: React.FC = () => {
                 <p className="text-xs text-dim leading-relaxed">Unlock unlimited storage and features.</p>
               </div>
             </div>
-            <button className="w-full bg-[#6366f1] hover:bg-[#4f46e5] text-white font-medium py-2 px-4 rounded-xl transition-colors shadow-sm relative z-10 text-sm">
+            <button 
+              onClick={() => alert("Redirecting to Pro Payment Gateway...")}
+              className="w-full bg-[#6366f1] hover:bg-[#4f46e5] text-white font-medium py-2 px-4 rounded-xl transition-colors shadow-sm relative z-10 text-sm cursor-pointer"
+            >
               Upgrade Now
             </button>
           </div>
@@ -190,7 +193,13 @@ const RoomsPage: React.FC = () => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg className="text-dim group-focus-within:text-brand transition-colors" fill="none" height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
               </div>
-              <input className="w-full bg-[#18191c] border border-[#28292d] text-bright rounded-xl pl-10 pr-12 py-2 focus:ring-1 focus:ring-brand focus:border-brand focus:bg-surface transition-all placeholder:text-surface-400 text-sm h-10" placeholder="Search rooms, messages, or users..." type="text"/>
+              <input 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#18191c] border border-[#28292d] text-bright rounded-xl pl-10 pr-12 py-2 focus:ring-1 focus:ring-brand focus:border-brand focus:bg-surface transition-all placeholder:text-surface-400 text-sm h-10" 
+                placeholder="Search rooms, messages, or users..." 
+                type="text"
+              />
               <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
                 <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-200 border border-[#28292d] text-xs font-medium text-dim font-sans shadow-sm">
                   <svg fill="none" height="12" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"></path></svg> K
@@ -200,11 +209,19 @@ const RoomsPage: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-4 ml-4 shrink-0">
-            <button aria-label="Notifications" className="relative p-2 rounded-xl text-dim hover:text-bright hover:bg-surface-100 transition-colors">
+            <button 
+              onClick={() => alert("You have no new notifications.")}
+              aria-label="Notifications" 
+              className="relative p-2 rounded-xl text-dim hover:text-bright hover:bg-surface-100 transition-colors cursor-pointer"
+            >
               <svg fill="none" height="20" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-surface"></span>
             </button>
-            <button aria-label="Help" className="p-2 rounded-xl text-dim hover:text-bright hover:bg-surface-100 transition-colors">
+            <button 
+              onClick={() => alert("SyncStream Help Center: Search for rooms or use the 'Create Room' button to create custom spaces.")}
+              aria-label="Help" 
+              className="p-2 rounded-xl text-dim hover:text-bright hover:bg-surface-100 transition-colors cursor-pointer"
+            >
               <svg fill="none" height="20" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
             </button>
             <button onClick={onOpenCreateModal} className="bg-[#6366f1] hover:bg-[#4f46e5] text-white font-medium py-2 px-4 rounded-xl flex items-center gap-2 transition-colors shadow-sm text-sm h-10">
@@ -309,9 +326,9 @@ const RoomsPage: React.FC = () => {
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
-                          // Options trigger
+                          alert(`Room settings for #${room.name}: Join, invite, or view archives.`);
                         }}
-                        className="p-2 rounded-lg text-dim hover:text-bright hover:bg-surface-200 transition-colors ml-2 shrink-0 z-10"
+                        className="p-2 rounded-lg text-dim hover:text-bright hover:bg-surface-200 transition-colors ml-2 shrink-0 z-10 cursor-pointer"
                         title="Options"
                       >
                         <i className="fa-solid fa-ellipsis-vertical text-sm"></i>
@@ -334,11 +351,22 @@ const RoomsPage: React.FC = () => {
                 <div className="flex items-center justify-between border-t border-[#28292d] pt-4 mt-6 text-sm shrink-0">
                   <span className="text-dim">Showing 1 to {filteredRooms.length} of {filteredRooms.length} rooms</span>
                   <div className="flex items-center gap-2">
-                    <button className="p-1.5 rounded-lg border border-[#28292d] text-dim hover:text-bright hover:bg-surface-200 transition-colors">
+                    <button 
+                      onClick={() => alert("You are on the first page.")}
+                      className="p-1.5 rounded-lg border border-[#28292d] text-dim hover:text-bright hover:bg-surface-200 transition-colors cursor-pointer"
+                    >
                       <i className="fa-solid fa-chevron-left text-xs"></i>
                     </button>
-                    <button className="px-3 py-1 rounded-lg bg-[#6366f1] text-white font-semibold text-xs">1</button>
-                    <button className="p-1.5 rounded-lg border border-[#28292d] text-dim hover:text-bright hover:bg-surface-200 transition-colors">
+                    <button 
+                      onClick={() => alert("You are on page 1.")}
+                      className="px-3 py-1 rounded-lg bg-[#6366f1] text-white font-semibold text-xs cursor-pointer"
+                    >
+                      1
+                    </button>
+                    <button 
+                      onClick={() => alert("You are on the first page.")}
+                      className="p-1.5 rounded-lg border border-[#28292d] text-dim hover:text-bright hover:bg-surface-200 transition-colors cursor-pointer"
+                    >
                       <i className="fa-solid fa-chevron-right text-xs"></i>
                     </button>
                   </div>
