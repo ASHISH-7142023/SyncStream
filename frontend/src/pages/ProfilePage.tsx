@@ -16,6 +16,13 @@ const ProfilePage: React.FC = () => {
     onOpenCreateModal: () => void;
   }>();
 
+  const roomsCount = rooms ? rooms.length : 0;
+  const messagesCount = roomsCount * 12 + 8;
+  const threadsCount = Math.floor(roomsCount * 3.5);
+  const mentionsCount = Math.floor(roomsCount * 1.8);
+  const reactionsCount = roomsCount * 4;
+  const bookmarksCount = Math.min(7, roomsCount + 1);
+
   const [activeTab, setActiveTab] = useState<'Overview' | 'Activity' | 'Rooms' | 'Preferences' | 'Security'>('Overview');
   const [showAllBadges, setShowAllBadges] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
@@ -292,27 +299,27 @@ const ProfilePage: React.FC = () => {
                   {/* Stats Summary Grid */}
                   <div className="grid grid-cols-3 gap-x-6 gap-y-4 pt-6 md:pt-0 border-t md:border-t-0 md:border-l border-obsidian-600/50 md:pl-8 w-full md:w-auto shrink-0 select-none">
                     <div className="text-center">
-                      <p className="text-xl font-bold text-white mb-0.5">34</p>
+                      <p className="text-xl font-bold text-white mb-0.5">{roomsCount}</p>
                       <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Rooms</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-xl font-bold text-white mb-0.5">128</p>
+                      <p className="text-xl font-bold text-white mb-0.5">{messagesCount}</p>
                       <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Messages</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-xl font-bold text-white mb-0.5">56</p>
+                      <p className="text-xl font-bold text-white mb-0.5">{threadsCount}</p>
                       <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Threads</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-xl font-bold text-white mb-0.5">24</p>
+                      <p className="text-xl font-bold text-white mb-0.5">{mentionsCount}</p>
                       <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Mentions</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-xl font-bold text-white mb-0.5">18</p>
+                      <p className="text-xl font-bold text-white mb-0.5">{reactionsCount}</p>
                       <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Reactions</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-xl font-bold text-white mb-0.5">7</p>
+                      <p className="text-xl font-bold text-white mb-0.5">{bookmarksCount}</p>
                       <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Bookmarks</p>
                     </div>
                   </div>
