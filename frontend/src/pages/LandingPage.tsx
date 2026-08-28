@@ -122,7 +122,10 @@ const LandingPage: React.FC = () => {
                   Get Started Free
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                 </button>
-                <button className="flex items-center gap-2 text-white bg-transparent border border-white/10 hover:bg-white/5 px-6 py-3.5 rounded-xl font-medium transition-all">
+                <button 
+                  onClick={() => alert("Watch Demo: Connecting rooms, active presence, typing sync, and low-latency audio/video calling are fully interactive inside.")}
+                  className="flex items-center gap-2 text-white bg-transparent border border-white/10 hover:bg-white/5 px-6 py-3.5 rounded-xl font-medium transition-all cursor-pointer"
+                >
                   <svg className="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path></svg>
                   Watch Demo
                 </button>
@@ -165,7 +168,10 @@ const LandingPage: React.FC = () => {
                     <SyncStreamLogo className="w-6 h-6" iconClassName="w-3.5 h-3.5" />
                     <span className="font-semibold text-white text-sm">SyncStream</span>
                   </div>
-                  <button className="text-gray-400 hover:text-white">
+                  <button 
+                    onClick={() => alert("Notification center is active in your authenticated dashboard.")}
+                    className="text-gray-400 hover:text-white cursor-pointer"
+                  >
                     🔔
                   </button>
                 </div>
@@ -189,7 +195,12 @@ const LandingPage: React.FC = () => {
                   <div>
                     <div className="flex items-center justify-between px-3 mb-2">
                       <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Rooms</span>
-                      <button className="text-gray-400 hover:text-white">+</button>
+                      <button 
+                        onClick={() => navigate('/register')}
+                        className="text-gray-400 hover:text-white cursor-pointer"
+                      >
+                        +
+                      </button>
                     </div>
                     <div className="space-y-1 text-left">
                       <a className="flex items-center gap-2 px-3 py-1.5 text-xs text-gray-400 hover:bg-white/5 rounded-md" href="#general">
@@ -266,7 +277,10 @@ const LandingPage: React.FC = () => {
                   <div className="text-[10px] text-[#7C3AED] mb-1.5 text-left animate-pulse">Sarah Wilson is typing...</div>
                   <div className="relative flex items-center bg-[#09090B] rounded-lg border border-white/10 focus-within:border-[#7C3AED]/50 focus-within:ring-1 focus-within:ring-[#7C3AED]/50 transition-all">
                     <input className="w-full bg-transparent border-none text-white placeholder-gray-500 focus:ring-0 py-2.5 pl-4 pr-16 rounded-lg text-xs" placeholder="Type a message..." type="text" readOnly />
-                    <button className="absolute right-2 bg-[#7C3AED] hover:bg-[#6D28D9] text-white p-1 rounded transition-colors">
+                    <button 
+                      onClick={() => alert("Sign up or log in to start typing and sending real-time messages!")}
+                      className="absolute right-2 bg-[#7C3AED] hover:bg-[#6D28D9] text-white p-1 rounded transition-colors cursor-pointer"
+                    >
                       🚀
                     </button>
                   </div>
@@ -335,9 +349,27 @@ const LandingPage: React.FC = () => {
             <span className="text-sm font-semibold text-gray-300">SyncStream</span>
           </div>
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-gray-500">
-            <a className="hover:text-white transition-colors" href="#terms">Terms of Service</a>
-            <a className="hover:text-white transition-colors" href="#privacy">Privacy Policy</a>
-            <a className="hover:text-white transition-colors" href="#help">Help Center</a>
+            <a 
+              onClick={(e) => { e.preventDefault(); alert("SyncStream Terms of Service: By using our platform, you agree to respect our code of conduct and service quotas."); }}
+              className="hover:text-white transition-colors cursor-pointer" 
+              href="#terms"
+            >
+              Terms of Service
+            </a>
+            <a 
+              onClick={(e) => { e.preventDefault(); alert("SyncStream Privacy Policy: We secure your email and profile configurations natively using JWT and encrypted MongoDB clusters."); }}
+              className="hover:text-white transition-colors cursor-pointer" 
+              href="#privacy"
+            >
+              Privacy Policy
+            </a>
+            <a 
+              onClick={(e) => { e.preventDefault(); alert("SyncStream Support: For inquiries or support requests, please contact help@syncstream.dev."); }}
+              className="hover:text-white transition-colors cursor-pointer" 
+              href="#help"
+            >
+              Help Center
+            </a>
           </div>
           <p className="text-xs text-gray-500">© 2026 SyncStream. All rights reserved.</p>
         </div>
