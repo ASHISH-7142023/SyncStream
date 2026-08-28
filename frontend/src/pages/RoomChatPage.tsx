@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
+import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 import api from '../services/api';
 
 interface Member {
@@ -186,8 +187,8 @@ const RoomChatPage: React.FC = () => {
       `}>
         <div className="h-16 flex items-center justify-between px-4 border-b border-white/5">
           <div className="flex items-center gap-2 text-brand-400 font-semibold text-xl tracking-tight cursor-pointer" onClick={() => navigate('/dashboard')}>
-            <svg fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="m10 10 2-2 2 2"></path><path d="m10 14 2 2 2-2"></path></svg>
-            SyncStream
+            <SyncStreamLogo className="w-8 h-8" />
+            <img src="/name.png" alt="SyncStream" className="h-5 object-contain" />
           </div>
           <button 
             onClick={() => setShowMobileSidebar(false)}

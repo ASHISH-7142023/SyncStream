@@ -75,8 +75,8 @@ const RegisterPage: React.FC = () => {
           {/* Logo and Badges */}
           <div>
             <div className="flex items-center gap-3 mb-6 cursor-pointer" onClick={() => navigate('/')}>
-              <SyncStreamLogo className="w-10 h-10" iconClassName="w-6 h-6" />
-              <span className="text-2xl font-bold tracking-tight">Sync<span className="text-[#6366f1]">Stream</span></span>
+              <SyncStreamLogo className="w-10 h-10" />
+              <img src="/name.png" alt="SyncStream" className="h-6 object-contain" />
             </div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#374151] bg-[#12121a]/50 text-sm text-[#9ca3af] mb-6">
               <span className="w-2 h-2 rounded-full bg-[#10b981]"></span>

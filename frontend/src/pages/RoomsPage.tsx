@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 import api from '../services/api';
 
 interface Room {
@@ -75,10 +76,8 @@ const RoomsPage: React.FC = () => {
       `}>
         <div className="h-16 flex items-center justify-between px-4 shrink-0 border-b border-[#28292d]">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
-            <div className="w-8 h-8 rounded-lg brand-gradient flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
-              <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="m9 10 2 2 4-4"></path></svg>
-            </div>
-            <span className="font-bold text-lg tracking-tight brand-text-gradient">SyncStream</span>
+            <SyncStreamLogo className="w-8 h-8" />
+            <img src="/name.png" alt="SyncStream" className="h-5 object-contain" />
           </div>
           <button 
             onClick={() => setShowMobileSidebar(false)}

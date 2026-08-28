@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 
 interface Room {
   id: string;
@@ -69,11 +70,8 @@ const ProfilePage: React.FC = () => {
       `}>
         <div className="h-16 flex items-center justify-between px-6 border-b border-obsidian-700">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
-            <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center relative">
-              <i className="fa-solid fa-comment-dots text-white text-lg"></i>
-              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-purple-400 rounded-full border-2 border-obsidian-900"></div>
-            </div>
-            <span className="text-xl font-bold text-white tracking-tight">SyncStream</span>
+            <SyncStreamLogo className="w-8 h-8" />
+            <img src="/name.png" alt="SyncStream" className="h-5 object-contain" />
           </div>
           <button 
             onClick={() => setShowMobileSidebar(false)}
