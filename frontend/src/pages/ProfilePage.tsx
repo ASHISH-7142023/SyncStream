@@ -138,9 +138,11 @@ const ProfilePage: React.FC = () => {
         <div className="p-4 border-t border-obsidian-700 mt-auto flex items-center justify-between cursor-pointer hover:bg-obsidian-700 transition-colors" onClick={() => navigate('/profile')}>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center font-bold text-sm text-white border border-obsidian-600">
-                {user ? user.username.slice(0, 2).toUpperCase() : 'AJ'}
-              </div>
+              <img 
+                src="/person_logo.png" 
+                alt="User Avatar" 
+                className="w-10 h-10 rounded-full object-cover border border-obsidian-600 bg-obsidian-700" 
+              />
               <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-obsidian-900 rounded-full"></div>
             </div>
             <div>
@@ -230,9 +232,11 @@ const ProfilePage: React.FC = () => {
                     {/* Avatar */}
                     <div className="relative flex-shrink-0">
                       <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full p-1 bg-gradient-to-br from-purple-500 to-obsidian-800">
-                        <div className="w-full h-full rounded-full bg-purple-600 flex items-center justify-center font-extrabold text-white text-3xl sm:text-4xl border-4 border-obsidian-800 uppercase select-none">
-                          {user ? user.username.slice(0, 2) : 'AJ'}
-                        </div>
+                        <img 
+                          src="/person_logo.png" 
+                          alt="User Avatar" 
+                          className="w-full h-full rounded-full object-cover border-4 border-obsidian-800 bg-obsidian-700" 
+                        />
                       </div>
                       <div className="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 bg-green-500 border-4 border-obsidian-800 rounded-full"></div>
                     </div>
