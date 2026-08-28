@@ -120,7 +120,10 @@ const DashboardPage: React.FC = () => {
           >
             ✕
           </button>
-          <button className="hidden md:block text-text-muted hover:text-white transition-colors">
+          <button 
+            onClick={() => alert("Sidebar collapse toggle is a Pro feature!")}
+            className="hidden md:block text-text-muted hover:text-white transition-colors cursor-pointer"
+          >
             <i className="fa-solid fa-angles-left text-sm"></i>
           </button>
         </div>
@@ -288,7 +291,10 @@ const DashboardPage: React.FC = () => {
                 </div>
               )}
             </div>
-            <button className="text-text-muted hover:text-white transition-colors" onClick={() => navigate('/profile')}>
+            <button 
+              className="text-text-muted hover:text-white transition-colors cursor-pointer" 
+              onClick={() => alert("Dashboard Help: You can view total active rooms, online member list, send new invites, or join rooms from the active feed.")}
+            >
               <i className="fa-regular fa-circle-question text-base"></i>
             </button>
             
@@ -351,7 +357,12 @@ const DashboardPage: React.FC = () => {
               <div className="lg:col-span-2 bg-bg-card border border-gray-800 rounded-xl flex flex-col h-[500px]">
                 <div className="p-5 border-b border-gray-800 flex items-center justify-between shrink-0">
                   <h2 className="font-semibold text-lg">Recent Activity</h2>
-                  <button className="text-sm text-accent-purpleLight hover:text-accent-purple transition-colors cursor-pointer">View all</button>
+                  <button 
+                    onClick={() => navigate('/profile')}
+                    className="text-sm text-accent-purpleLight hover:text-accent-purple transition-colors cursor-pointer"
+                  >
+                    View all
+                  </button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-2 scrollbar-thin">
                   {recentActivity.map((act, i) => (
@@ -386,7 +397,10 @@ const DashboardPage: React.FC = () => {
                   ))}
                 </div>
                 <div className="p-3 border-t border-gray-800 shrink-0">
-                  <button className="w-full py-2.5 text-sm font-medium text-accent-purpleLight hover:text-white hover:bg-bg-hover rounded-lg transition-colors cursor-pointer">
+                  <button 
+                    onClick={() => alert("You are fully up-to-date! No more activities found.")}
+                    className="w-full py-2.5 text-sm font-medium text-accent-purpleLight hover:text-white hover:bg-bg-hover rounded-lg transition-colors cursor-pointer"
+                  >
                     Load more
                   </button>
                 </div>
@@ -436,7 +450,12 @@ const DashboardPage: React.FC = () => {
                 <div className="bg-bg-card border border-gray-800 rounded-xl shrink-0 p-5">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="font-semibold text-lg">Online Members</h2>
-                    <button className="text-sm text-accent-purpleLight hover:text-accent-purple transition-colors">View all</button>
+                    <button 
+                      onClick={() => alert("Online Members (24): Sarah Wilson, David Brown, Emily Davis, Michael Chen, Lisa Anderson, and 19 others.")}
+                      className="text-sm text-accent-purpleLight hover:text-accent-purple transition-colors cursor-pointer"
+                    >
+                      View all
+                    </button>
                   </div>
                   <div className="flex items-center -space-x-2">
                     {['SW', 'DB', 'ED', 'MC', 'LA'].map((initial, i) => (
