@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 import api from '../services/api';
 
 interface Room {
@@ -76,7 +75,7 @@ const RoomsPage: React.FC = () => {
       `}>
         <div className="h-16 flex items-center justify-between px-4 shrink-0 border-b border-[#28292d]">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
-            <SyncStreamLogo className="w-8 h-8" />
+            <img src="/chat.png" alt="Logo" className="w-8 h-8 rounded-lg object-cover shadow-md" />
             <img src="/name.png" alt="SyncStream" className="h-6 w-auto object-contain" />
           </div>
           <button 

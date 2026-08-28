@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
-import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 import api from '../services/api';
 
 interface Member {
@@ -187,7 +186,7 @@ const RoomChatPage: React.FC = () => {
       `}>
         <div className="h-16 flex items-center justify-between px-4 border-b border-white/5">
           <div className="flex items-center gap-2 text-brand-400 font-semibold text-xl tracking-tight cursor-pointer" onClick={() => navigate('/dashboard')}>
-            <SyncStreamLogo className="w-8 h-8" />
+            <img src="/chat.png" alt="Logo" className="w-8 h-8 rounded-lg object-cover shadow-md" />
             <img src="/name.png" alt="SyncStream" className="h-6 w-auto object-contain" />
           </div>
           <button 
