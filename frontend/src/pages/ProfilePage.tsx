@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 
 interface Room {
   id: string;
@@ -70,7 +69,7 @@ const ProfilePage: React.FC = () => {
       `}>
         <div className="h-16 flex items-center justify-between px-6 border-b border-obsidian-700">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
-            <SyncStreamLogo className="w-8 h-8" />
+            <img src="/person_logo.png" alt="Logo" className="w-8 h-8 rounded-lg object-cover shadow-md" />
             <img src="/name.png" alt="SyncStream" className="h-6 w-auto object-contain" />
           </div>
           <button 
