@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 
 interface Room {
   id: string;
@@ -110,9 +111,7 @@ const DashboardPage: React.FC = () => {
       `}>
         <div className="h-16 flex items-center justify-between px-4 shrink-0">
           <div className="flex items-center gap-2 text-xl font-bold tracking-tight text-white cursor-pointer" onClick={() => navigate('/dashboard')}>
-            <div className="w-8 h-8 bg-gradient-to-br from-accent-purple to-accent-purpleLight rounded-lg flex items-center justify-center shadow-lg shadow-accent-purple/20">
-              <i className="fa-solid fa-bolt text-white text-sm"></i>
-            </div>
+            <SyncStreamLogo className="w-8 h-8" />
             SyncStream
           </div>
           <button 
