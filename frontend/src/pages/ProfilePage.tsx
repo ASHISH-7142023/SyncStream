@@ -28,6 +28,14 @@ const ProfilePage: React.FC = () => {
     setIsEditingBio(false);
   };
 
+  const [theme, setTheme] = useState(localStorage.getItem('app-theme') || 'default');
+
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme);
+    localStorage.setItem('app-theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+  };
+
 
   const badges = [
     { title: 'Early Adopter', desc: 'Joined early', icon: '🚀' },
@@ -510,10 +518,14 @@ const ProfilePage: React.FC = () => {
                           <h4 className="text-sm font-semibold text-white mb-1">Appearance Theme</h4>
                           <p className="text-xs text-slate-400 leading-relaxed">Customize your app interface layout styling.</p>
                         </div>
-                        <select className="bg-obsidian-900 border border-[#2e3346] text-white text-xs rounded-lg px-3 py-2 focus:ring-1 focus:ring-purple-500 outline-none">
-                          <option>Dark Obsidian (Default)</option>
-                          <option>Frosted Glass Light</option>
-                          <option>Midnight Blue</option>
+                        <select 
+                          value={theme}
+                          onChange={(e) => handleThemeChange(e.target.value)}
+                          className="bg-obsidian-900 border border-[#2e3346] text-white text-xs rounded-lg px-3 py-2 focus:ring-1 focus:ring-purple-500 outline-none cursor-pointer"
+                        >
+                          <option value="default">Dark Obsidian (Default)</option>
+                          <option value="light">Frosted Glass Light</option>
+                          <option value="midnight">Midnight Blue</option>
                         </select>
                       </div>
 

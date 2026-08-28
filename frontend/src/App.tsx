@@ -67,6 +67,11 @@ function AppContent() {
 }
 
 function App() {
+  React.useEffect(() => {
+    const savedTheme = localStorage.getItem('app-theme') || 'default';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }, []);
+
   return (
     <AuthProvider>
       <AppContent />

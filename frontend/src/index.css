@@ -291,3 +291,119 @@ html, body, #root {
 .animation-delay-300 {
   animation-delay: 300ms;
 }
+
+/* Theme overrides */
+html[data-theme="light"] {
+  --bg-main: #F8FAFC;
+  --bg-sidebar: #FFFFFF;
+  --bg-card: rgba(255, 255, 255, 0.7);
+  --bg-hover: #F1F5F9;
+  --accent-purple: #7C3AED;
+  --accent-purple-light: #8B5CF6;
+  --accent-green: #22C55E;
+  --accent-blue: #0284C7;
+  --text-main: #0F172A;
+  --text-muted: #475569;
+  
+  --surface: #F8FAFC;
+  --surface-container-lowest: #FFFFFF;
+  --surface-container-low: rgba(255, 255, 255, 0.6);
+  --surface-container: rgba(255, 255, 255, 0.8);
+  --surface-container-high: #E2E8F0;
+  --surface-container-highest: #CBD5E1;
+  --on-surface: #0F172A;
+  --on-surface-variant: #475569;
+  --outline: #E2E8F0;
+  --outline-variant: #CBD5E1;
+  --primary: #7C3AED;
+  --primary-container: rgba(124, 58, 237, 0.1);
+  --on-primary-container: #7C3AED;
+  
+  --surface-dim: #F1F5F9;
+  --surface-bright: #FFFFFF;
+  
+  --obsidian-900: #F8FAFC;
+  --obsidian-800: #FFFFFF;
+  --obsidian-700: rgba(255, 255, 255, 0.6);
+  --obsidian-600: #E2E8F0;
+}
+
+html[data-theme="light"] .glass-panel {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 250, 252, 0.7) 100%) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04) !important;
+}
+
+html[data-theme="light"] select, 
+html[data-theme="light"] input, 
+html[data-theme="light"] textarea {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
+}
+
+html[data-theme="light"] select option {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+}
+
+html[data-theme="light"] button.text-white, 
+html[data-theme="light"] span.text-white, 
+html[data-theme="light"] h1.text-white, 
+html[data-theme="light"] h2.text-white, 
+html[data-theme="light"] h3.text-white, 
+html[data-theme="light"] h4.text-white, 
+html[data-theme="light"] p.text-white,
+html[data-theme="light"] div.text-white {
+  color: #0F172A !important;
+}
+
+html[data-theme="light"] .text-slate-400,
+html[data-theme="light"] .text-slate-350,
+html[data-theme="light"] .text-slate-300 {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .text-slate-500 {
+  color: #64748B !important;
+}
+
+html[data-theme="midnight"] {
+  --bg-main: #020617;
+  --bg-sidebar: #070F2B;
+  --bg-card: #0B192C;
+  --bg-hover: #1E3A8A;
+  --accent-purple: #3B82F6;
+  --accent-purple-light: #60A5FA;
+  --accent-green: #10B981;
+  --accent-blue: #60A5FA;
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
+  
+  --surface: #020617;
+  --surface-container-lowest: #070F2B;
+  --surface-container-low: #0B192C;
+  --surface-container: #1E3A8A;
+  --surface-container-high: #1E3A8A;
+  --surface-container-highest: #1D4ED8;
+  --on-surface: #F8FAFC;
+  --on-surface-variant: #94A3B8;
+  --outline: #1E293B;
+  --outline-variant: #334155;
+  --primary: #3B82F6;
+  --primary-container: rgba(59, 130, 246, 0.15);
+  --on-primary-container: #60A5FA;
+  
+  --surface-dim: #020617;
+  --surface-bright: #0F172A;
+  
+  --obsidian-900: #020617;
+  --obsidian-800: #070F2B;
+  --obsidian-700: #0B192C;
+  --obsidian-600: #1E3A8A;
+}
+
+html[data-theme="midnight"] .glass-panel {
+  background: linear-gradient(145deg, rgba(11, 25, 44, 0.8) 0%, rgba(7, 15, 43, 0.8) 100%) !important;
+  border: 1px solid rgba(59, 130, 246, 0.15) !important;
+}
