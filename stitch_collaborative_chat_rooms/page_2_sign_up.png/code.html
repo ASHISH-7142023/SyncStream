@@ -67,45 +67,152 @@
         </p>
 </div>
 <!-- Feature Image Placeholder -->
-<div class="relative w-full max-w-md mx-auto lg:mx-0 my-8">
-<!-- Mock App UI Container -->
-<div class="rounded-2xl border border-borderCol bg-surfaceContainer p-1 overflow-hidden shadow-2xl relative z-10">
-<div class="bg-surface rounded-xl p-4 h-64 flex flex-col justify-between border border-borderCol/50">
-<div class="flex items-center justify-between border-b border-borderCol pb-3 mb-3">
-<div class="flex items-center gap-2">
-<i class="fa-solid fa-hashtag text-textMuted"></i>
-<span class="font-semibold">general</span>
+<div class="relative w-full max-w-lg mx-auto lg:mx-0 my-8">
+  <!-- Mock App UI Container -->
+  <div class="glass-panel rounded-2xl p-4 w-full transform -rotate-2 hover:rotate-0 transition-transform duration-500 shadow-2xl shadow-black/50 text-left relative z-10">
+    <!-- Header / Sidebar Row -->
+    <div class="flex gap-4 h-[320px]">
+      
+      <!-- Sidebar -->
+      <div class="w-1/3 flex flex-col justify-between border-r border-white/5 pr-4 shrink-0">
+        <div class="space-y-4">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 bg-primary rounded-md flex items-center justify-center">
+              <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </div>
+            <span class="text-sm font-bold text-white">SyncStream</span>
+          </div>
+          <div class="space-y-2">
+            <div class="text-[10px] text-[#9ca3af] font-bold tracking-wider uppercase">Rooms</div>
+            <div class="px-2 py-1.5 rounded-lg bg-[#6366f1]/20 text-white text-xs font-semibold flex items-center gap-2">
+              <span class="text-[#818cf8]">#</span> general
+            </div>
+            <div class="px-2 py-1.5 rounded-lg hover:bg-white/5 text-[#9ca3af] text-xs flex items-center gap-2 transition-colors">
+              <span class="text-slate-600">#</span> developers
+            </div>
+            <div class="px-2 py-1.5 rounded-lg hover:bg-white/5 text-[#9ca3af] text-xs flex items-center gap-2 transition-colors">
+              <span class="text-slate-600">#</span> design
+            </div>
+            <div class="px-2 py-1.5 rounded-lg hover:bg-white/5 text-[#9ca3af] text-xs flex items-center gap-2 transition-colors">
+              <span class="text-slate-600">#</span> marketing
+            </div>
+            <div class="px-2 py-1.5 rounded-lg hover:bg-white/5 text-[#9ca3af] text-xs flex items-center gap-2 transition-colors">
+              <span class="text-slate-600">#</span> random
+            </div>
+            <div class="px-2 py-1.5 rounded-lg hover:bg-white/5 text-[#9ca3af]/70 text-xs flex items-center gap-2 transition-colors cursor-pointer">
+              <span class="text-slate-600 text-sm font-semibold">+</span> Add Room
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Chat Area -->
+      <div class="flex-1 flex flex-col justify-between min-w-0">
+        <!-- Chat Header -->
+        <div class="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
+          <div class="flex flex-col text-left min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[#9ca3af] font-bold">#</span>
+              <span class="text-sm font-semibold text-white truncate">general</span>
+            </div>
+            <span class="text-[10px] text-[#9ca3af] truncate">Company-wide updates</span>
+          </div>
+          <div class="flex items-center gap-3 text-[#9ca3af]">
+            <i class="fa-solid fa-magnifying-glass text-xs cursor-pointer hover:text-white transition-colors"></i>
+            <i class="fa-solid fa-thumbtack text-xs cursor-pointer hover:text-white transition-colors"></i>
+            <div class="flex items-center gap-1 text-xs cursor-pointer hover:text-white transition-colors">
+              <i class="fa-solid fa-users text-xs"></i>
+              <span class="text-[10px]">12</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Messages stream -->
+        <div class="flex-1 overflow-y-auto py-3 space-y-4 pr-1 scrollbar-hide text-left">
+          <!-- Message 1 -->
+          <div class="flex gap-2.5 items-start">
+            <div class="w-8 h-8 rounded-full bg-[#6366f1]/20 text-white flex items-center justify-center font-bold text-base shrink-0 select-none">
+              🦁
+            </div>
+            <div>
+              <div class="flex items-baseline gap-1.5">
+                <span class="font-semibold text-xs text-white">Alex Johnson</span>
+                <span class="text-[9px] text-[#9ca3af]">10:30 AM</span>
+              </div>
+              <p class="text-[11px] text-gray-200 mt-0.5">Hey team! Project update is now live.</p>
+              <div class="mt-1 flex items-center gap-1">
+                <span class="text-[9px] bg-[#12121a]/80 border border-white/5 px-2 py-0.5 rounded-full text-slate-300">🔥 12</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Message 2 -->
+          <div class="flex gap-2.5 items-start">
+            <div class="w-8 h-8 rounded-full bg-[#10b981]/20 text-white flex items-center justify-center font-bold text-base shrink-0 select-none">
+              🦄
+            </div>
+            <div>
+              <div class="flex items-baseline gap-1.5">
+                <span class="font-semibold text-xs text-white">Sarah Wilson</span>
+                <span class="text-[9px] text-[#9ca3af]">10:31 AM</span>
+              </div>
+              <p class="text-[11px] text-gray-200 mt-0.5">Looks amazing! Great work everyone 🚀</p>
+              <div class="mt-1 flex items-center gap-1">
+                <span class="text-[9px] bg-[#12121a]/80 border border-white/5 px-2 py-0.5 rounded-full text-slate-300">👏 8</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Message 3 -->
+          <div class="flex gap-2.5 items-start">
+            <div class="w-8 h-8 rounded-full bg-orange-500/20 text-white flex items-center justify-center font-bold text-base shrink-0 select-none">
+              🐼
+            </div>
+            <div>
+              <div class="flex items-baseline gap-1.5">
+                <span class="font-semibold text-xs text-white">David Brown</span>
+                <span class="text-[9px] text-[#9ca3af]">10:32 AM</span>
+              </div>
+              <p class="text-[11px] text-gray-200 mt-0.5">Excited to see this in production!</p>
+              <div class="mt-1 flex items-center gap-1">
+                <span class="text-[9px] bg-[#12121a]/80 border border-white/5 px-2 py-0.5 rounded-full text-slate-300">🚀 6</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom composer input -->
+        <div class="h-9 rounded-xl bg-[#12121a] border border-white/5 w-full flex items-center justify-between px-3 shrink-0">
+          <span class="text-[11px] text-[#9ca3af]">Type a message...</span>
+          <div class="flex items-center gap-1.5 text-[#9ca3af]">
+            <i class="fa-solid fa-paperclip text-xs hover:text-white transition-colors cursor-pointer"></i>
+            <i class="fa-regular fa-face-smile text-xs hover:text-white transition-colors cursor-pointer"></i>
+            <div class="w-6 h-6 rounded-lg bg-[#6366f1] text-white flex items-center justify-center cursor-pointer hover:bg-[#4f46e5] transition-colors">
+              <svg fill="none" height="10" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" viewBox="0 0 24 24" width="10" xmlns="http://www.w3.org/2000/svg"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Floating Border Badges -->
+  <div class="absolute -left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#6366f1]/20 border border-[#6366f1]/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(99,102,241,0.3)] animate-bounce select-none z-20">
+    💬
+  </div>
+  <div class="absolute -right-6 top-1/3 w-12 h-12 bg-[#10b981]/20 border border-[#10b981]/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(16,185,129,0.3)] animate-pulse select-none z-20">
+    ⚡
+  </div>
+  <div class="absolute -bottom-6 left-1/3 w-12 h-12 bg-blue-500/20 border border-blue-500/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(59,130,246,0.3)] select-none z-20">
+    🛡️
+  </div>
 </div>
-<div class="flex -space-x-2">
-<img alt="User" class="w-6 h-6 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnGQqwk1sEQdswH8B4Jv_3O7e_t-wNzj5gG10SQXZ3Io8YE8HVICbP3fNP4tSUvf_cV3ESQ0hUlaIOlsiiExsIBWjyqwUbvPpJpOzT7DLwWN_HbNG0OmpQqzX_-pG0ZKsrroccAYSBvCzccduDC6aP2yhpUX87yBEQz1gf4YgmquV4Q-2f5PnaXobzUu1XwIRIhVmouSNhhmKV6926oSRBzSqxuvyBno__-pP-NkiL3FeCwpoCdfXk"/>
-<img alt="User" class="w-6 h-6 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArXQ3vmA_vYFdBxLBzkTn7ScsId86nog4HndsYOWB9JU7DBlD9QGdaWGmURUqNHO1o0dceg84f97RaKYbz_frmspdhsqvPPhtSW44-QKyxtg_CT-YJZjIKyV7jas02aXSBtNur36Ya86dkCSAnt-lj3J6bNosnHPyviHnC-JlNwbKHvR-zq1qz6oQ-c8ZjbsgVdJBQgTYt9WCql42Jtg7b8TaLyxhL4jpv8NzLaj_ixRt8Nn1QtaDa"/>
-<img alt="User" class="w-6 h-6 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRxLyrSE5Z2eJ9LrWq8WzikpsufvwXbu3KNDq3Jne_LyCtS0SReDoX942bX2Q-AUa20lcxEXCkpT7Amy1RPB6rXLqxq28QCoDdU2z10gnuOcwycgzTXxM16Mx786YE64n8P0gikG9LaV8P5472L4DLKEgp0s2bKdNjyayjbO8-anEIEN3Wl5Nja9B703ejzRJ5TuqV9CnQR_0A1W4l0KXpKVGNO9VXBL3X8kyWjOutpNITEpu2RYmh"/>
-</div>
-</div>
-<div class="space-y-4 flex-1">
-<div class="flex gap-3">
-<img alt="User" class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHSRkld_bj3EV4q9fn8vZ4GBwBoHjyA_Xmffd166J1vJaa5YmP-RSGDVeGAiLA-iN767tpBsZauKolCWkxnncDyXensidH4SFsJkWIRzuLbMdknKZkGoTNnWl8s6BFQJjSKbn1T3XZBUWtNlqXdkr4WQo1szlGcKQSL3ezsQvdiynp5iVpjPYmZEh5W_kGgiWZ9EXXHAPEpenqMg4sMqOvjY_4sBQgwgsLNrfXALKyBNBc3R1VtyrN"/>
-<div>
-<div class="flex items-baseline gap-2">
-<span class="font-medium text-sm">Alex Johnson</span>
-<span class="text-xs text-textMuted">10:30 AM</span>
-</div>
-<p class="text-sm text-textMuted mt-1">Hey team! Project update is now live.</p>
-</div>
-</div>
-</div>
-<div class="mt-4 relative">
-<input class="w-full bg-surfaceContainer border border-borderCol rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-primary" placeholder="Type a message..." type="text"/>
-<button class="absolute right-2 top-1/2 -translate-y-1/2 text-primary hover:text-primaryHover">
-<i class="fa-solid fa-paper-plane"></i>
-</button>
-</div>
-</div>
-</div>
+
 <!-- Decorative Glows -->
 <div class="absolute top-1/2 left-0 w-32 h-32 bg-primary/20 blur-3xl rounded-full -translate-x-1/2 -translate-y-1/2"></div>
 <div class="absolute bottom-0 right-0 w-32 h-32 bg-success/20 blur-3xl rounded-full translate-x-1/2 translate-y-1/2"></div>
-</div>
 <!-- Feature List -->
 <div class="space-y-6">
 <div class="flex items-start gap-4">
