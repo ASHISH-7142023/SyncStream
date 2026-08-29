@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getAvatarForUser, getAvatarsForGender } from '../utils/avatarHelper';
 
 interface Room {
   id: string;
@@ -36,6 +37,27 @@ const ProfilePage: React.FC = () => {
   };
 
   const [theme, setTheme] = useState(localStorage.getItem('app-theme') || 'default');
+
+  const [gender, setGender] = useState(localStorage.getItem('user-gender') || 'male');
+  const [selectedAvatar, setSelectedAvatar] = useState(localStorage.getItem('user-avatar') || '🦁');
+
+  const handleGenderChange = (newGender: string) => {
+    setGender(newGender);
+    localStorage.setItem('user-gender', newGender);
+    const defaultAvatars: { [key: string]: string } = {
+      male: '🦁',
+      female: '🦄',
+      other: '👽'
+    };
+    const defAv = defaultAvatars[newGender] || '👽';
+    setSelectedAvatar(defAv);
+    localStorage.setItem('user-avatar', defAv);
+  };
+
+  const handleAvatarChange = (newAvatar: string) => {
+    setSelectedAvatar(newAvatar);
+    localStorage.setItem('user-avatar', newAvatar);
+  };
 
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
@@ -174,11 +196,9 @@ const ProfilePage: React.FC = () => {
         <div className="p-4 border-t border-obsidian-700 mt-auto flex items-center justify-between cursor-pointer hover:bg-obsidian-700 transition-colors" onClick={() => navigate('/profile')}>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <img 
-                src="/person_logo.png" 
-                alt="User Avatar" 
-                className="w-10 h-10 rounded-full object-cover border border-obsidian-600 bg-obsidian-700" 
-              />
+              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none">
+                {getAvatarForUser(user ? user.username : 'Alex Johnson')}
+              </div>
               <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-obsidian-900 rounded-full"></div>
             </div>
             <div>
@@ -267,12 +287,10 @@ const ProfilePage: React.FC = () => {
                   <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 w-full">
                     {/* Avatar */}
                     <div className="relative flex-shrink-0">
-                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full p-1 bg-gradient-to-br from-purple-500 to-obsidian-800">
-                        <img 
-                          src="/person_logo.png" 
-                          alt="User Avatar" 
-                          className="w-full h-full rounded-full object-cover border-4 border-obsidian-800 bg-obsidian-700" 
-                        />
+                      <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full p-1 bg-gradient-to-br from-purple-500 to-obsidian-800 flex items-center justify-center">
+                        <div className="w-full h-full rounded-full border-4 border-obsidian-800 bg-obsidian-750 flex items-center justify-center text-4xl sm:text-5xl select-none">
+                          {selectedAvatar}
+                        </div>
                       </div>
                       <div className="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 bg-green-500 border-4 border-obsidian-800 rounded-full"></div>
                     </div>
@@ -556,6 +574,42 @@ const ProfilePage: React.FC = () => {
                           <option value="light">Frosted Glass Light</option>
                           <option value="midnight">Midnight Blue</option>
                         </select>
+                      </div>
+
+                      <div className="flex flex-col gap-4 border-b border-white/5 pb-5">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="text-sm font-semibold text-white mb-1">Funny Avatar Gender Category</h4>
+                            <p className="text-xs text-slate-400 leading-relaxed">Assign a category of funny animals and characters to your user profile.</p>
+                          </div>
+                          <select 
+                            value={gender}
+                            onChange={(e) => handleGenderChange(e.target.value)}
+                            className="bg-obsidian-900 border border-[#2e3346] text-white text-xs rounded-lg px-3 py-2 focus:ring-1 focus:ring-purple-500 outline-none cursor-pointer"
+                          >
+                            <option value="male">Male ♂ (Lions, Bears, Gorillas)</option>
+                            <option value="female">Female ♀ (Unicorns, Kittens, Bunnies)</option>
+                            <option value="other">Secret Agent 🕶️ / Other (Aliens, Owls, Sloths)</option>
+                          </select>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Choose Avatar Character</label>
+                          <div className="flex gap-2 flex-wrap">
+                            {getAvatarsForGender(gender).map((av) => (
+                              <button 
+                                key={av.emoji}
+                                onClick={() => handleAvatarChange(av.emoji)}
+                                className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-all border ${
+                                  selectedAvatar === av.emoji 
+                                    ? 'bg-purple-600/30 border-purple-500 scale-105 shadow-md shadow-purple-500/20' 
+                                    : 'bg-obsidian-800 border-obsidian-750 hover:border-obsidian-600 hover:scale-105'
+                                }`}
+                              >
+                                {av.emoji}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
                       </div>
 
                       <div className="flex items-center justify-between border-b border-white/5 pb-4">

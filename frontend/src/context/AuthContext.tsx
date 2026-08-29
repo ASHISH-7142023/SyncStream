@@ -34,10 +34,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         try {
           const response = await api.get('/api/auth/me');
           setUser(response.data);
+          localStorage.setItem('username', response.data.username);
           setToken(storedToken);
         } catch (err: any) {
           console.error("Token validation failed. Logging out.", err);
           localStorage.removeItem('token');
+          localStorage.removeItem('username');
           setUser(null);
           setToken(null);
         }
@@ -56,6 +58,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const { token: receivedToken, userId, username: resUsername } = response.data;
       
       localStorage.setItem('token', receivedToken);
+      localStorage.setItem('username', resUsername);
       setToken(receivedToken);
       setUser({ id: userId, username: resUsername });
     } catch (err: any) {
@@ -74,6 +77,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const { token: receivedToken, userId, username: resUsername } = response.data;
       
       localStorage.setItem('token', receivedToken);
+      localStorage.setItem('username', resUsername);
       setToken(receivedToken);
       setUser({ id: userId, username: resUsername });
     } catch (err: any) {
@@ -86,6 +90,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('username');
     setToken(null);
     setUser(null);
     setError(null);

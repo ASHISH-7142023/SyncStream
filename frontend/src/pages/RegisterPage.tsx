@@ -18,6 +18,7 @@ const RegisterPage: React.FC = () => {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [gender, setGender] = useState('male');
 
   const getPasswordStrength = () => {
     if (!password) return 0;
@@ -54,6 +55,7 @@ const RegisterPage: React.FC = () => {
     setSubmitting(true);
     try {
       await register(username, password);
+      localStorage.setItem('user-gender', gender);
       // Automatically redirect to login or dashboard
       navigate('/dashboard');
     } catch (error: any) {
@@ -359,6 +361,21 @@ const RegisterPage: React.FC = () => {
                     </p>
                   </div>
                 )}
+              </div>
+
+              {/* Gender selection for funny avatars */}
+              <div>
+                <label className="block text-xs font-semibold text-[#9ca3af] uppercase tracking-wider mb-1.5" htmlFor="gender">Gender <span className="text-[#6366f1]">(For Funny Avatar Assignment)</span></label>
+                <select 
+                  id="gender" 
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  className="w-full bg-[#0a0a0f] border border-[#374151] rounded-xl py-2.5 px-4 text-sm focus:ring-2 focus:ring-[#6366f1] focus:border-transparent text-white outline-none cursor-pointer"
+                >
+                  <option value="male">Male ♂</option>
+                  <option value="female">Female ♀</option>
+                  <option value="other">Secret Agent 🕶️ / Other</option>
+                </select>
               </div>
 
               {/* Terms Checkbox */}

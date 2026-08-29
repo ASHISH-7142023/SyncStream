@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import SyncStreamLogo from '../components/ui/SyncStreamLogo';
+import { getAvatarForUser } from '../utils/avatarHelper';
 
 interface Room {
   id: string;
@@ -192,8 +193,8 @@ const DashboardPage: React.FC = () => {
         <div className="p-4 border-t border-gray-800 flex items-center justify-between cursor-pointer hover:bg-bg-hover transition-colors rounded-tr-2xl" onClick={() => navigate('/profile')}>
           <div className="flex items-center gap-3 min-w-0">
             <div className="relative shrink-0">
-              <div className="w-8 h-8 rounded-full bg-accent-purple flex items-center justify-center font-bold text-xs text-white">
-                {user ? user.username.slice(0, 2).toUpperCase() : 'AJ'}
+              <div className="w-8 h-8 rounded-full bg-accent-purple/20 flex items-center justify-center text-lg select-none">
+                {getAvatarForUser(user ? user.username : 'Alex Johnson')}
               </div>
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-accent-green border-2 border-bg-sidebar rounded-full"></span>
             </div>
@@ -458,9 +459,9 @@ const DashboardPage: React.FC = () => {
                     </button>
                   </div>
                   <div className="flex items-center -space-x-2">
-                    {['SW', 'DB', 'ED', 'MC', 'LA'].map((initial, i) => (
-                      <div key={i} className="w-10 h-10 rounded-full border-2 border-bg-card bg-[#252d41] flex items-center justify-center font-bold text-xs text-white relative group cursor-pointer hover:scale-110 hover:z-30 transition-transform">
-                        {initial}
+                    {['Sarah Wilson', 'David Brown', 'Emily Davis', 'Michael Chen', 'Lisa Anderson'].map((name, i) => (
+                      <div key={i} className="w-10 h-10 rounded-full border-2 border-bg-card bg-[#252d41] flex items-center justify-center text-xl relative group cursor-pointer hover:scale-110 hover:z-30 transition-transform select-none" title={name}>
+                        {getAvatarForUser(name)}
                         <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-accent-green border-2 border-bg-card rounded-full"></span>
                       </div>
                     ))}

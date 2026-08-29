@@ -3,6 +3,7 @@ import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import { getAvatarForUser } from '../utils/avatarHelper';
 
 interface Member {
   id: string;
@@ -277,8 +278,8 @@ const RoomChatPage: React.FC = () => {
         <div className="p-4 border-t border-white/5 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer" onClick={() => navigate('/profile')}>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-9 h-9 rounded-full bg-[#8b5cf6] flex items-center justify-center font-bold text-sm text-white">
-                {user ? user.username.slice(0, 2).toUpperCase() : 'AJ'}
+              <div className="w-9 h-9 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-xl text-white select-none">
+                {getAvatarForUser(user ? user.username : 'Alex Johnson')}
               </div>
               <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-[#151723] rounded-full"></div>
             </div>
@@ -332,8 +333,8 @@ const RoomChatPage: React.FC = () => {
           <div className="flex items-center gap-4 text-[#94a3b8]">
             <div className="flex items-center -space-x-2">
               {onlineMembers.slice(0, 4).map((m) => (
-                <div key={m.id} className="w-7 h-7 rounded-full border-2 border-[#0f111a] bg-[#334155] flex items-center justify-center font-bold text-[9px] text-white select-none">
-                  {m.username.slice(0, 2).toUpperCase()}
+                <div key={m.id} className="w-7 h-7 rounded-full border-2 border-[#0f111a] bg-[#334155] flex items-center justify-center text-sm select-none" title={m.username}>
+                  {getAvatarForUser(m.username)}
                 </div>
               ))}
               {onlineMembers.length > 4 && (
@@ -410,8 +411,8 @@ const RoomChatPage: React.FC = () => {
                   </div>
                 )}
                 <div className="flex gap-4 group text-left">
-                <div className="w-10 h-10 rounded-full bg-[#8b5cf6]/20 text-[#a78bfa] flex items-center justify-center font-bold text-sm shrink-0 select-none mt-1">
-                  {msg.sender?.slice(0, 2).toUpperCase() || 'US'}
+                <div className="w-10 h-10 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-xl shrink-0 select-none mt-1">
+                  {getAvatarForUser(msg.sender || 'US')}
                 </div>
                 <div className="flex-grow min-w-0">
                   <div className="flex items-baseline gap-2 mb-1">
@@ -582,8 +583,8 @@ const RoomChatPage: React.FC = () => {
                     <li key={m.id} className="flex items-center justify-between group cursor-pointer">
                       <div className="flex items-center gap-3">
                         <div className="relative">
-                          <div className="w-8 h-8 rounded-full bg-[#8b5cf6] flex items-center justify-center font-bold text-xs text-white">
-                            {m.username.slice(0, 2).toUpperCase()}
+                          <div className="w-8 h-8 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-lg select-none">
+                            {getAvatarForUser(m.username)}
                           </div>
                           <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-[#151723] rounded-full"></span>
                         </div>
@@ -622,8 +623,8 @@ const RoomChatPage: React.FC = () => {
                     <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-70">
                       <div className="flex items-center gap-3">
                         <div className="relative">
-                          <div className="w-8 h-8 rounded-full bg-[#3b4155] flex items-center justify-center font-bold text-xs text-white">
-                            {m.username.slice(0, 2).toUpperCase()}
+                          <div className="w-8 h-8 rounded-full bg-[#3b4155]/20 flex items-center justify-center text-lg select-none">
+                            {getAvatarForUser(m.username)}
                           </div>
                           <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-away border-2 border-[#151723] rounded-full"></span>
                         </div>
@@ -648,8 +649,8 @@ const RoomChatPage: React.FC = () => {
                     <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-50 grayscale">
                       <div className="flex items-center gap-3">
                         <div className="relative">
-                          <div className="w-8 h-8 rounded-full bg-[#1a1d2d] flex items-center justify-center font-bold text-xs text-white">
-                            {m.username.slice(0, 2).toUpperCase()}
+                          <div className="w-8 h-8 rounded-full bg-[#1a1d2d]/20 flex items-center justify-center text-lg select-none">
+                            {getAvatarForUser(m.username)}
                           </div>
                           <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-offline border-2 border-[#151723] rounded-full"></span>
                         </div>

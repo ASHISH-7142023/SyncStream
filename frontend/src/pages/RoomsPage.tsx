@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import { getAvatarForUser } from '../utils/avatarHelper';
 
 interface Room {
   id: string;
@@ -152,8 +153,8 @@ const RoomsPage: React.FC = () => {
         <div className="p-4 shrink-0 border-t border-[#28292d] flex items-center justify-between cursor-pointer hover:bg-surface-100 transition-colors rounded-tr-2xl" onClick={() => navigate('/profile')}>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-[#6366f1] flex items-center justify-center font-bold text-sm text-white">
-                {user ? user.username.slice(0, 2).toUpperCase() : 'AJ'}
+              <div className="w-10 h-10 rounded-full bg-[#6366f1]/20 flex items-center justify-center text-xl text-white select-none">
+                {getAvatarForUser(user ? user.username : 'Alex Johnson')}
               </div>
               <div className="absolute bottom-0 right-0 w-3 h-3 bg-success border-2 border-surface-50 rounded-full"></div>
             </div>
