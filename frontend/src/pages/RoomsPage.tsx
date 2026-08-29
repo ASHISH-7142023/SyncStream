@@ -77,7 +77,7 @@ const RoomsPage: React.FC = () => {
         <div className="h-16 flex items-center justify-between px-4 shrink-0 border-b border-[#28292d]">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
             <img src="/chat.png" alt="Logo" className="w-8 h-8 object-contain" />
-            <img src="/name.png" alt="SyncStream" className="h-6 w-auto object-contain" />
+            <img src="/name.png" alt="SyncStream" className="h-7 w-32 object-contain" />
           </div>
           <button 
             onClick={() => setShowMobileSidebar(false)}
