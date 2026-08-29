@@ -205,7 +205,7 @@ const RoomChatPage: React.FC = () => {
         <div className="h-16 flex items-center justify-between px-4 border-b border-white/5">
           <div className="flex items-center gap-2 text-brand-400 font-semibold text-xl tracking-tight cursor-pointer" onClick={() => navigate('/dashboard')}>
             <img src="/chat.png" alt="Logo" className="w-8 h-8 object-contain" />
-            <img src="/name.png" alt="SyncStream" className="h-7 w-32 object-contain" />
+            <img src="/name.png" alt="SyncStream" className="h-7 w-44 object-contain" />
           </div>
           <button 
             onClick={() => setShowMobileSidebar(false)}
