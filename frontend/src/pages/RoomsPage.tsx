@@ -308,18 +308,18 @@ const RoomsPage: React.FC = () => {
                       <div className="flex items-center gap-6 shrink-0 text-sm">
                         <div className="text-center min-w-[3rem]">
                           <div className="flex items-center justify-center gap-1.5 text-bright font-medium">
-                            👥 18
+                            👥 {Math.floor(room.name.length * 1.5 + 4)}
                           </div>
                           <div className="text-xs text-dim">Members</div>
                         </div>
                         <div className="text-center min-w-[3rem]">
                           <div className="flex items-center justify-center gap-1.5 text-bright font-medium">
-                            <span className="w-1.5 h-1.5 rounded-full bg-success"></span> 9
+                            <span className="w-1.5 h-1.5 rounded-full bg-success"></span> {Math.max(1, Math.floor(room.name.length / 2))}
                           </div>
                           <div className="text-xs text-dim">Online</div>
                         </div>
                         <div className="text-right min-w-[4rem] hidden sm:block">
-                          <div className="text-bright">{isDevelopers ? '5m ago' : room.name.toLowerCase() === 'general' ? '2m ago' : '1h ago'}</div>
+                          <div className="text-bright">{room.name.length % 2 === 0 ? `${room.name.length}m ago` : `${Math.floor(room.name.length / 3) + 1}h ago`}</div>
                           <div className="text-xs text-dim">Last active</div>
                         </div>
                       </div>

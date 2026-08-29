@@ -383,7 +383,7 @@ const RoomChatPage: React.FC = () => {
               <div className="flex items-center gap-3">
                 <svg className="text-brand-400 text-[#a78bfa]" fill="none" height="14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="17" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.68V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.68a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
                 <span className="text-[#a78bfa] font-medium">Pinned</span>
-                <span className="text-text-muted text-xs">Project Roadmap Q2 is now available in the docs.</span>
+                <span className="text-text-muted text-xs">Project roadmap for #{room ? room.name : 'developers'} is now available in the workspace documents.</span>
               </div>
               <div className="flex items-center gap-3">
                 <a href="#docs" className="text-xs bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg transition-colors text-text-muted font-semibold hover:scale-[1.03] active:scale-[0.97] transition-all">View Doc</a>

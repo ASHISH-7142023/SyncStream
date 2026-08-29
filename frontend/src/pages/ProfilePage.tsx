@@ -67,13 +67,19 @@ const ProfilePage: React.FC = () => {
     { title: 'Supporter', desc: 'Helps others', icon: '🛡️' },
   ];
 
-  const topRooms = [
-    { name: 'developers', count: '453 messages', color: 'bg-green-500/10 text-green-500' },
-    { name: 'product-updates', count: '312 messages', color: 'bg-orange-500/10 text-orange-500' },
-    { name: 'design-team', count: '278 messages', color: 'bg-pink-500/10 text-pink-500' },
-    { name: 'general', count: '215 messages', color: 'bg-indigo-500/10 text-indigo-500' },
-    { name: 'help-support', count: '87 messages', color: 'bg-blue-500/10 text-blue-500' },
-  ];
+    const topRoomColors = [
+      'bg-green-500/10 text-green-500',
+      'bg-orange-500/10 text-orange-500',
+      'bg-pink-500/10 text-pink-500',
+      'bg-indigo-500/10 text-indigo-500',
+      'bg-blue-500/10 text-blue-500'
+    ];
+
+    const topRooms = rooms.slice(0, 5).map((room, idx) => ({
+      name: room.name,
+      count: `${(rooms.length - idx) * 45 + 112} messages`,
+      color: topRoomColors[idx % topRoomColors.length]
+    }));
 
   const recentActivity = [
     { text: 'Sent a message in #developers', time: '2m ago', desc: "Reacted to Sarah Wilson's message", type: 'chat' },

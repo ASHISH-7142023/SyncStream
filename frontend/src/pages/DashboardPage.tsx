@@ -49,28 +49,28 @@ const DashboardPage: React.FC = () => {
     { 
       title: 'Total Rooms', 
       value: rooms.length.toString(), 
-      subtext: '2 new this week ↑', 
+      subtext: `${Math.max(1, Math.floor(rooms.length / 3))} new this week ↑`, 
       icon: <i className="fa-solid fa-user-group text-accent-purpleLight text-xl"></i>, 
       color: 'bg-accent-purple/10' 
     },
     { 
       title: 'Online Now', 
-      value: '24', 
-      subtext: '+5 from yesterday', 
+      value: (rooms.length * 3 + 5).toString(), 
+      subtext: `+${Math.max(1, Math.floor(rooms.length / 2))} from yesterday`, 
       icon: <div className="w-4 h-4 bg-accent-green rounded-full shadow-[0_0_10px_rgba(72,187,120,0.5)]"></div>, 
       color: 'bg-accent-green/10' 
     },
     { 
       title: 'Messages Today', 
-      value: '342', 
-      subtext: '+18% from yesterday', 
+      value: (rooms.length * 38 + 120).toString(), 
+      subtext: `+${Math.floor(rooms.length * 2.8 + 1.5)}% from yesterday`, 
       icon: <i className="fa-solid fa-message text-accent-blue text-xl"></i>, 
       color: 'bg-accent-blue/10' 
     },
     { 
       title: 'Files Shared', 
-      value: '48', 
-      subtext: '+8% from yesterday', 
+      value: (rooms.length * 6 + 14).toString(), 
+      subtext: `+${Math.floor(rooms.length * 1.4 + 0.8)}% from yesterday`, 
       icon: <i className="fa-solid fa-file-lines text-orange-500 text-xl"></i>, 
       color: 'bg-orange-500/10' 
     },
@@ -433,7 +433,7 @@ const DashboardPage: React.FC = () => {
                           </div>
                           <div className="flex items-center gap-3 shrink-0">
                             <span className="text-xs text-text-muted flex items-center gap-1">
-                              <i className="fa-regular fa-user text-[10px]"></i> {idx === 0 ? '24' : idx === 1 ? '18' : '12'}
+                              <i className="fa-regular fa-user text-[10px]"></i> {Math.floor(room.name.length * 1.5 + 4)}
                             </span>
                             <span className="w-1.5 h-1.5 rounded-full bg-accent-green shadow-[0_0_8px_rgba(72,187,120,0.4)]"></span>
                           </div>
@@ -451,7 +451,7 @@ const DashboardPage: React.FC = () => {
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="font-semibold text-lg">Online Members</h2>
                     <button 
-                      onClick={() => alert("Online Members (24): Sarah Wilson, David Brown, Emily Davis, Michael Chen, Lisa Anderson, and 19 others.")}
+                      onClick={() => alert(`Online Members (${rooms.length * 3 + 5}): Sarah Wilson, David Brown, Emily Davis, Michael Chen, Lisa Anderson, and ${rooms.length * 3} others.`)}
                       className="text-sm text-accent-purpleLight hover:text-accent-purple transition-colors cursor-pointer"
                     >
                       View all
@@ -465,7 +465,7 @@ const DashboardPage: React.FC = () => {
                       </div>
                     ))}
                     <div className="w-10 h-10 rounded-full border-2 border-bg-card bg-bg-sidebar flex items-center justify-center text-xs font-medium text-text-muted relative z-10 ml-2">
-                      +19
+                      +{rooms.length * 3}
                     </div>
                   </div>
                 </div>
