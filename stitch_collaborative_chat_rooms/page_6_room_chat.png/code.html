@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Room Chat - SyncStream</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style data-purpose="font-setup">
+    @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Geist', sans-serif;
+    }
+  </style>
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+              950: '#2e1065',
+            },
+            surface: {
+              DEFAULT: '#0f111a',
+              dim: '#090a0f',
+              bright: '#1a1d2d',
+              container: '#151723',
+              'container-high': '#1f2233',
+            },
+            text: {
+              DEFAULT: '#e2e8f0',
+              muted: '#94a3b8',
+              accent: '#a78bfa'
+            },
+            status: {
+              online: '#10b981',
+              away: '#f59e0b',
+              offline: '#64748b'
+            }
+          },
+          borderRadius: {
+            '4xl': '2rem',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-styles">
+    /* Custom scrollbar for webkit */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    
+    .glow-effect {
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-surface-dim text-text h-screen overflow-hidden flex flex-col antialiased">
+<!-- BEGIN: Main Layout -->
+<div class="flex flex-1 overflow-hidden">
+<!-- BEGIN: Left Sidebar -->
+<aside class="w-64 bg-surface-container flex flex-col border-r border-white/5 flex-shrink-0">
+<!-- App Header -->
+<div class="h-16 flex items-center px-4 border-b border-white/5">
+<div class="flex items-center gap-2 text-brand-400 font-semibold text-xl tracking-tight">
+<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="m10 10 2-2 2 2"></path><path d="m10 14 2 2 2-2"></path></svg>
+          SyncStream
+        </div>
+</div>
+<!-- Navigation -->
+<nav class="flex-1 overflow-y-auto py-4 px-3 space-y-6">
+<!-- Primary Links -->
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-text-muted hover:text-text hover:bg-white/5 transition-colors" href="#">
+<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              Home
+            </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-text-muted hover:text-text hover:bg-white/5 transition-colors" href="#">
+<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><line x1="9" x2="15" y1="10" y2="10"></line><line x1="12" x2="12" y1="7" y2="13"></line></svg>
+              Threads
+            </a>
+</li>
+<li>
+<a class="flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg text-text-muted hover:text-text hover:bg-white/5 transition-colors" href="#">
+<div class="flex items-center gap-3">
+<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                Direct Messages
+              </div>
+<span class="bg-brand-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center">3</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-text-muted hover:text-text hover:bg-white/5 transition-colors" href="#">
+<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="4"></circle><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"></path></svg>
+              Mentions
+            </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-text-muted hover:text-text hover:bg-white/5 transition-colors" href="#">
+<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+              Saved Messages
+            </a>
+</li>
+</ul>
+<!-- Rooms -->
+<div>
+<div class="flex items-center justify-between px-3 mb-2">
+<h3 class="text-xs font-semibold text-text-muted tracking-wider">ROOMS</h3>
+<button class="text-text-muted hover:text-text transition-colors">
+<svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg>
+</button>
+</div>
+<ul class="space-y-0.5">
+<li>
+<a class="flex items-center justify-between px-3 py-2 text-sm rounded-lg text-text-muted hover:bg-white/5 transition-colors" href="#">
+<div class="flex items-center gap-2">
+<span class="text-lg opacity-60">#</span>
+                  general
+                </div>
+<div class="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-3 py-2 text-sm rounded-lg bg-brand-900/40 text-brand-50 font-medium" href="#">
+<div class="flex items-center gap-2">
+<span class="text-lg opacity-60">#</span>
+                  developers
+                </div>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-text-muted hover:bg-white/5 transition-colors" href="#">
+<span class="text-lg opacity-60">#</span>
+                design-team
+              </a>
+</li>
+<li>
+<a class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-text-muted hover:bg-white/5 transition-colors" href="#">
+<span class="text-lg opacity-60">#</span>
+                product-updates
+              </a>
+</li>
+<li>
+<a class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-text-muted hover:bg-white/5 transition-colors" href="#">
+<span class="text-lg opacity-60">#</span>
+                marketing
+              </a>
+</li>
+<li>
+<a class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-text-muted hover:bg-white/5 transition-colors" href="#">
+<span class="text-lg opacity-60">#</span>
+                random
+              </a>
+</li>
+<li>
+<a class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-text-muted hover:bg-white/5 transition-colors" href="#">
+<span class="text-lg opacity-60">#</span>
+                help-support
+              </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Upgrade Promo -->
+<div class="p-4">
+<div class="bg-surface-bright rounded-2xl p-4 border border-white/5 glow-effect relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-brand-600/10 to-transparent"></div>
+<div class="relative z-10">
+<div class="w-8 h-8 rounded-lg bg-brand-600/20 text-brand-400 flex items-center justify-center mb-3">
+<svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+</div>
+<h4 class="font-medium text-brand-300 text-sm mb-1">Upgrade to Pro</h4>
+<p class="text-xs text-text-muted mb-4 leading-relaxed">Unlock unlimited history, custom emojis, and more advanced features.</p>
+<button class="w-full bg-brand-600 hover:bg-brand-500 text-white text-sm font-medium py-2 px-4 rounded-xl transition-colors">
+              Upgrade Now
+            </button>
+</div>
+</div>
+</div>
+<!-- User Profile -->
+<div class="p-4 border-t border-white/5 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Alex Johnson" class="w-9 h-9 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsSadnKjhcmROJc3vm1t9Ii_7RabNL50TL9pDbnYzUwI0QorPTDlMI-u3hZQuuR6Ub7RbSgI3bLfnOrp8UPH0urxWJH77g4mb1XsDKFs8WFvsxq14az7LDBHddLLEVritwE8Hfz-x5wAsp05l6vscLM4Zik8lKI_SgKswWkO-4WybmwbSe-M0TgeM7CE7qb7yMUXx9JSSXHjZckJ1CeNXLdLmO0SaaesTC5oY_Pi29KwAVSev6YN63"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-surface-container rounded-full"></div>
+</div>
+<div>
+<div class="text-sm font-medium">Alex Johnson</div>
+<div class="text-xs text-status-online">Online</div>
+</div>
+</div>
+<svg class="text-text-muted" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><polyline points="6 9 12 15 18 9"></polyline></svg>
+</div>
+</aside>
+<!-- END: Left Sidebar -->
+<!-- BEGIN: Main Chat Area -->
+<main class="flex-1 flex flex-col min-w-0 bg-surface">
+<!-- Chat Header -->
+<header class="h-16 flex items-center justify-between px-6 border-b border-white/5 flex-shrink-0 bg-surface-container/50 backdrop-blur-sm z-10">
+<div class="flex items-center gap-4">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="text-xl text-text-muted">#</span>
+<h1 class="text-lg font-semibold">developers</h1>
+<button class="text-text-muted hover:text-brand-400 transition-colors">
+<svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+</button>
+</div>
+<span class="text-xs text-text-muted">Development discussions &amp; technical updates</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center -space-x-2">
+<img alt="Member" class="w-7 h-7 rounded-full border-2 border-surface object-cover z-40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQ0NJFvYvwgVcrYE246pbHY3vTJvnKIKAKO9IvyfT_Fe_ti1x3EKBu9BclKI6Q-Kk7mSW8EkAkQ9resoCNsPW67w1lL-QG0AtGsWrd3Zre0VYGMLstV2GoC7ii_QqxPUJAB3FzTwzG1m-TUh6m9HAfMZoD0wC1GBjq24Zif-qpu9MP5Vwl3YVi6UH0PUwnT2E9QeeJWLxhB1nnCEBWlFsMF5ZqbcttpeQIn_oYv8wt1q5YAuJ_iAxO"/>
+<img alt="Member" class="w-7 h-7 rounded-full border-2 border-surface object-cover z-30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-QnrAknul8Nz3N55TKjOnj5a12sQ-K6Gn3GaWLWVvE_VW9sulRbx7bwZ9F069meGQDiT7qgIRD-pysv7GhMAV3xqYS0gMvx_SjJWGrBeh7wSgx3vXbm6njg-B9pmBIsuc_lcxQxj9Q3rNKAMSVsTe7GKSZiIQyVhw7-XqOWjQp1GKWPlhBUT9pibCaBRQENIQz6vv9CuvEo2AVRSj_Qf4fFb7ylvbL-5beoczipgg0eoHH3f2sbmQ"/>
+<img alt="Member" class="w-7 h-7 rounded-full border-2 border-surface object-cover z-20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXRTio-vX0q1cvRC4zFYUymZIeIn3-rIAFJveVCvblUvomYphOSntuTjtq2Dbo9Sl7JwynXHel93CQ7hx0TrC37o2sdqLmPqhDcU_oGS--b6-vIepF9s4NKZLVMUZigFd36dzHnA7KNi6cfzYOATGv9j-96wHqaZ47YvsFRWIrctyGyQbt5yisaHLjy1UFd8Atwna6cNAtcSXq6Luw7snAiXxiDnu6Jxa3XOcUD6BJj5BdsyGEGopE"/>
+<img alt="Member" class="w-7 h-7 rounded-full border-2 border-surface object-cover z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBo3SAAtRrnW__iKut_j8rshf7owJPfkhLJyaxbLtkdnPT0TnzVHtJ_1Xquhh5BicSNPoZ-0trUD3VRS4Tj2Mg4yxj-aZokB92Pr6yDzR2tbKKZSPDHV6YKek9AnKKXyNsvUdQ7xy3diPBC7nhZxU0YqVLL2ydpY5coZTToPBHk9Ife7YTj773exoGwNl6V1i-E38qyOTnLendPOMBzBsqT6kbsbVbkw0YyhZGAQGFYwLIdZxhgz-a"/>
+<div class="w-7 h-7 rounded-full border-2 border-surface bg-surface-bright flex items-center justify-center text-[10px] text-text-muted font-medium z-0">
+              18
+            </div>
+</div>
+<div class="flex items-center gap-3 text-text-muted">
+<button class="p-2 hover:bg-white/5 rounded-lg transition-colors">
+<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
+</button>
+<button class="p-2 hover:bg-white/5 rounded-lg transition-colors text-brand-400">
+<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="17" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.68V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.68a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
+</button>
+<button class="p-2 hover:bg-white/5 rounded-lg transition-colors">
+<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" x2="20" y1="8" y2="14"></line><line x1="23" x2="17" y1="11" y2="11"></line></svg>
+</button>
+<button class="p-2 hover:bg-white/5 rounded-lg transition-colors">
+<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+</button>
+</div>
+</div>
+</header>
+<!-- Pinned Message -->
+<div class="px-6 py-2">
+<div class="bg-surface-container-high rounded-xl p-3 flex items-center justify-between text-sm border border-white/5">
+<div class="flex items-center gap-3">
+<svg class="text-brand-400" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="17" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.68V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.68a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
+<span class="text-brand-400 font-medium">Pinned</span>
+<span class="text-text-muted">Project Roadmap Q2 is now available in the docs.</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="text-xs bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg transition-colors text-text-muted">View Doc</button>
+<button class="text-text-muted hover:text-text transition-colors">
+<svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg>
+</button>
+</div>
+</div>
+</div>
+<!-- Chat Feed -->
+<div class="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6">
+<!-- Message -->
+<div class="flex gap-4 group">
+<img alt="Alex Johnson" class="w-10 h-10 rounded-full object-cover flex-shrink-0 mt-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsdw3cmj0X0F_4FKdJqHRsRXWjQO0klNaaWw0KCZzr4R7H2VdPSNwAD1e60hH1ckmmltq32gLZJCQRJwCpt3fAxAmiduto0NOQnKtCDu2dY2sgGNP7YK7IGd0TezaLz8vup3CK5xwhnI61cyJdcLarLLpUrLK1j7EpW3igj5XMy7q2jgl2pR_EWbslSFLe8SloAsP9KvJ6rN8PpkslszAKY8CyYAqDJaUHM4KZtH_jWWnlUCDOTeR7"/>
+<div class="flex-1">
+<div class="flex items-baseline gap-2 mb-1">
+<span class="font-medium">Alex Johnson</span>
+<span class="text-xs text-text-muted">10:30 AM</span>
+</div>
+<div class="text-[15px] leading-relaxed mb-2">
+              Hey team! Just pushed the new real-time messaging implementation 🚀
+            </div>
+<div class="flex gap-2">
+<button class="flex items-center gap-1.5 bg-surface-container-high border border-white/10 rounded-full px-2.5 py-1 text-xs hover:border-white/20 transition-colors">
+<span>👍</span>
+<span class="text-text-muted">12</span>
+</button>
+<button class="flex items-center gap-1.5 bg-surface-container-high border border-white/10 rounded-full px-2.5 py-1 text-xs hover:border-white/20 transition-colors">
+<span>🔥</span>
+<span class="text-text-muted">6</span>
+</button>
+<button class="flex items-center justify-center w-7 h-7 bg-transparent border border-transparent rounded-full hover:bg-surface-container-high hover:border-white/10 transition-colors text-text-muted opacity-0 group-hover:opacity-100">
+<svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" x2="9.01" y1="9" y2="9"></line><line x1="15" x2="15.01" y1="9" y2="9"></line></svg>
+</button>
+</div>
+</div>
+</div>
+<!-- Message -->
+<div class="flex gap-4 group">
+<img alt="Sarah Wilson" class="w-10 h-10 rounded-full object-cover flex-shrink-0 mt-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTDnsfWs0AU5lMtOXx_uD_2PEpdzRjiHJpboVgsY98HlkrcJEJaYaeLLgfEhQF2UR4IuIJdGCOpmqQz2984wAXVCvvkP23vbDQY4bKycGJT331RQd86s2O0r8Pto5LjuVIgum35nvWllFUY6ql3Rm24bDTsJ-qAAFdH5O1zqOfOJEHYeueVgqRnHXw94hHHXQrVIIz3x6rLCt_SAohNC0AF0dInV7EGnXLZEJw5fLlbDlhfTYmJRqw"/>
+<div class="flex-1">
+<div class="flex items-baseline gap-2 mb-1">
+<span class="font-medium">Sarah Wilson</span>
+<span class="text-xs text-text-muted">10:31 AM</span>
+</div>
+<div class="text-[15px] leading-relaxed mb-2">
+              Looks amazing! The performance is incredibly fast now.
+            </div>
+<div class="flex gap-2">
+<button class="flex items-center gap-1.5 bg-surface-container-high border border-white/10 rounded-full px-2.5 py-1 text-xs hover:border-white/20 transition-colors">
+<span>🔥</span>
+<span class="text-text-muted">8</span>
+</button>
+<button class="flex items-center gap-1.5 bg-surface-container-high border border-white/10 rounded-full px-2.5 py-1 text-xs hover:border-white/20 transition-colors">
+<span>🎉</span>
+<span class="text-text-muted">4</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Message -->
+<div class="flex gap-4 group">
+<img alt="David Brown" class="w-10 h-10 rounded-full object-cover flex-shrink-0 mt-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv1o8e6PuDQEQ1jmyn_HMEEswffergx5DWqyqf37Yk8Xct5wIW3-RQWmE5yAWAlG80rNHHopC7l_DEuNRWXILtglctN2FjcmsBGSzeI1xyX94ASMucPDs072y6FxOUK-W6opoShtOfl-ss-arQYrrBtKksLfJwQNG_coBzo2QOewd5-W3eo8tu8UyT7lzMFh1-ED1U-EbCtpseFIj6wggdf6YRt0m90LLjVBXQf6S5fybKxWiCx0G-"/>
+<div class="flex-1">
+<div class="flex items-baseline gap-2 mb-1">
+<span class="font-medium">David Brown</span>
+<span class="text-xs text-text-muted">10:32 AM</span>
+</div>
+<div class="text-[15px] leading-relaxed mb-2">
+              Great work! The architecture is very solid and scalable.
+            </div>
+<div class="flex gap-2">
+<button class="flex items-center gap-1.5 bg-surface-container-high border border-white/10 rounded-full px-2.5 py-1 text-xs hover:border-white/20 transition-colors">
+<span>👍</span>
+<span class="text-text-muted">6</span>
+</button>
+<button class="flex items-center gap-1.5 bg-surface-container-high border border-white/10 rounded-full px-2.5 py-1 text-xs hover:border-white/20 transition-colors">
+<span>❤️</span>
+<span class="text-text-muted">2</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Message -->
+<div class="flex gap-4 group">
+<img alt="Emily Davis" class="w-10 h-10 rounded-full object-cover flex-shrink-0 mt-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBii9o07pX_uIUcPnk3l1UnghiWxRpnqNe7vtY9KqqcSPqzo3pF-hUFuGbswiFUwfwepP8nmPoyGyJlwyqmOcgwmC3FNPFO_dlNha7EsXmAnrBcvaDx2ApwBDTGpJ3Swq8Ni_xONt0tbE5bkB7mHWRfAOZZ_sfdIYgnPt65Q0oeKGA7Cmay38CKN8e8D9C6wPgTJ3Z4DUw-KeowPqiMX7PySdey63S_RcUqoVZWHoqCY14iA4WnIjRc"/>
+<div class="flex-1">
+<div class="flex items-baseline gap-2 mb-1">
+<span class="font-medium">Emily Davis</span>
+<span class="text-xs text-text-muted">10:33 AM</span>
+</div>
+<div class="text-[15px] leading-relaxed">
+              Can't wait to see this in production! 🔥
+            </div>
+</div>
+</div>
+<!-- Typing Indicator -->
+<div class="flex items-center gap-2 text-xs text-brand-400 py-2">
+<div class="flex gap-1">
+<span class="w-1.5 h-1.5 bg-brand-400 rounded-full animate-bounce"></span>
+<span class="w-1.5 h-1.5 bg-brand-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
+<span class="w-1.5 h-1.5 bg-brand-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+</div>
+          Sarah Wilson is typing...
+        </div>
+<!-- Divider -->
+<div class="flex items-center gap-4 py-2">
+<div class="flex-1 h-px bg-white/10"></div>
+<span class="text-xs text-brand-400 font-medium">New Messages</span>
+<div class="flex-1 h-px bg-white/10"></div>
+</div>
+<!-- Message -->
+<div class="flex gap-4 group">
+<img alt="Michael Chen" class="w-10 h-10 rounded-full object-cover flex-shrink-0 mt-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyKT0a0RbhOWsGPcc6H9gYitXP6y00psha0Z0QP-wxWGamU4wbmzsQvEptRz0lqn1x-XkOpMPBdmlPiOOaunVHQ4rh8Oj77d209ZyNdkTB4cs64kwbq9a4tVDEdwztXBLMmNWyYRlIiOB3vsfeINQTh-ZUe1NbstJU0YG036rL9E8hUJlJVkTnM_1bwf3bxni2KVXop5JXzM5O2FM-G_N1kvV3W9AAX0OE6kDK-ZiI88iSCKMoOuhH"/>
+<div class="flex-1">
+<div class="flex items-baseline gap-2 mb-1">
+<span class="font-medium">Michael Chen</span>
+<span class="text-xs text-text-muted">10:36 AM</span>
+</div>
+<div class="text-[15px] leading-relaxed mb-2">
+              We should also update the API docs for the new endpoints.<br/>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-sm bg-brand-900/50 text-brand-300 mt-1">@Alex Johnson</span>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center gap-1.5 bg-surface-container-high border border-white/10 rounded-full px-2.5 py-1 text-xs hover:border-white/20 transition-colors">
+<span>👍</span>
+<span class="text-text-muted">5</span>
+</button>
+<button class="flex items-center justify-center w-7 h-7 bg-transparent border border-transparent rounded-full hover:bg-surface-container-high hover:border-white/10 transition-colors text-text-muted opacity-0 group-hover:opacity-100">
+<svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" x2="9.01" y1="9" y2="9"></line><line x1="15" x2="15.01" y1="9" y2="9"></line></svg>
+</button>
+</div>
+</div>
+</div>
+<!-- Message -->
+<div class="flex gap-4 group pb-4">
+<img alt="Lisa Anderson" class="w-10 h-10 rounded-full object-cover flex-shrink-0 mt-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrmwxyzdv6yZAo1Mno1CfskwFtWowU4qV678l2eQFqSxQ9N2OAYmO2NqJMzeHzNo2wLiUXPPzrR4RUUJ6ApFGWZMSvITtu6A8jfTRfhMhv6NmMw2fT_ciVhw929K5tOAZIvpmpzfpZGjO1AkrpImFMt1Fkg50nyrzLEf3mGK1HSrKv4r5IBu6SYLhRXMY1LQMJ8UgC9cf4Hzo9Jz-G4EUP8V3IJTdocboMYoBL33_o4NggmK7lxhdx"/>
+<div class="flex-1">
+<div class="flex items-baseline gap-2 mb-1">
+<span class="font-medium">Lisa Anderson</span>
+<span class="text-xs text-text-muted">10:38 AM</span>
+</div>
+<div class="text-[15px] leading-relaxed">
+              I'll take care of the documentation ✍️
+            </div>
+</div>
+</div>
+</div>
+<!-- Message Input -->
+<div class="px-6 py-4 bg-surface flex-shrink-0 z-10">
+<div class="bg-surface-container-high border border-white/10 rounded-2xl flex flex-col focus-within:border-brand-500/50 focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.3)] transition-all">
+<textarea class="w-full bg-transparent border-0 text-[15px] placeholder-text-muted/70 resize-none py-3 px-4 focus:ring-0 min-h-[48px]" placeholder="Type a message..." rows="1"></textarea>
+<div class="flex items-center justify-between px-2 pb-2">
+<div class="flex items-center gap-1 text-text-muted">
+<button class="p-2 hover:bg-white/5 rounded-lg transition-colors">
+<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg>
+</button>
+<button class="p-2 hover:bg-white/5 rounded-lg transition-colors font-serif font-bold text-sm">
+                Aa
+              </button>
+<button class="p-2 hover:bg-white/5 rounded-lg transition-colors">
+<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" x2="9.01" y1="9" y2="9"></line><line x1="15" x2="15.01" y1="9" y2="9"></line></svg>
+</button>
+<button class="p-2 hover:bg-white/5 rounded-lg transition-colors">
+<span class="font-bold">@</span>
+</button>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-white/5 rounded-lg transition-colors text-text-muted">
+<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+</button>
+<button class="p-2 hover:bg-white/5 rounded-lg transition-colors text-text-muted">
+<svg fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
+</button>
+<button class="bg-brand-600 hover:bg-brand-500 text-white p-2 rounded-xl transition-colors shadow-lg shadow-brand-500/20">
+<svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- END: Main Chat Area -->
+<!-- BEGIN: Right Sidebar (Members) -->
+<aside class="w-72 bg-surface-container flex flex-col border-l border-white/5 flex-shrink-0">
+<!-- Header -->
+<div class="h-16 flex items-center justify-between px-4 border-b border-white/5">
+<h2 class="font-medium">Members <span class="text-text-muted text-sm font-normal">(18)</span></h2>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-2 text-xs text-brand-300 bg-brand-900/30 hover:bg-brand-900/50 border border-brand-800/50 px-3 py-1.5 rounded-lg transition-colors">
+<svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" x2="20" y1="8" y2="14"></line><line x1="23" x2="17" y1="11" y2="11"></line></svg>
+            Invite
+          </button>
+<button class="text-text-muted hover:text-text p-1 transition-colors">
+<svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg>
+</button>
+</div>
+</div>
+<!-- Search -->
+<div class="p-4 border-b border-white/5">
+<div class="relative flex items-center">
+<svg class="absolute left-3 text-text-muted" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
+<input class="w-full bg-surface-bright border border-white/5 text-sm rounded-lg pl-9 pr-4 py-2 focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition-all placeholder-text-muted/60" placeholder="Search members..." type="text"/>
+</div>
+</div>
+<!-- Member List -->
+<div class="flex-1 overflow-y-auto p-4 space-y-6">
+<!-- Online -->
+<div>
+<div class="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide cursor-pointer hover:text-text transition-colors">
+<svg fill="none" height="12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            Online — <span class="text-status-online">9</span>
+</div>
+<ul class="space-y-3">
+<li class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Alex Johnson" class="w-9 h-9 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3DgKqCV-ND4iRQN5SkOsBlbvRkIPnWkANFYiBiv7685_S79ONoZwOcNDqt4w4xiPouofE9uoemAV4wgNoqAItB_g9a7eGNJxoHBVr44vviu7Teb7ayLmDl4ohUVNwCLCgo1jVLJrVvsFBVzaMX-KK290oHwOrMwIWxgmgyBIKzLJve7pxHjJq1IiPOi3VJFhnFbtIIf92xWDzK4HsL_b8kfg0288MHM3P8t166z5ZScPnQvn7INKT"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-surface-container rounded-full"></div>
+</div>
+<div>
+<div class="text-sm font-medium flex items-center gap-1.5">
+                    Alex Johnson <span class="text-text-muted text-xs font-normal">(You)</span>
+<span class="w-1.5 h-1.5 rounded-full bg-status-online"></span>
+</div>
+<div class="text-xs text-text-muted">Online</div>
+</div>
+</div>
+<span class="text-[10px] font-medium text-brand-400 border border-brand-400/30 rounded px-1.5 py-0.5">Owner</span>
+</li>
+<li class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Sarah Wilson" class="w-9 h-9 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6b5-0Ydlr1m3bu5n1suT7sii-5V7I2J4k4UwyS4o6_tB9z0q9wWC4S8AAXFNfmA8l7XJ2Hl1NVJsq3ZMht_AlM-y0hv0gkLRlgIMboTEy3oA-E8mSNomajHxHslFNlQxU539fZTK5Gl4_XAMvQTOWzsvmgGwXPk8CgeAzp4Ee2gsnNWsIwmmIxzdIe3s26KADYIz0X26qRTUiANTNTsFXvneE5HGBcgY4sWHfBQHt-6pKk-B4pHgg"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-surface-container rounded-full"></div>
+</div>
+<div>
+<div class="text-sm font-medium flex items-center gap-1.5">
+                    Sarah Wilson
+                    <span class="w-1.5 h-1.5 rounded-full bg-status-online"></span>
+</div>
+<div class="text-xs text-text-muted">Online</div>
+</div>
+</div>
+</li>
+<li class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="David Brown" class="w-9 h-9 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmhu9j0tjDCuyiQ3xhM5c5FTglOFRr_y9MUyaD4_7A90dFySAFc_1fItzpeNy-vq6pxLmGc9FDabzN1Gkg0FZfyV9DRkfhyV0yLYrVZVmZYNdyXrtf8S8gG6CUnEGQPJA_6NJaPc-9sp-MhTTHqIYwTpti8hMJLV6js8Qm3n1i2pw5MDpslupd6aqRVB6lm8bjeD_BBT-GLmgJAA8wxdacysA7Zed9cwhi_LIUeXGFq0j5v5D0rwTz"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-surface-container rounded-full"></div>
+</div>
+<div>
+<div class="text-sm font-medium flex items-center gap-1.5">
+                    David Brown
+                    <span class="w-1.5 h-1.5 rounded-full bg-status-online"></span>
+</div>
+<div class="text-xs text-text-muted">Online</div>
+</div>
+</div>
+</li>
+<li class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Emily Davis" class="w-9 h-9 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP2rSIZXZUaCRNVIuxy3bO_utqx6z8P21rRtaj4N3-c-2GwlJ0qoS-s06hNFk-vXOCRByns4grVFz6W6WBVlo3ZEAybMGVTtLLfpauVKdgCg8Iyp2bSwdWSTYHJEOsNUtipQDGqWcSc2lViRS-NjJgKAYwZiL-4VxokMoB_S7UjBlZdpr8sYcdclNRDbA0vMHAdxbjyt0mgdMwAnW3tefTDeHdJtPubG-dIVmmDF6aDc8vVf7v8RYT"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-surface-container rounded-full"></div>
+</div>
+<div>
+<div class="text-sm font-medium flex items-center gap-1.5">
+                    Emily Davis
+                    <span class="w-1.5 h-1.5 rounded-full bg-status-online"></span>
+</div>
+<div class="text-xs text-text-muted">Online</div>
+</div>
+</div>
+</li>
+<li class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Michael Chen" class="w-9 h-9 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmKhc__pHBykqePtU4z0bNWVSHSTdxeDOWiGGS1yIRrUpEBGu7y57hz0K4V4gKS4u9xVlMxZLrK_ZiA_fnP4mUMSqFkojc45S2z6a76NlR0uSpkc87gPMZ5l8ttMFbAaBYBt-WNMA2TaViNuI2ohy-HMKlEhlZLtFLZYQx_RPUXWXCB_NFxAdAxUOGuGdo7Bp46TlQ6ifNOkANkhkhAOlqClhLXg94s1jUWmTUt3JLQU0ErvQqFT7L"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-surface-container rounded-full"></div>
+</div>
+<div>
+<div class="text-sm font-medium flex items-center gap-1.5">
+                    Michael Chen
+                    <span class="w-1.5 h-1.5 rounded-full bg-status-online"></span>
+</div>
+<div class="text-xs text-text-muted">Online</div>
+</div>
+</div>
+</li>
+</ul>
+<button class="text-brand-400 text-xs mt-3 hover:underline">View all online (9)</button>
+</div>
+<!-- Away -->
+<div>
+<div class="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide cursor-pointer hover:text-text transition-colors">
+<svg fill="none" height="12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            Away — <span class="text-status-away">2</span>
+</div>
+<ul class="space-y-3">
+<li class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Rachel Kim" class="w-9 h-9 rounded-full object-cover opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj3e1wrm1tE7f0M4N7HJGvrdNJjch69JPX7bwpTB1N4uJUPnMyjaKbiK_dfa0MLFpikKQrSwEbpm7vE3p3z6xmT9IpmkVV60AlGnG4pAEHujYAJ6MmwBddsw6768wCavPWzFvgQYX8MoW-H8b2PVjToGHkA6yMdInEphfOhJLZQX2uf4XE-RL2TE8i2_IceMlZallj_L3GJCQgR2rEOHoMbg0IruNR3rBUuOTU7dX-TqG1nToJFj0_"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-away border-2 border-surface-container rounded-full"></div>
+</div>
+<div>
+<div class="text-sm font-medium opacity-80 flex items-center gap-1.5">
+                    Rachel Kim
+                  </div>
+<div class="text-xs text-text-muted flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-status-away"></span>
+                    Away
+                  </div>
+</div>
+</div>
+</li>
+<li class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="James Taylor" class="w-9 h-9 rounded-full object-cover opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhsGyLz6lYfAK0IVlJG3_93FtmsMpF6cQeSpzd12vS3bC7brRm27-MwWCKcia5-Ec0nFURV5IVlcaIj4rXy3EgfGkqE-l0DGh0WjR_pf8BEwW8n3KjlS1-Tn2SjUWYVVG9dRS-5yI60Kp3aAlTP1eucbl9aEJLU1MJBfA38kvfD_T-lm3kH72uQQwxAxdcovrBZHNlZzrx8hNMlPvqThe2jRKYUTTYn5j4gBTGWuDLcnfKX5znMayc"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-away border-2 border-surface-container rounded-full"></div>
+</div>
+<div>
+<div class="text-sm font-medium opacity-80 flex items-center gap-1.5">
+                    James Taylor
+                  </div>
+<div class="text-xs text-text-muted flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-status-away"></span>
+                    Away
+                  </div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<!-- Offline -->
+<div>
+<div class="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide cursor-pointer hover:text-text transition-colors">
+<svg fill="none" height="12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="2"></circle></svg>
+            Offline — <span class="text-status-offline">7</span>
+</div>
+<ul class="space-y-3">
+<li class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Daniel Lee" class="w-9 h-9 rounded-full object-cover opacity-50 grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoA2CbgZrEFIVmKyHPZ_8goVIDqz9dH803z-AJMULn_lUfkAVJETaWtfQfDaVe0z9LiE9lOJphakstTUA2MIxVAjg3EFjrPgktQLvEJo7f44pLZ8wJWOwlNwope31w1NaQ25NpqrYISoutbo-Ja6sCvWsLRrgXTJr9s8_VA5umDHHES8uywwA6TmN4I5Tgz6377VYr5MolPMtMzuoFdmH-8ldxxeK92MZ865SJz6BB_IcgTEa_ouJX"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-offline border-2 border-surface-container rounded-full"></div>
+</div>
+<div class="opacity-50">
+<div class="text-sm font-medium">Daniel Lee</div>
+<div class="text-xs text-text-muted">Offline</div>
+</div>
+</div>
+</li>
+<li class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Priya Sharma" class="w-9 h-9 rounded-full object-cover opacity-50 grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTxqHn3lb7zTKdoV37-14TeG8m8nvHbFKG4QbAFIDIgFtEkC4V6CRdr14juk1T62x0SG8H2IeIAcFhf98npKmF2W6aaW259OMO1WS7LFyh1_MaeJ64NgFRBULkSf0B-Anlj6nWR8PBYzTkHVgp4Wc8schwIbHNQXvRr-UezY5XUf5A1NMSwrcH3zy1IekkTXOjG_DjK8sRRHarh31LEZB_tgqZV_nEkS4CKq2PYD7r5gv8w9QHpPH1"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-offline border-2 border-surface-container rounded-full"></div>
+</div>
+<div class="opacity-50">
+<div class="text-sm font-medium">Priya Sharma</div>
+<div class="text-xs text-text-muted">Offline</div>
+</div>
+</div>
+</li>
+</ul>
+<button class="text-brand-400 text-xs mt-3 hover:underline">View all offline (7)</button>
+</div>
+</div>
+</aside>
+<!-- END: Right Sidebar (Members) -->
+</div>
+<!-- END: Main Layout -->
+<!-- BEGIN: Footer / Status Bar -->
+<footer class="h-10 bg-surface-dim border-t border-white/5 flex items-center justify-between px-4 text-xs text-text-muted flex-shrink-0 z-20">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5 text-status-online">
+<svg fill="none" height="12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+        Connected
+      </div>
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-status-offline"></span>
+        WebSocket
+      </div>
+<div>Server: US-East-1</div>
+</div>
+<div>
+<button class="flex items-center gap-2 text-red-400 hover:text-red-300 transition-colors border border-red-500/30 hover:bg-red-500/10 px-3 py-1 rounded-lg">
+        Leave Room
+        <svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" x2="9" y1="12" y2="12"></line></svg>
+</button>
+</div>
+</footer>
+<!-- END: Footer / Status Bar -->
+</body></html>
