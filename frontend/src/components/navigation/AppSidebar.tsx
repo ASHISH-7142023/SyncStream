@@ -59,7 +59,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         {!isCollapsed && (
           <div className="flex items-center space-x-2.5 cursor-pointer" onClick={() => navigate('/dashboard')}>
             <SyncStreamLogo className="w-8 h-8" />
-            <img src="/name.png" alt="SyncStream" className="h-7 w-44 object-contain" />
+            <img src="/name.png" alt="SyncStream" className="h-7 w-32 object-contain" />
           </div>
         )}
         {isCollapsed && (
