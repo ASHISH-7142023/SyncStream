@@ -169,7 +169,7 @@ const RoomChatPage: React.FC = () => {
   }
 
   return (
-    <div className="h-screen flex overflow-hidden text-sm selection:bg-brand selection:text-white bg-[#0f111a] text-[#e2e8f0] font-sans antialiased">
+    <div className="h-screen flex flex-col overflow-hidden text-sm selection:bg-brand selection:text-white bg-[#0f111a] text-[#e2e8f0] font-sans antialiased">
       
       {/* Sidebar Backdrop for Mobile */}
       {showMobileSidebar && (
@@ -178,6 +178,9 @@ const RoomChatPage: React.FC = () => {
           onClick={() => setShowMobileSidebar(false)}
         />
       )}
+
+      {/* Main Workspace layout wrapper (excluding footer) */}
+      <div className="flex flex-1 min-h-0 overflow-hidden relative">
 
       {/* Left Sidebar */}
       <aside className={`
@@ -670,8 +673,10 @@ const RoomChatPage: React.FC = () => {
         </aside>
       )}
 
+      </div>
+
       {/* Footer bar */}
-      <footer className="absolute bottom-0 left-0 right-0 h-10 bg-surface-dim border-t border-white/5 flex items-center justify-between px-4 text-xs text-text-muted z-20 shrink-0 select-none">
+      <footer className="h-10 bg-surface-dim border-t border-white/5 flex items-center justify-between px-4 text-xs text-text-muted z-20 shrink-0 select-none">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5 text-status-online font-semibold">
             🟢 Connected
