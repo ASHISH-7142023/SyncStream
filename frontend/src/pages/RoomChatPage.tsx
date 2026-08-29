@@ -37,10 +37,23 @@ const RoomChatPage: React.FC = () => {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [localReactions, setLocalReactions] = useState<Record<string, { emoji: string; count: number; active: boolean }[]>>({});
   const [isFavorite, setIsFavorite] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [selectedEmojiCategory, setSelectedEmojiCategory] = useState(0);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
 
   const feedEndRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<any>(null);
   const isTypingRef = useRef(false);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(e.target as Node)) {
+        setShowEmojiPicker(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   const { rooms, onOpenCreateModal } = useOutletContext<{ 
     rooms: RoomDetails[]; 
@@ -505,13 +518,55 @@ const RoomChatPage: React.FC = () => {
                 >
                   Aa
                 </button>
-                <button 
-                  onClick={() => alert("Emoji Picker: You can click the thumbs up 👍 or fire 🔥 reaction icons beneath any message.")}
-                  type="button" 
-                  className="p-2 hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
-                >
-                  <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" x2="9.01" y1="9" y2="9"></line><line x1="15" x2="15.01" y1="9" y2="9"></line></svg>
-                </button>
+                <div className="relative" ref={emojiPickerRef}>
+                  <button 
+                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                    type="button" 
+                    className={`p-2 hover:bg-white/5 rounded-lg transition-colors cursor-pointer ${showEmojiPicker ? 'text-[#a78bfa] bg-white/5' : ''}`}
+                    title="Emoji Picker"
+                  >
+                    <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" x2="9.01" y1="9" y2="9"></line><line x1="15" x2="15.01" y1="9" y2="9"></line></svg>
+                  </button>
+
+                  {showEmojiPicker && (
+                    <div className="absolute bottom-12 left-0 w-72 bg-[#1f2233] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col h-80 animate-scale-in">
+                      {/* Header: Category Tabs */}
+                      <div className="flex bg-[#151723] border-b border-white/5 p-1.5 justify-between shrink-0">
+                        {emojiCategories.map((cat, idx) => (
+                          <button 
+                            key={idx}
+                            type="button"
+                            onClick={() => setSelectedEmojiCategory(idx)}
+                            className={`w-7 h-7 flex items-center justify-center rounded-lg text-base hover:bg-white/5 transition-colors cursor-pointer ${selectedEmojiCategory === idx ? 'bg-white/10 text-white' : 'text-text-muted'}`}
+                            title={cat.name}
+                          >
+                            {cat.icon}
+                          </button>
+                        ))}
+                      </div>
+                      {/* Body: Emojis Grid */}
+                      <div className="flex-1 overflow-y-auto p-3 scrollbar-thin text-left">
+                        <h4 className="text-[11px] font-semibold text-[#a78bfa] uppercase tracking-wider mb-2 select-none">
+                          {emojiCategories[selectedEmojiCategory].name}
+                        </h4>
+                        <div className="grid grid-cols-7 gap-1">
+                          {emojiCategories[selectedEmojiCategory].emojis.map((emoji, idx) => (
+                            <button 
+                              key={idx}
+                              type="button"
+                              onClick={() => {
+                                setInputText(prev => prev + emoji);
+                              }}
+                              className="w-8 h-8 flex items-center justify-center text-xl hover:bg-white/5 rounded-lg active:scale-90 transition-all cursor-pointer"
+                            >
+                              {emoji}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <button 
                   onClick={() => alert("Mentions list: Type @ followed by a member name (e.g. @Sarah) to notify them in the chat.")}
                   type="button" 
@@ -697,5 +752,48 @@ const RoomChatPage: React.FC = () => {
     </div>
   );
 };
+
+const emojiCategories = [
+  {
+    name: 'Smileys & Emotion',
+    icon: '😀',
+    emojis: ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🥸', '🤩', '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🫣', '🤭', '🫢', '🤫', '🤥', '😶', '😶‍🌫️', '😐', '😑', '😬', '🫠', '🙄', '😯', '😦', '😧', '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '😵‍💫', '🤐', '🥴', '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '😈', '👿', '👹', '👺', '🤡', '💩', '👻', '💀', '☠️', '👽', '👾', '🤖', '🎃', '😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿', '😾']
+  },
+  {
+    name: 'People & Body',
+    icon: '👋',
+    emojis: ['👋', '🤚', '🖐️', '✋', '🖖', '👌', '🤌', '🤏', '✌️', '🤞', '🫰', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍', '👎', '✊', '👊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✍️', '💅', '🤳', '💪', '🦾', '🦿', '🦵', '🦶', '👂', '🦻', '👃', '🧠', '🫀', '🫁', '🦷', '🦴', '👀', '👁️', '👅', '👄', '💋', '🩸']
+  },
+  {
+    name: 'Animals & Nature',
+    icon: '🐱',
+    emojis: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐽', '🐸', '🐵', '🙈', '🙉', '🙊', '🐒', '🐔', '🐧', '🐦', '🐤', '🐣', '🐥', '🦆', '🦅', '🦉', '🦤', '🪶', '🦩', '🦚', '🦜', '🐊', '🐢', '🦎', '🐍', '🐲', '🐉', '🦕', '🦖', '🐳', '🐋', '🐬', '🦭', '🐟', '🐠', '🐡', '🦈', '🐙', '🐚', '🪸', '🐌', '🦋', '🐛', '🐜', '🐝', '🪲', '🐞', '🦗', '🕷️', '🕸️', '🦂', '🦟', '🪰', '🪱', '🦠', '💐', '🌸', '💮', '🏵️', '🌹', '🥀', '🌺', '🌻', '🌼', '🌷', '🌱', '🪴', '🌲', '🌳', '🌴', '🌵', '🌾', '🌿', '🍀', '🍁', '🍂', '🍃']
+  },
+  {
+    name: 'Food & Drink',
+    icon: '🍔',
+    emojis: ['🍇', '🍈', '🍉', '🍊', '🍋', '🍌', '🍍', '🥭', '🍎', '🍏', '🍐', '🍑', '🍒', '🍓', '🫐', '🥝', '🍅', '🫒', '🥥', '🥑', '🍆', '🥔', '🥕', '🌽', '🌶️', '🫑', '🥒', '🥬', '🥦', '🧄', '🧅', '🍄', '🥜', '🫘', '🌰', '🍞', '🥐', '🥖', '🫓', '🥨', '🥯', '🥞', '🧇', '🧀', '🍖', '🍗', '🥩', '🥓', '🍔', '🍟', '🍕', '🌭', '🥪', '🌮', '🌯', '🫔', '🥙', '🧆', '🥚', '🍳', '🥘', '🍲', '🫕', '🥣', '🥗', '🍿', '🧈', '🧄', '🧂', '🥫', '🍱', '🍘', '🍙', '🍚', '🍛', '🍜', '🍝', '🍠', '🍢', '🍣', '🍤', '🍥', '🦪', '🍡', '🥟', '🥠', '🥡', '🍦', '🍧', '🍨', '🍩', '🍪', '🎂', '🍰', '🧁', '🥧', '🍫', '🍬', '🍭', '🍮', '🍯', '🍼', '🥛', '☕', '🫖', '🍵', '🍶', '🍾', '🍷', '🍸', '🍹', '🍺', '🍻', '🥂', '🥃', '🥤', '🧋', '🧃', '🧉', '🧊']
+  },
+  {
+    name: 'Travel & Places',
+    icon: '🚗',
+    emojis: ['🚗', '🚕', '🚙', '🚌', '🚎', '🏎️', '🚓', '🚑', '🚒', '🚐', '🛻', '🚚', '🚛', '🚜', '🛵', '🏍️', '🛺', '🚲', '🛴', '🛹', '🛼', '🚨', '🚔', '🚍', '🚘', '🚖', '🚡', '🚠', '🚟', '🚃', '🚋', '🚂', '🚆', '🚇', '🚊', '🚉', '🚁', '🛩️', '✈️', '🛫', '🛬', '🚀', '🛸', '🛰️', '⛵', '🛥️', '🚤', '🚢', '⚓', '🛟', '🚧', '⛽', '🏣', '🏤', '🏥', '🏦', '🏨', '🏪', '🏫', '🏬', '🏭', '🏰', '🏯', '🏟️', '🗽', '🗼', '⛲', '⛺', '🌁', '🌃', '🌄', '🌅', '🌆', '🌇', '🌉', '🎠', '🎡', '🎢']
+  },
+  {
+    name: 'Activities & Events',
+    icon: '⚽',
+    emojis: ['⚽', '🏀', '🏈', '⚾', '🥎', '🎾', '🏐', '🏉', '🥏', '🎱', '🪀', '🏓', '🏒', '🏑', '🥍', '🏏', '🪃', '🥅', '⛳', '🪁', '🏹', '🎣', '🤿', '🥊', '🥋', '🎽', '🛹', '🛼', '🛷', '🥌', '🎿', '⛷️', '🏂', '🏋️', '🤺', '🤼', '🤸', '⛹️', '🤾', '🧗', '🧘', '🚴', '🚵', '🏊', '🤽', '🚣', '🏄', '🏇', '🏆', '🥇', '🥈', '🥉', '🏅', '🎖️', '🎫', '🎟️', '🎪', '🎭', '🎨', '🎬', '🎤', '🎧', '🎼', '🎹', '🥁', '🎷', '🎺', '🎸', '🪕', '🎻', '🎲', '♟️', '🎯', '🎳', '🎮', '🎰', '🧩']
+  },
+  {
+    name: 'Objects & Devices',
+    icon: '💡',
+    emojis: ['⌚', '📱', '💻', '⌨️', '🖱️', '🖨️', '📺', '📷', '📹', '📼', '🔍', '🔎', '💡', '🔦', '🏮', '🪔', '📔', '📕', '📖', '📗', '📘', '📙', '📚', '📓', '📒', '📃', '📜', '📄', '¼', '📊', '📋', '📌', '📍', '📎', '📏', '📐', '✂️', '🗃️', '🗑️', '🔒', '🔓', '🔏', '🔐', '🔑', '🗝️', '🔨', '🪓', '⛏️', '🛠️', '🛡️', '🪚', '🔧', '🔩', '⚙️', '⚖️', '🔗', '⛓️', '🪝', '🧰', '🧲', '🪜', '🔬', '🔭', '📡', '💉', '💊', '🩹', '🪒', '🧴', '🧻', '🧼', '🧽', '🪠', '🧹', '🧺', '🚪', '🪞', '🪟', '🪑', '🛋️', '🛏️', '🧸', '🖼️', '🛍️', '🎁', '🎈', '🎏', '🎀', '🪄', '🪅', '🎊', '🎉']
+  },
+  {
+    name: 'Symbols & Flags',
+    icon: '🔣',
+    emojis: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '☮️', '✝️', '☪️', '🕉️', '☸️', '✡️', '☯️', '☦️', '🛐', '⛎', '♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓', '🆔', '📴', '📳', '🏁', '🚩', '🎌', '🏴', '🏳️', '🏳️‍🌈', '🏳️‍⚧️', '🇺🇸', '🇬🇧', '🇨🇦', '🇪🇺', '🇯🇵', '🇩🇪', '🇫🇷', '🇮🇹', '🇮🇳', '🇨🇳']
+  }
+];
 
 export default RoomChatPage;
