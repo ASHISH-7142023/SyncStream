@@ -231,29 +231,45 @@ const RegisterPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Glowing Orbit Rings (Connecting floating badges) */}
+            <div className="absolute inset-0 pointer-events-none overflow-visible -z-10">
+              <svg className="w-full h-full overflow-visible opacity-50 animate-[spin_120s_linear_infinite]" viewBox="0 0 100 100" preserveAspectRatio="none">
+                {/* Outer Orbit connecting the badges */}
+                <ellipse 
+                  cx="50" 
+                  cy="50" 
+                  rx="57" 
+                  ry="54" 
+                  fill="none" 
+                  stroke="#8b5cf6" 
+                  strokeWidth="0.3" 
+                  strokeDasharray="1.5 1.5"
+                  className="opacity-75"
+                />
+                {/* Inner Orbit for depth */}
+                <ellipse 
+                  cx="50" 
+                  cy="50" 
+                  rx="48" 
+                  ry="45" 
+                  fill="none" 
+                  stroke="#10b981" 
+                  strokeWidth="0.2" 
+                  strokeDasharray="3 2"
+                  className="opacity-50"
+                />
+              </svg>
+            </div>
+
             {/* Floating Border Badges */}
             <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#8b5cf6]/20 border border-[#8b5cf6]/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(139,92,246,0.3)] animate-bounce select-none z-20">
               💬
             </div>
-            <div className="absolute -left-6 top-1/2 w-6 h-px border-t border-dashed border-[#8b5cf6]/60 -translate-x-full -translate-y-1/2 z-10 pointer-events-none">
-              <div className="absolute left-0 top-0 w-1.5 h-1.5 bg-[#8b5cf6] rounded-full -translate-x-1/2 -translate-y-1/2 shadow-[0_0_8px_#8b5cf6] animate-ping" />
-              <div className="absolute right-0 top-0 w-1.5 h-1.5 bg-[#8b5cf6] rounded-full translate-x-1/2 -translate-y-1/2 shadow-[0_0_8px_#8b5cf6]" />
-            </div>
-
             <div className="absolute -right-6 top-1/3 w-12 h-12 bg-[#10b981]/20 border border-[#10b981]/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(16,185,129,0.3)] animate-pulse select-none z-20">
               ⚡
             </div>
-            <div className="absolute -right-6 top-1/3 w-6 h-px border-t border-dashed border-green-500/60 translate-x-full -translate-y-1/2 z-10 pointer-events-none">
-              <div className="absolute left-0 top-0 w-1.5 h-1.5 bg-green-500 rounded-full -translate-x-1/2 -translate-y-1/2 shadow-[0_0_8px_#22c55e]" />
-              <div className="absolute right-0 top-0 w-1.5 h-1.5 bg-green-500 rounded-full translate-x-1/2 -translate-y-1/2 shadow-[0_0_8px_#22c55e] animate-ping" />
-            </div>
-
             <div className="absolute -bottom-6 left-1/3 w-12 h-12 bg-[#3b82f6]/20 border border-[#3b82f6]/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(59,130,246,0.3)] select-none z-20">
               🛡️
-            </div>
-            <div className="absolute bottom-0 left-1/3 w-px h-6 border-l border-dashed border-[#3b82f6]/60 translate-y-full -translate-x-1/2 z-10 pointer-events-none">
-              <div className="absolute left-0 top-0 w-1.5 h-1.5 bg-[#3b82f6] rounded-full -translate-x-1/2 -translate-y-1/2 shadow-[0_0_8px_#3b82f6]" />
-              <div className="absolute left-0 bottom-0 w-1.5 h-1.5 bg-[#3b82f6] rounded-full -translate-x-1/2 translate-y-1/2 shadow-[0_0_8px_#3b82f6] animate-ping" />
             </div>
 
             {/* Decorative Glows */}
