@@ -227,30 +227,31 @@
 
   <!-- Glowing Orbit Rings (Connecting floating badges) -->
   <div class="absolute inset-0 pointer-events-none overflow-visible -z-10">
-    <svg class="w-full h-full overflow-visible opacity-50 animate-[spin_120s_linear_infinite]" viewBox="0 0 100 100" preserveAspectRatio="none" style="animation: spin 120s linear infinite;">
+    <svg class="w-full h-full overflow-visible opacity-60" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="orbit-gradient-login-html" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#8b5cf6" />
+          <stop offset="50%" stop-color="#10b981" />
+          <stop offset="100%" stop-color="#3b82f6" />
+        </linearGradient>
+      </defs>
       <!-- Outer Orbit connecting the badges -->
-      <ellipse 
-        cx="50" 
-        cy="50" 
-        rx="57" 
-        ry="54" 
+      <path 
+        d="M -5 50 Q 50 -15 105 33.3 Q 110 85 33.3 103 Q 5 95 -5 50 Z" 
         fill="none" 
-        stroke="#8b5cf6" 
+        stroke="url(#orbit-gradient-login-html)" 
         stroke-width="0.3" 
         stroke-dasharray="1.5 1.5"
-        class="opacity-75"
+        class="opacity-80"
       />
       <!-- Inner Orbit for depth -->
-      <ellipse 
-        cx="50" 
-        cy="50" 
-        rx="48" 
-        ry="45" 
+      <path 
+        d="M 2 48 Q 50 -5 98 36 Q 92 80 35 97 Q 12 85 2 48 Z" 
         fill="none" 
         stroke="#10b981" 
         stroke-width="0.2" 
         stroke-dasharray="3 2"
-        class="opacity-50"
+        class="opacity-45"
       />
     </svg>
   </div>

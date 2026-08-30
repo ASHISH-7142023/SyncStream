@@ -233,30 +233,31 @@ const RegisterPage: React.FC = () => {
 
             {/* Glowing Orbit Rings (Connecting floating badges) */}
             <div className="absolute inset-0 pointer-events-none overflow-visible -z-10">
-              <svg className="w-full h-full overflow-visible opacity-50 animate-[spin_120s_linear_infinite]" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <svg className="w-full h-full overflow-visible opacity-60" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="orbit-gradient-register" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#8b5cf6" />
+                    <stop offset="50%" stopColor="#10b981" />
+                    <stop offset="100%" stopColor="#3b82f6" />
+                  </linearGradient>
+                </defs>
                 {/* Outer Orbit connecting the badges */}
-                <ellipse 
-                  cx="50" 
-                  cy="50" 
-                  rx="57" 
-                  ry="54" 
+                <path 
+                  d="M -5 50 Q 50 -15 105 33.3 Q 110 85 33.3 103 Q 5 95 -5 50 Z" 
                   fill="none" 
-                  stroke="#8b5cf6" 
+                  stroke="url(#orbit-gradient-register)" 
                   strokeWidth="0.3" 
                   strokeDasharray="1.5 1.5"
-                  className="opacity-75"
+                  className="opacity-80"
                 />
                 {/* Inner Orbit for depth */}
-                <ellipse 
-                  cx="50" 
-                  cy="50" 
-                  rx="48" 
-                  ry="45" 
+                <path 
+                  d="M 2 48 Q 50 -5 98 36 Q 92 80 35 97 Q 12 85 2 48 Z" 
                   fill="none" 
                   stroke="#10b981" 
                   strokeWidth="0.2" 
                   strokeDasharray="3 2"
-                  className="opacity-50"
+                  className="opacity-45"
                 />
               </svg>
             </div>
