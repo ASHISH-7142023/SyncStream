@@ -334,6 +334,70 @@ const LandingPage: React.FC = () => {
                         <p className="text-xs text-gray-300 mt-0.5">Can't wait to see this in production! 🔥</p>
                       </div>
                     </div>
+
+                    {/* Log 5 */}
+                    <div className="flex gap-2.5 items-start text-left">
+                      <img 
+                        src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&h=100&q=80" 
+                        alt="Alex" 
+                        className="w-8 h-8 rounded-full object-cover border border-white/5 shrink-0"
+                      />
+                      <div>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-xs text-white">Alex Johnson</span>
+                          <span className="text-[9px] text-gray-500">10:35 AM</span>
+                        </div>
+                        <p className="text-xs text-gray-300 mt-0.5">I've also updated the documentation in the `#help-support` channel.</p>
+                      </div>
+                    </div>
+
+                    {/* Log 6 */}
+                    <div className="flex gap-2.5 items-start text-left">
+                      <img 
+                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&h=100&q=80" 
+                        alt="Sarah" 
+                        className="w-8 h-8 rounded-full object-cover border border-white/5 shrink-0"
+                      />
+                      <div>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-xs text-white">Sarah Wilson</span>
+                          <span className="text-[9px] text-gray-500">10:36 AM</span>
+                        </div>
+                        <p className="text-xs text-gray-300 mt-0.5">Great, I will review the security compliance checklist next.</p>
+                      </div>
+                    </div>
+
+                    {/* Log 7 */}
+                    <div className="flex gap-2.5 items-start text-left">
+                      <img 
+                        src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&h=100&q=80" 
+                        alt="Michael" 
+                        className="w-8 h-8 rounded-full object-cover border border-white/5 shrink-0"
+                      />
+                      <div>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-xs text-white">Michael Chen</span>
+                          <span className="text-[9px] text-gray-500">10:38 AM</span>
+                        </div>
+                        <p className="text-xs text-gray-300 mt-0.5">The new UI looks super clean. The animations are so smooth!</p>
+                      </div>
+                    </div>
+
+                    {/* Log 8 */}
+                    <div className="flex gap-2.5 items-start text-left">
+                      <img 
+                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100&q=80" 
+                        alt="David" 
+                        className="w-8 h-8 rounded-full object-cover border border-white/5 shrink-0"
+                      />
+                      <div>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-xs text-white">David Brown</span>
+                          <span className="text-[9px] text-gray-500">10:39 AM</span>
+                        </div>
+                        <p className="text-xs text-gray-300 mt-0.5">Agreed, the dark obsidian theme is gorgeous.</p>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Input block */}
