@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 
 const LandingPage: React.FC = () => {
@@ -63,37 +63,9 @@ const LandingPage: React.FC = () => {
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/10 blur-[120px]"></div>
       </div>
 
-      {/* Header bar */}
-      <header className="relative z-50 w-full border-b border-white/5 bg-[#050614]/80 backdrop-blur-md sticky top-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            {/* Logo */}
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
-              <SyncStreamLogo className="w-8 h-8" />
-              <img src="/name.png" alt="SyncStream" className="h-7 w-32 object-contain" />
-            </div>
-            
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center gap-8">
-              <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#features">Features</a>
-              <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#how">How It Works</a>
-              <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#pricing">Pricing</a>
-              <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#about">About Us</a>
-              <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#docs">Docs</a>
-            </nav>
-
-            {/* Header action buttons */}
-            <div className="hidden md:flex items-center gap-4">
-              <Link to="/login" className="text-sm font-medium text-gray-300 hover:text-white px-4 py-2 rounded-lg border border-white/10 hover:border-white/20 transition-all">Login</Link>
-              <Link to="/register" className="text-sm font-medium text-white bg-[#7C3AED] hover:bg-[#6D28D9] px-5 py-2.5 rounded-lg transition-all shadow-[0_0_15px_rgba(124,58,237,0.5)]">Get Started Free</Link>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Main hero space */}
       <main className="flex-grow relative z-10">
-        <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-12 pt-20 pb-24 text-left">
+        <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-12 pt-8 pb-24 text-left">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8 items-center">
             
             {/* Hero Left content block */}
