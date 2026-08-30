@@ -17,6 +17,7 @@ interface RoomDetails {
   name: string;
   description?: string;
   isPrivate?: boolean;
+  members?: string[];
 }
 
 const RoomChatPage: React.FC = () => {
@@ -24,14 +25,13 @@ const RoomChatPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { 
-    connectionStatus, messages, typingUsers,
+    connectionStatus, messages, typingUsers, presenceUsers,
     joinRoom, leaveRoom, sendMessage, sendTyping, loadMessages
   } = useSocket();
 
   const [room, setRoom] = useState<RoomDetails | null>(null);
   const [inputText, setInputText] = useState('');
   const [loadingRoom, setLoadingRoom] = useState(true);
-  const [memberList, setMemberList] = useState<Member[]>([]);
   const [pinnedClosed, setPinnedClosed] = useState(false);
   const [showMembersSidebar, setShowMembersSidebar] = useState(true);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
@@ -70,9 +70,6 @@ const RoomChatPage: React.FC = () => {
         const res = await api.get(`/api/rooms/${roomId}`);
         setRoom(res.data);
         
-        const mems = await api.get(`/api/rooms/${roomId}/members`);
-        setMemberList(mems.data);
-
         joinRoom(roomId);
         loadMessages(roomId);
       } catch (err) {
@@ -152,7 +149,16 @@ const RoomChatPage: React.FC = () => {
     });
   };
 
-  const onlineMembers = memberList.filter(m => m.status === 'ONLINE' || !m.status);
+  const memberList: Member[] = (room?.members || []).map((userId) => {
+    const presence = presenceUsers[userId];
+    return {
+      id: userId,
+      username: presence?.username || `User_${userId.substring(0, 4)}`,
+      status: presence?.status || 'OFFLINE',
+    };
+  });
+
+  const onlineMembers = memberList.filter(m => m.status === 'ONLINE');
   const awayMembers = memberList.filter(m => m.status === 'AWAY');
   const offlineMembers = memberList.filter(m => m.status === 'OFFLINE');
 
