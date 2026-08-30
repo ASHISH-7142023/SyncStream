@@ -95,7 +95,7 @@ const RegisterPage: React.FC = () => {
           </div>
 
           {/* Feature Image Placeholder */}
-          <div className="relative w-full max-w-xl mx-auto lg:mx-0 my-8">
+          <div className="relative z-10 w-full max-w-xl mx-auto lg:mx-0 my-8">
             {/* Mock App UI Container */}
             <div className="glass-panel rounded-2xl p-4 w-full transform -rotate-2 hover:rotate-0 transition-transform duration-500 shadow-2xl shadow-black/50 text-left relative z-10">
               {/* Header / Sidebar Row */}
