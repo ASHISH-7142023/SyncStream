@@ -153,11 +153,25 @@ const LandingPage: React.FC = () => {
               <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-[#7C3AED]/20 border border-[#7C3AED]/30 flex items-center justify-center text-white shadow-lg shadow-[#7C3AED]/20 animate-bounce z-20 select-none">
                 💬
               </div>
+              <div className="absolute -left-6 top-1/2 w-6 h-px border-t border-dashed border-[#7C3AED]/60 -translate-x-full -translate-y-1/2 z-10 pointer-events-none">
+                <div className="absolute left-0 top-0 w-1.5 h-1.5 bg-[#7C3AED] rounded-full -translate-x-1/2 -translate-y-1/2 shadow-[0_0_8px_#7C3AED] animate-ping" />
+                <div className="absolute right-0 top-0 w-1.5 h-1.5 bg-[#7C3AED] rounded-full translate-x-1/2 -translate-y-1/2 shadow-[0_0_8px_#7C3AED]" />
+              </div>
+
               <div className="absolute -right-6 top-1/3 w-12 h-12 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center text-green-400 shadow-lg shadow-green-500/20 animate-pulse z-20 select-none">
                 ⚡
               </div>
+              <div className="absolute -right-6 top-1/3 w-6 h-px border-t border-dashed border-green-500/60 translate-x-full -translate-y-1/2 z-10 pointer-events-none">
+                <div className="absolute left-0 top-0 w-1.5 h-1.5 bg-green-500 rounded-full -translate-x-1/2 -translate-y-1/2 shadow-[0_0_8px_#22c55e]" />
+                <div className="absolute right-0 top-0 w-1.5 h-1.5 bg-green-500 rounded-full translate-x-1/2 -translate-y-1/2 shadow-[0_0_8px_#22c55e] animate-ping" />
+              </div>
+
               <div className="absolute bottom-[-24px] left-1/3 w-12 h-12 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-lg shadow-blue-500/20 animate-bounce z-20 select-none" style={{ animationDelay: '0.5s' }}>
                 🛡️
+              </div>
+              <div className="absolute bottom-0 left-1/3 w-px h-6 border-l border-dashed border-blue-500/60 translate-y-full -translate-x-1/2 z-10 pointer-events-none">
+                <div className="absolute left-0 top-0 w-1.5 h-1.5 bg-blue-500 rounded-full -translate-x-1/2 -translate-y-1/2 shadow-[0_0_8px_#3b82f6]" />
+                <div className="absolute left-0 bottom-0 w-1.5 h-1.5 bg-blue-500 rounded-full -translate-x-1/2 translate-y-1/2 shadow-[0_0_8px_#3b82f6] animate-ping" />
               </div>
 
               <div className="relative w-full rounded-2xl glass-panel shadow-2xl overflow-hidden flex flex-col md:flex-row z-10">
