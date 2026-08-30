@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 
 const LandingPage: React.FC = () => {
@@ -63,9 +63,37 @@ const LandingPage: React.FC = () => {
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/10 blur-[120px]"></div>
       </div>
 
+      {/* Header bar */}
+      <header className="relative z-50 w-full border-b border-white/5 bg-[#050614]/80 backdrop-blur-md sticky top-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            {/* Logo */}
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+              <SyncStreamLogo className="w-8 h-8" />
+              <img src="/name.png" alt="SyncStream" className="h-7 w-32 object-contain" />
+            </div>
+            
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex items-center gap-8">
+              <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#features">Features</a>
+              <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#how">How It Works</a>
+              <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#pricing">Pricing</a>
+              <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#about">About Us</a>
+              <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#docs">Docs</a>
+            </nav>
+
+            {/* Header action buttons */}
+            <div className="hidden md:flex items-center gap-4">
+              <Link to="/login" className="text-sm font-medium text-gray-300 hover:text-white px-4 py-2 rounded-lg border border-white/10 hover:border-white/20 transition-all">Login</Link>
+              <Link to="/register" className="text-sm font-medium text-white bg-[#7C3AED] hover:bg-[#6D28D9] px-5 py-2.5 rounded-lg transition-all shadow-[0_0_15px_rgba(124,58,237,0.5)]">Get Started Free</Link>
+            </div>
+          </div>
+        </div>
+      </header>
+
       {/* Main hero space */}
       <main className="flex-grow relative z-10">
-        <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-12 pt-8 pb-24 text-left">
+        <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-12 pt-20 pb-24 text-left">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8 items-center">
             
             {/* Hero Left content block */}
@@ -371,15 +399,15 @@ const LandingPage: React.FC = () => {
         </div>
 
         {/* Feature Grid */}
-        <div id="features" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+        <div id="features" className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-12 mt-32">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((f, i) => (
-              <div key={i} className="glass-panel p-6 rounded-2xl flex flex-col items-center text-center hover:bg-white/5 transition-colors group">
-                <div className="w-14 h-14 rounded-2xl bg-[#0b1326] border border-white/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-[#7C3AED]">
+              <div key={i} className="glass-panel p-8 rounded-2xl flex flex-col items-start text-left hover:bg-white/5 transition-all duration-300 group hover:-translate-y-1">
+                <div className="w-12 h-12 rounded-xl bg-[#7C3AED]/10 border border-[#7C3AED]/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform text-[#a78bfa]">
                   {f.icon}
                 </div>
-                <h3 className="text-white text-sm font-semibold mb-2">{f.title}</h3>
-                <p className="text-xs text-gray-400 leading-relaxed">{f.desc}</p>
+                <h3 className="text-white text-lg font-semibold mb-3">{f.title}</h3>
+                <p className="text-sm text-gray-400 leading-relaxed">{f.desc}</p>
               </div>
             ))}
           </div>
