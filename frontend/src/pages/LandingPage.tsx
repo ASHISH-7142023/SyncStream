@@ -147,7 +147,7 @@ const LandingPage: React.FC = () => {
             </div>            
             
             {/* Hero Right: Product chat preview mockup */}
-            <div className="relative w-full max-w-[950px] xl:max-w-[1150px] 2xl:max-w-[1300px] lg:col-span-7 lg:ml-auto lg:translate-x-8 xl:translate-x-16">
+            <div className="relative w-full max-w-[950px] xl:max-w-[1150px] 2xl:max-w-[1300px] lg:col-span-7 lg:ml-auto lg:-translate-x-4 xl:-translate-x-8">
               
               {/* Glowing Orbit Rings (Connecting floating badges) */}
               <div className="absolute inset-0 pointer-events-none overflow-visible -z-10">
