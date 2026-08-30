@@ -163,7 +163,7 @@ const LandingPage: React.FC = () => {
               <div className="relative w-full rounded-2xl glass-panel shadow-2xl overflow-hidden flex flex-col md:flex-row z-10">
                 
                 {/* Mockup Sidebar */}
-                <div className="w-full md:w-64 bg-[#0b1326]/80 border-r border-white/5 flex flex-col h-[500px]">
+                <div className="w-full md:w-64 bg-[#0b1326]/85 border-r border-white/5 flex flex-col h-[520px]">
                   {/* Sidebar Header */}
                   <div className="p-4 flex items-center justify-between border-b border-white/5">
                     <div className="flex items-center gap-2">
@@ -200,10 +200,10 @@ const LandingPage: React.FC = () => {
                       </div>
                       <div className="flex items-center justify-between px-3 py-1.5 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white text-xs font-medium transition-colors cursor-pointer">
                         <div className="flex items-center gap-2">
-                          <span className="text-[#7C3AED]">#</span> general
+                          <span className="text-[#9ca3af]">#</span> general
                         </div>
                       </div>
-                      <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-[#7C3AED]/20 text-white text-xs font-medium">
+                      <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-[#7C3AED]/20 text-white text-xs font-semibold">
                         <div className="flex items-center gap-2">
                           <span className="text-[#c4b5fd]">#</span> developers
                         </div>
@@ -211,12 +211,22 @@ const LandingPage: React.FC = () => {
                       </div>
                       <div className="flex items-center justify-between px-3 py-1.5 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white text-xs font-medium transition-colors cursor-pointer">
                         <div className="flex items-center gap-2">
-                          <span className="text-gray-600">#</span> design
+                          <span className="text-gray-500">#</span> design
                         </div>
                       </div>
                       <div className="flex items-center justify-between px-3 py-1.5 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white text-xs font-medium transition-colors cursor-pointer">
                         <div className="flex items-center gap-2">
-                          <span className="text-gray-600">#</span> random
+                          <span className="text-gray-500">#</span> random
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between px-3 py-1.5 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white text-xs font-medium transition-colors cursor-pointer">
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500">#</span> announcements
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between px-3 py-1.5 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white text-xs font-medium transition-colors cursor-pointer">
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500">#</span> help-support
                         </div>
                       </div>
                     </div>
@@ -225,34 +235,49 @@ const LandingPage: React.FC = () => {
                   {/* Sidebar Footer User profile */}
                   <div className="p-3 border-t border-white/5 bg-[#080d1a] flex items-center justify-between">
                     <div className="flex items-center gap-2 min-w-0">
-                      <div className="w-8 h-8 rounded-full bg-[#7C3AED]/20 text-white flex items-center justify-center font-bold text-xs select-none">
-                        AJ
-                      </div>
+                      <img 
+                        src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&h=100&q=80" 
+                        alt="Alex" 
+                        className="w-8 h-8 rounded-full object-cover border border-white/10 shrink-0"
+                      />
                       <div className="flex flex-col min-w-0 text-left">
                         <span className="text-xs font-medium text-white truncate">Alex Johnson</span>
-                        <span className="text-[9px] text-green-400 flex items-center gap-0.5"><span className="w-1 h-1 rounded-full bg-green-400"></span> Online</span>
+                        <span className="text-[9px] text-green-400 flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500"></span> Online</span>
                       </div>
                     </div>
+                    <button className="text-gray-400 hover:text-white transition-colors cursor-pointer">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5"></path></svg>
+                    </button>
                   </div>
                 </div>
 
                 {/* Mockup Chat pane */}
-                <div className="flex-1 flex flex-col justify-between h-[500px]">
+                <div className="flex-grow flex flex-col justify-between h-[520px]">
                   {/* Chat pane header */}
                   <div className="p-4 border-b border-white/5 flex items-center justify-between bg-[#0b1326]/50">
                     <div className="flex flex-col text-left">
-                      <span className="text-xs font-semibold text-white"># developers</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs font-semibold text-white"># developers</span>
+                        <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
+                      </div>
                       <span className="text-[9px] text-gray-400">Development discussions</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-gray-400">
+                      <svg className="w-4 h-4 hover:text-white cursor-pointer transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
+                      <svg className="w-4 h-4 hover:text-white cursor-pointer transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20H2v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
+                      <svg className="w-4 h-4 hover:text-white cursor-pointer transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                     </div>
                   </div>
 
                   {/* Message logs */}
-                  <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+                  <div className="flex-grow overflow-y-auto custom-scrollbar p-4 space-y-4">
                     {/* Log 1 */}
                     <div className="flex gap-2.5 items-start text-left">
-                      <div className="w-8 h-8 rounded-full bg-[#7C3AED]/20 text-white flex items-center justify-center font-bold text-xs select-none shrink-0">
-                        AJ
-                      </div>
+                      <img 
+                        src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&h=100&q=80" 
+                        alt="Alex" 
+                        className="w-8 h-8 rounded-full object-cover border border-white/5 shrink-0"
+                      />
                       <div>
                         <div className="flex items-baseline gap-1.5">
                           <span className="font-semibold text-xs text-white">Alex Johnson</span>
@@ -264,9 +289,11 @@ const LandingPage: React.FC = () => {
 
                     {/* Log 2 */}
                     <div className="flex gap-2.5 items-start text-left">
-                      <div className="w-8 h-8 rounded-full bg-green-500/20 text-[#10B981] flex items-center justify-center font-bold text-xs select-none shrink-0">
-                        SW
-                      </div>
+                      <img 
+                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&h=100&q=80" 
+                        alt="Sarah" 
+                        className="w-8 h-8 rounded-full object-cover border border-white/5 shrink-0"
+                      />
                       <div>
                         <div className="flex items-baseline gap-1.5">
                           <span className="font-semibold text-xs text-white">Sarah Wilson</span>
@@ -275,51 +302,92 @@ const LandingPage: React.FC = () => {
                         <p className="text-xs text-gray-300 mt-0.5">Looks amazing! The performance is incredibly fast now.</p>
                       </div>
                     </div>
+
+                    {/* Log 3 */}
+                    <div className="flex gap-2.5 items-start text-left">
+                      <img 
+                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100&q=80" 
+                        alt="David" 
+                        className="w-8 h-8 rounded-full object-cover border border-white/5 shrink-0"
+                      />
+                      <div>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-xs text-white">David Brown</span>
+                          <span className="text-[9px] text-gray-500">10:32 AM</span>
+                        </div>
+                        <p className="text-xs text-gray-300 mt-0.5">Great work! The architecture is very solid and scalable.</p>
+                      </div>
+                    </div>
+
+                    {/* Log 4 */}
+                    <div className="flex gap-2.5 items-start text-left">
+                      <img 
+                        src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&h=100&q=80" 
+                        alt="Emily" 
+                        className="w-8 h-8 rounded-full object-cover border border-white/5 shrink-0"
+                      />
+                      <div>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-xs text-white">Emily Davis</span>
+                          <span className="text-[9px] text-gray-500">10:33 AM</span>
+                        </div>
+                        <p className="text-xs text-gray-300 mt-0.5">Can't wait to see this in production! 🔥</p>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Input block */}
-                  <div className="p-4 bg-[#0f1423] border-t border-white/5">
+                  <div className="p-4 bg-[#0f1423]/50 border-t border-white/5">
                     <div className="text-[10px] text-[#7C3AED] mb-1.5 text-left animate-pulse">Sarah Wilson is typing...</div>
                     <div className="relative flex items-center bg-[#09090B] rounded-lg border border-white/10 focus-within:border-[#7C3AED]/50 focus-within:ring-1 focus-within:ring-[#7C3AED]/50 transition-all">
-                      <input className="w-full bg-transparent border-none text-white placeholder-gray-500 focus:ring-0 py-2.5 pl-4 pr-16 rounded-lg text-xs" placeholder="Type a message..." type="text" readOnly />
-                      <button 
-                        onClick={() => alert("Sign up or log in to start typing and sending real-time messages!")}
-                        className="absolute right-2 bg-[#7C3AED] hover:bg-[#6D28D9] text-white p-1 rounded transition-colors cursor-pointer"
-                      >
-                        🚀
-                      </button>
+                      <input className="w-full bg-transparent border-none text-white placeholder-gray-500 focus:ring-0 py-2.5 pl-4 pr-20 rounded-lg text-xs" placeholder="Type a message..." type="text" readOnly />
+                      <div className="absolute right-2 flex items-center gap-1.5 text-gray-400">
+                        <svg className="w-4 h-4 hover:text-white transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
+                        <svg className="w-4 h-4 hover:text-white transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
+                        <button 
+                          onClick={() => alert("Sign up or log in to start typing and sending real-time messages!")}
+                          className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white p-1 rounded transition-colors cursor-pointer"
+                        >
+                          <svg fill="none" height="10" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" viewBox="0 0 24 24" width="10" xmlns="http://www.w3.org/2000/svg"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Mockup Members Sidebar */}
-                <div className="w-60 bg-[#0b1326]/80 border-l border-white/5 flex flex-col h-[500px] hidden xl:flex text-left">
+                <div className="w-60 bg-[#0b1326]/85 border-l border-white/5 flex flex-col h-[520px] hidden xl:flex text-left">
                   <div className="p-4 border-b border-white/5">
                     <span className="text-xs font-semibold text-white">MEMBERS — 8</span>
                   </div>
                   <div className="flex-1 overflow-y-auto p-3 space-y-3">
                     {[
-                      { name: 'Alex Johnson', status: 'Online', color: 'bg-green-500' },
-                      { name: 'Sarah Wilson', status: 'Online', color: 'bg-green-500' },
-                      { name: 'David Brown', status: 'Online', color: 'bg-green-500' },
-                      { name: 'Emily Davis', status: 'Away', color: 'bg-yellow-500' },
-                      { name: 'Michael Chen', status: 'Online', color: 'bg-green-500' },
-                      { name: 'Lisa Anderson', status: 'Offline', color: 'bg-gray-500' },
-                      { name: 'James Taylor', status: 'Offline', color: 'bg-gray-500' },
-                      { name: 'Rachel Kim', status: 'Offline', color: 'bg-gray-500' },
+                      { name: 'Alex Johnson', status: 'Online', color: 'bg-green-500', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&h=100&q=80' },
+                      { name: 'Sarah Wilson', status: 'Online', color: 'bg-green-500', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&h=100&q=80' },
+                      { name: 'David Brown', status: 'Online', color: 'bg-green-500', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100&q=80' },
+                      { name: 'Emily Davis', status: 'Away', color: 'bg-yellow-500', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&h=100&q=80' },
+                      { name: 'Michael Chen', status: 'Online', color: 'bg-green-500', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&h=100&q=80' },
+                      { name: 'Lisa Anderson', status: 'Offline', color: 'bg-gray-500', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&h=100&q=80' },
+                      { name: 'James Taylor', status: 'Offline', color: 'bg-gray-500', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&h=100&q=80' },
+                      { name: 'Rachel Kim', status: 'Offline', color: 'bg-gray-500', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&h=100&q=80' },
                     ].map((m, i) => (
                       <div key={i} className="flex items-center justify-between text-xs group">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-[#1b2336] flex items-center justify-center font-bold text-[9px] text-white">
-                            {m.name.slice(0, 2).toUpperCase()}
-                          </div>
+                          <img 
+                            src={m.avatar} 
+                            alt={m.name} 
+                            className="w-6 h-6 rounded-full object-cover border border-white/5"
+                          />
                           <div className="flex flex-col">
-                            <span className="text-white font-medium">{m.name}</span>
+                            <span className="text-white font-medium text-xs">{m.name}</span>
                             <span className="text-[9px] text-gray-500 flex items-center gap-1">
-                              <span className={`w-1 h-1 rounded-full ${m.color}`}></span> {m.status}
+                              <span className={`w-1.5 h-1.5 rounded-full ${m.color}`}></span> {m.status}
                             </span>
                           </div>
                         </div>
+                        <button className="text-gray-500 hover:text-white transition-colors cursor-pointer">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5"></path></svg>
+                        </button>
                       </div>
                     ))}
                   </div>
