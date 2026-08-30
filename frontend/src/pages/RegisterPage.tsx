@@ -95,11 +95,11 @@ const RegisterPage: React.FC = () => {
           </div>
 
           {/* Feature Image Placeholder */}
-          <div className="relative w-full max-w-lg mx-auto lg:mx-0 my-8">
+          <div className="relative w-full max-w-xl mx-auto lg:mx-0 my-8">
             {/* Mock App UI Container */}
             <div className="glass-panel rounded-2xl p-4 w-full transform -rotate-2 hover:rotate-0 transition-transform duration-500 shadow-2xl shadow-black/50 text-left relative z-10">
               {/* Header / Sidebar Row */}
-              <div className="flex gap-4 h-[320px]">
+              <div className="flex gap-4 h-[420px]">
                 
                 {/* Sidebar */}
                 <div className="w-1/3 flex flex-col justify-between border-r border-white/5 pr-4 shrink-0">
@@ -109,18 +109,27 @@ const RegisterPage: React.FC = () => {
                       <span className="text-sm font-bold text-white">SyncStream</span>
                     </div>
                     <div className="space-y-2">
-                      <div className="text-[10px] text-[#9ca3af] font-bold tracking-wider uppercase">Rooms</div>
-                      <div className="px-2 py-1.5 rounded-lg bg-[#6366f1]/20 text-white text-xs font-semibold flex items-center gap-2">
-                        <span className="text-[#818cf8]">#</span> general
+                      <div className="text-[10px] text-[#94a3b8] font-bold tracking-wider uppercase">Rooms</div>
+                      <div className="px-2 py-1.5 rounded-lg bg-[#8b5cf6]/20 text-white text-xs font-semibold flex items-center gap-2">
+                        <span className="text-[#a78bfa]">#</span> general
                       </div>
-                      {['developers', 'design', 'marketing', 'random'].map((name) => (
-                        <div key={name} className="px-2 py-1.5 rounded-lg hover:bg-white/5 text-[#9ca3af] text-xs flex items-center gap-2 transition-colors">
+                      {['developers', 'design', 'announcements', 'help-support'].map((name) => (
+                        <div key={name} className="px-2 py-1 rounded-lg hover:bg-white/5 text-[#94a3b8] text-xs flex items-center gap-2 transition-colors">
                           <span className="text-slate-600">#</span> {name}
                         </div>
                       ))}
-                      <div className="px-2 py-1.5 rounded-lg hover:bg-white/5 text-[#9ca3af]/70 text-xs flex items-center gap-2 transition-colors cursor-pointer">
-                        <span className="text-slate-600 text-sm font-semibold">+</span> Add Room
-                      </div>
+                    </div>
+                  </div>
+                  {/* User footer */}
+                  <div className="flex items-center gap-2 min-w-0 border-t border-white/5 pt-3">
+                    <img 
+                      src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&h=80&q=80" 
+                      alt="Alex" 
+                      className="w-7 h-7 rounded-full object-cover border border-white/10 shrink-0"
+                    />
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-[10px] font-medium text-white truncate">Alex Johnson</span>
+                      <span className="text-[8px] text-green-400 flex items-center gap-0.5"><span className="w-1 h-1 rounded-full bg-green-500"></span> Online</span>
                     </div>
                   </div>
                 </div>
@@ -131,83 +140,88 @@ const RegisterPage: React.FC = () => {
                   <div className="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
                     <div className="flex flex-col text-left min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[#9ca3af] font-bold">#</span>
+                        <span className="text-text-muted font-bold">#</span>
                         <span className="text-sm font-semibold text-white truncate">general</span>
                       </div>
-                      <span className="text-[10px] text-[#9ca3af] truncate">Company-wide updates</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-[#9ca3af]">
-                      <i className="fa-solid fa-magnifying-glass text-xs cursor-pointer hover:text-white transition-colors"></i>
-                      <i className="fa-solid fa-thumbtack text-xs cursor-pointer hover:text-white transition-colors"></i>
-                      <div className="flex items-center gap-1 text-xs cursor-pointer hover:text-white transition-colors">
-                        <i className="fa-solid fa-users text-xs"></i>
-                        <span className="text-[10px]">12</span>
-                      </div>
+                      <span className="text-[10px] text-text-muted truncate">Company-wide updates</span>
                     </div>
                   </div>
 
                   {/* Messages stream */}
-                  <div className="flex-1 overflow-y-auto py-3 space-y-4 pr-1 scrollbar-hide text-left">
+                  <div className="flex-grow overflow-y-auto py-3 space-y-4 pr-1 scrollbar-hide text-left">
                     {/* Message 1 */}
                     <div className="flex gap-2.5 items-start">
-                      <div className="w-8 h-8 rounded-full bg-[#6366f1]/20 text-white flex items-center justify-center font-bold text-base shrink-0 select-none">
-                        🦁
-                      </div>
+                      <img 
+                        src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&h=80&q=80" 
+                        alt="Alex" 
+                        className="w-7 h-7 rounded-full object-cover border border-white/5 shrink-0"
+                      />
                       <div>
                         <div className="flex items-baseline gap-1.5">
                           <span className="font-semibold text-xs text-white">Alex Johnson</span>
-                          <span className="text-[9px] text-[#9ca3af]">10:30 AM</span>
+                          <span className="text-[9px] text-[#94a3b8]">10:30 AM</span>
                         </div>
                         <p className="text-[11px] text-gray-200 mt-0.5">Hey team! Project update is now live.</p>
-                        <div className="mt-1 flex items-center gap-1">
-                          <span className="text-[9px] bg-[#12121a]/80 border border-white/5 px-2 py-0.5 rounded-full text-slate-300">🔥 12</span>
-                        </div>
                       </div>
                     </div>
 
                     {/* Message 2 */}
                     <div className="flex gap-2.5 items-start">
-                      <div className="w-8 h-8 rounded-full bg-[#10b981]/20 text-white flex items-center justify-center font-bold text-base shrink-0 select-none">
-                        🦄
-                      </div>
+                      <img 
+                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&h=80&q=80" 
+                        alt="Sarah" 
+                        className="w-7 h-7 rounded-full object-cover border border-white/5 shrink-0"
+                      />
                       <div>
                         <div className="flex items-baseline gap-1.5">
                           <span className="font-semibold text-xs text-white">Sarah Wilson</span>
-                          <span className="text-[9px] text-[#9ca3af]">10:31 AM</span>
+                          <span className="text-[9px] text-[#94a3b8]">10:31 AM</span>
                         </div>
                         <p className="text-[11px] text-gray-200 mt-0.5">Looks amazing! Great work everyone 🚀</p>
-                        <div className="mt-1 flex items-center gap-1">
-                          <span className="text-[9px] bg-[#12121a]/80 border border-white/5 px-2 py-0.5 rounded-full text-slate-300">👏 8</span>
-                        </div>
                       </div>
                     </div>
 
                     {/* Message 3 */}
                     <div className="flex gap-2.5 items-start">
-                      <div className="w-8 h-8 rounded-full bg-orange-500/20 text-white flex items-center justify-center font-bold text-base shrink-0 select-none">
-                        🐼
-                      </div>
+                      <img 
+                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=80" 
+                        alt="David" 
+                        className="w-7 h-7 rounded-full object-cover border border-white/5 shrink-0"
+                      />
                       <div>
                         <div className="flex items-baseline gap-1.5">
                           <span className="font-semibold text-xs text-white">David Brown</span>
-                          <span className="text-[9px] text-[#9ca3af]">10:32 AM</span>
+                          <span className="text-[9px] text-[#94a3b8]">10:32 AM</span>
                         </div>
                         <p className="text-[11px] text-gray-200 mt-0.5">Excited to see this in production!</p>
-                        <div className="mt-1 flex items-center gap-1">
-                          <span className="text-[9px] bg-[#12121a]/80 border border-white/5 px-2 py-0.5 rounded-full text-slate-300">🚀 6</span>
+                      </div>
+                    </div>
+
+                    {/* Message 4 */}
+                    <div className="flex gap-2.5 items-start">
+                      <img 
+                        src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=80&h=80&q=80" 
+                        alt="Emily" 
+                        className="w-7 h-7 rounded-full object-cover border border-white/5 shrink-0"
+                      />
+                      <div>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-semibold text-xs text-white">Emily Davis</span>
+                          <span className="text-[9px] text-[#94a3b8]">10:33 AM</span>
                         </div>
+                        <p className="text-[11px] text-gray-200 mt-0.5">Can't wait to see this in production! 🔥</p>
                       </div>
                     </div>
                   </div>
 
                   {/* Bottom composer input */}
-                  <div className="h-9 rounded-xl bg-[#12121a] border border-white/5 w-full flex items-center justify-between px-3 shrink-0">
-                    <span className="text-[11px] text-[#9ca3af]">Type a message...</span>
-                    <div className="flex items-center gap-1.5 text-[#9ca3af]">
-                      <i className="fa-solid fa-paperclip text-xs hover:text-white transition-colors cursor-pointer"></i>
-                      <i className="fa-regular fa-face-smile text-xs hover:text-white transition-colors cursor-pointer"></i>
-                      <div className="w-6 h-6 rounded-lg bg-[#6366f1] text-white flex items-center justify-center cursor-pointer hover:bg-[#4f46e5] transition-colors">
-                        <svg fill="none" height="10" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" viewBox="0 0 24 24" width="10" xmlns="http://www.w3.org/2000/svg"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                  <div className="h-9 rounded-xl bg-[#252d41]/60 border border-white/5 w-full flex items-center justify-between px-3 shrink-0">
+                    <span className="text-[11px] text-[#94a3b8]">Type a message...</span>
+                    <div className="flex items-center gap-1.5 text-[#94a3b8]">
+                      <svg className="w-3.5 h-3.5 hover:text-white transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                      <svg className="w-3.5 h-3.5 hover:text-white transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                      <div className="w-6 h-6 rounded-lg bg-[#8b5cf6] text-white flex items-center justify-center cursor-pointer hover:bg-[#7c3aed] transition-colors">
+                        <svg fill="none" height="10" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" width="10" xmlns="http://www.w3.org/2000/svg"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                       </div>
                     </div>
                   </div>
@@ -218,13 +232,13 @@ const RegisterPage: React.FC = () => {
             </div>
 
             {/* Floating Border Badges */}
-            <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#6366f1]/20 border border-[#6366f1]/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(99,102,241,0.3)] animate-bounce select-none z-20">
+            <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#8b5cf6]/20 border border-[#8b5cf6]/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(139,92,246,0.3)] animate-bounce select-none z-20">
               💬
             </div>
             <div className="absolute -right-6 top-1/3 w-12 h-12 bg-[#10b981]/20 border border-[#10b981]/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(16,185,129,0.3)] animate-pulse select-none z-20">
               ⚡
             </div>
-            <div className="absolute -bottom-6 left-1/3 w-12 h-12 bg-blue-500/20 border border-blue-500/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(59,130,246,0.3)] select-none z-20">
+            <div className="absolute -bottom-6 left-1/3 w-12 h-12 bg-[#3b82f6]/20 border border-[#3b82f6]/30 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(59,130,246,0.3)] select-none z-20">
               🛡️
             </div>
 
