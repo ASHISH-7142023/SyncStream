@@ -93,7 +93,7 @@ const LandingPage: React.FC = () => {
 
       {/* Main hero space */}
       <main className="flex-grow relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 text-left">
+        <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-12 pt-20 pb-24 text-left">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-8 items-center">
             
             {/* Hero Left content block */}
@@ -147,7 +147,7 @@ const LandingPage: React.FC = () => {
             </div>            
             
             {/* Hero Right: Product chat preview mockup */}
-            <div className="relative w-full max-w-[800px] xl:max-w-[900px] lg:ml-auto lg:translate-x-12 xl:translate-x-24">
+            <div className="relative w-full max-w-[900px] xl:max-w-[1050px] 2xl:max-w-[1200px] lg:ml-auto lg:translate-x-6 xl:translate-x-12">
               
               {/* Floating Badges */}
               <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-[#7C3AED]/20 border border-[#7C3AED]/30 flex items-center justify-center text-white shadow-lg shadow-[#7C3AED]/20 animate-bounce z-20 select-none">
@@ -163,7 +163,7 @@ const LandingPage: React.FC = () => {
               <div className="relative w-full rounded-2xl glass-panel shadow-2xl overflow-hidden flex flex-col md:flex-row z-10">
                 
                 {/* Mockup Sidebar */}
-                <div className="w-full md:w-64 bg-[#0b1326]/85 border-r border-white/5 flex flex-col h-[520px]">
+                <div className="w-full md:w-64 bg-[#0b1326]/85 border-r border-white/5 flex flex-col h-[600px]">
                   {/* Sidebar Header */}
                   <div className="p-4 flex items-center justify-between border-b border-white/5">
                     <div className="flex items-center gap-2">
@@ -252,7 +252,7 @@ const LandingPage: React.FC = () => {
                 </div>
 
                 {/* Mockup Chat pane */}
-                <div className="flex-grow flex flex-col justify-between h-[520px]">
+                <div className="flex-grow flex flex-col justify-between h-[600px]">
                   {/* Chat pane header */}
                   <div className="p-4 border-b border-white/5 flex items-center justify-between bg-[#0b1326]/50">
                     <div className="flex flex-col text-left">
@@ -356,7 +356,7 @@ const LandingPage: React.FC = () => {
                 </div>
 
                 {/* Mockup Members Sidebar */}
-                <div className="w-60 bg-[#0b1326]/85 border-l border-white/5 flex flex-col h-[520px] hidden xl:flex text-left">
+                <div className="w-60 bg-[#0b1326]/85 border-l border-white/5 flex flex-col h-[600px] hidden xl:flex text-left">
                   <div className="p-4 border-b border-white/5">
                     <span className="text-xs font-semibold text-white">MEMBERS — 8</span>
                   </div>
