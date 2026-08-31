@@ -298,7 +298,7 @@ const RoomChatPage: React.FC = () => {
           <div className="flex items-center gap-3">
             <div className="relative">
               <div className="w-9 h-9 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-xl text-white select-none">
-                {getAvatarForUser(user ? user.username : 'Alex Johnson')}
+                {getAvatarForUser(user ? user.username : 'Alex Johnson', presenceUsers)}
               </div>
               <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-[#151723] rounded-full"></div>
             </div>
@@ -353,7 +353,7 @@ const RoomChatPage: React.FC = () => {
             <div className="flex items-center -space-x-2">
               {onlineMembers.slice(0, 4).map((m) => (
                 <div key={m.id} className="w-7 h-7 rounded-full border-2 border-[#0f111a] bg-[#334155] flex items-center justify-center text-sm select-none" title={m.username}>
-                  {getAvatarForUser(m.username)}
+                  {getAvatarForUser(m.username, presenceUsers)}
                 </div>
               ))}
               {onlineMembers.length > 4 && (
@@ -431,7 +431,7 @@ const RoomChatPage: React.FC = () => {
                 )}
                 <div className="flex gap-4 group text-left">
                 <div className="w-10 h-10 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-xl shrink-0 select-none mt-1">
-                  {getAvatarForUser(msg.sender || 'US')}
+                  {getAvatarForUser(msg.sender || 'US', presenceUsers)}
                 </div>
                 <div className="flex-grow min-w-0">
                   <div className="flex items-baseline gap-2 mb-1">
@@ -645,7 +645,7 @@ const RoomChatPage: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <div className="relative">
                           <div className="w-8 h-8 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-lg select-none">
-                            {getAvatarForUser(m.username)}
+                            {getAvatarForUser(m.username, presenceUsers)}
                           </div>
                           <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-[#151723] rounded-full"></span>
                         </div>
@@ -685,7 +685,7 @@ const RoomChatPage: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <div className="relative">
                           <div className="w-8 h-8 rounded-full bg-[#3b4155]/20 flex items-center justify-center text-lg select-none">
-                            {getAvatarForUser(m.username)}
+                            {getAvatarForUser(m.username, presenceUsers)}
                           </div>
                           <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-away border-2 border-[#151723] rounded-full"></span>
                         </div>
@@ -711,7 +711,7 @@ const RoomChatPage: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <div className="relative">
                           <div className="w-8 h-8 rounded-full bg-[#1a1d2d]/20 flex items-center justify-center text-lg select-none">
-                            {getAvatarForUser(m.username)}
+                            {getAvatarForUser(m.username, presenceUsers)}
                           </div>
                           <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-offline border-2 border-[#151723] rounded-full"></span>
                         </div>

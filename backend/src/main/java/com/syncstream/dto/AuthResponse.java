@@ -9,4 +9,6 @@ public class AuthResponse {
     private String token;
     private String userId;
     private String username;
+    private String gender;
+    private String avatar;
 }

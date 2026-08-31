@@ -26,13 +26,14 @@ public class PresenceService {
     private UserRepository userRepository;
 
     public UserPresenceDto updateUserStatus(String userId, PresenceStatus status) {
-        String username = userRepository.findById(userId)
-                .map(User::getUsername)
-                .orElse("Unknown");
+        User user = userRepository.findById(userId).orElse(null);
+        String username = user != null ? user.getUsername() : "Unknown";
+        String avatar = user != null ? user.getAvatar() : null;
 
         UserPresenceDto presence = UserPresenceDto.builder()
                 .userId(userId)
                 .username(username)
+                .avatar(avatar)
                 .serverId(serverId)
                 .status(status)
                 .lastSeen(Instant.now())
@@ -52,13 +53,14 @@ public class PresenceService {
         String key = PRESENCE_KEY_PREFIX + userId;
         UserPresenceDto presence = (UserPresenceDto) redisTemplate.opsForValue().get(key);
         if (presence == null) {
-            String username = userRepository.findById(userId)
-                    .map(User::getUsername)
-                    .orElse("Unknown");
+            User user = userRepository.findById(userId).orElse(null);
+            String username = user != null ? user.getUsername() : "Unknown";
+            String avatar = user != null ? user.getAvatar() : null;
             
             return UserPresenceDto.builder()
                     .userId(userId)
                     .username(username)
+                    .avatar(avatar)
                     .serverId(null)
                     .status(PresenceStatus.OFFLINE)
                     .lastSeen(Instant.EPOCH)

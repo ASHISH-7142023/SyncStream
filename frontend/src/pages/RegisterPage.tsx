@@ -4,6 +4,8 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 
+import { getAvatarsForGender } from '../utils/avatarHelper';
+
 const RegisterPage: React.FC = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -54,8 +56,10 @@ const RegisterPage: React.FC = () => {
     setErrorMsg('');
     setSubmitting(true);
     try {
-      await register(username, password);
-      localStorage.setItem('user-gender', gender);
+      const avatars = getAvatarsForGender(gender);
+      const defaultAvatar = avatars[Math.floor(Math.random() * avatars.length)].emoji;
+      
+      await register(username, password, gender, defaultAvatar);
       // Automatically redirect to login or dashboard
       navigate('/dashboard');
     } catch (error: any) {

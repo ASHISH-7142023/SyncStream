@@ -18,6 +18,7 @@ public class UserPresenceDto implements Serializable {
     
     private String userId;
     private String username;
+    private String avatar;
     private String serverId;
     private PresenceStatus status;
     private Instant lastSeen;

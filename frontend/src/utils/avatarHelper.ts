@@ -43,8 +43,16 @@ export const getAvatarsForGender = (gender: string): AvatarItem[] => {
 /**
  * Resolves funny emoji avatar character based on username and gender.
  */
-export const getAvatarForUser = (username: string): string => {
+export const getAvatarForUser = (username: string, presenceUsers?: Record<string, any>): string => {
   if (!username) return '👽';
+
+  // Check if we have a live presence with a custom avatar in the current room context
+  if (presenceUsers) {
+    const presence = Object.values(presenceUsers).find((p: any) => p.username === username);
+    if (presence && presence.avatar) {
+      return presence.avatar;
+    }
+  }
 
   // Check if it's the current user logged in
   const storedUser = localStorage.getItem('username');

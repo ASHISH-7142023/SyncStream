@@ -32,6 +32,10 @@ public class User implements UserDetails {
 
     private Instant createdAt;
 
+    private String gender;
+
+    private String avatar;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));

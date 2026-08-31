@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getAvatarForUser, getAvatarsForGender } from '../utils/avatarHelper';
+import api from '../services/api';
 
 interface Room {
   id: string;
@@ -41,7 +42,7 @@ const ProfilePage: React.FC = () => {
   const [gender, setGender] = useState(localStorage.getItem('user-gender') || 'male');
   const [selectedAvatar, setSelectedAvatar] = useState(localStorage.getItem('user-avatar') || '🦁');
 
-  const handleGenderChange = (newGender: string) => {
+  const handleGenderChange = async (newGender: string) => {
     setGender(newGender);
     localStorage.setItem('user-gender', newGender);
     const defaultAvatars: { [key: string]: string } = {
@@ -52,11 +53,23 @@ const ProfilePage: React.FC = () => {
     const defAv = defaultAvatars[newGender] || '👽';
     setSelectedAvatar(defAv);
     localStorage.setItem('user-avatar', defAv);
+
+    try {
+      await api.put('/api/auth/profile', { gender: newGender, avatar: defAv });
+    } catch (e) {
+      console.error('Failed to update gender on backend', e);
+    }
   };
 
-  const handleAvatarChange = (newAvatar: string) => {
+  const handleAvatarChange = async (newAvatar: string) => {
     setSelectedAvatar(newAvatar);
     localStorage.setItem('user-avatar', newAvatar);
+
+    try {
+      await api.put('/api/auth/profile', { avatar: newAvatar });
+    } catch (e) {
+      console.error('Failed to update avatar on backend', e);
+    }
   };
 
   const handleThemeChange = (newTheme: string) => {

@@ -13,4 +13,8 @@ public class RegisterRequest {
     @NotBlank(message = "Password cannot be blank")
     @Size(min = 6, max = 100, message = "Password must be at least 6 characters")
     private String password;
+
+    private String gender;
+
+    private String avatar;
 }

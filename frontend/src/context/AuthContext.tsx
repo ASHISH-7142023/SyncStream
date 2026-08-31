@@ -6,6 +6,8 @@ interface User {
   id: string;
   username: string;
   createdAt?: string;
+  gender?: string;
+  avatar?: string;
 }
 
 interface AuthContextType {
@@ -14,7 +16,7 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
   login: (username: string, password: string) => Promise<void>;
-  register: (username: string, password: string) => Promise<void>;
+  register: (username: string, password: string, gender: string, avatar: string) => Promise<void>;
   logout: () => void;
   clearError: () => void;
 }
@@ -35,6 +37,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           const response = await api.get('/api/auth/me');
           setUser(response.data);
           localStorage.setItem('username', response.data.username);
+          if (response.data.gender) localStorage.setItem('user-gender', response.data.gender);
+          if (response.data.avatar) localStorage.setItem('user-avatar', response.data.avatar);
           setToken(storedToken);
         } catch (err: any) {
           console.error("Token validation failed. Logging out.", err);
@@ -55,12 +59,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setError(null);
     try {
       const response = await api.post('/api/auth/login', { username, password });
-      const { token: receivedToken, userId, username: resUsername } = response.data;
+      const { token: receivedToken, userId, username: resUsername, gender, avatar } = response.data;
       
       localStorage.setItem('token', receivedToken);
       localStorage.setItem('username', resUsername);
+      if (gender) localStorage.setItem('user-gender', gender);
+      if (avatar) localStorage.setItem('user-avatar', avatar);
       setToken(receivedToken);
-      setUser({ id: userId, username: resUsername });
+      setUser({ id: userId, username: resUsername, gender, avatar });
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
       throw err;
@@ -69,17 +75,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const register = async (username: string, password: string) => {
+  const register = async (username: string, password: string, gender: string, avatar: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.post('/api/auth/register', { username, password });
+      const response = await api.post('/api/auth/register', { username, password, gender, avatar });
       const { token: receivedToken, userId, username: resUsername } = response.data;
       
       localStorage.setItem('token', receivedToken);
       localStorage.setItem('username', resUsername);
+      localStorage.setItem('user-gender', gender);
+      localStorage.setItem('user-avatar', avatar);
       setToken(receivedToken);
-      setUser({ id: userId, username: resUsername });
+      setUser({ id: userId, username: resUsername, gender, avatar });
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed. Username might be taken.');
       throw err;
