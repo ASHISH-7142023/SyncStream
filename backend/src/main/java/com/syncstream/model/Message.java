@@ -41,4 +41,8 @@ public class Message {
     private Instant createdAt;
 
     private Long sequenceNumber;
+
+    private String parentId;
+
+    private java.util.Map<String, java.util.List<String>> reactions = new java.util.HashMap<>();
 }

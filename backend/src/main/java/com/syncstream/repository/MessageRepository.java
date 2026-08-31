@@ -10,4 +10,5 @@ import java.util.List;
 public interface MessageRepository extends MongoRepository<Message, String> {
     Page<Message> findByRoomId(String roomId, Pageable pageable);
     List<Message> findByRoomIdAndSequenceNumberGreaterThanOrderBySequenceNumberAsc(String roomId, Long sequenceNumber);
+    List<Message> findByParentIdOrderByCreatedAtAsc(String parentId);
 }

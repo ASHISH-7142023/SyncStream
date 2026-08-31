@@ -16,6 +16,8 @@ export interface ChatMessage {
   messageType: 'TEXT' | 'JOIN' | 'LEAVE' | 'SYSTEM';
   createdAt: string;
   sequenceNumber: number;
+  parentId?: string;
+  reactions?: Record<string, string[]>; // emoji -> array of usernames
   // Local state helper for message reliability
   status?: 'SENDING' | 'SENT' | 'FAILED';
   clientMessageId?: string;
@@ -36,7 +38,8 @@ interface SocketContextType {
   presenceUsers: Record<string, UserPresence>; // userId -> presence
   joinRoom: (roomId: string) => void;
   leaveRoom: (roomId: string) => void;
-  sendMessage: (roomId: string, content: string, clientMessageId: string) => void;
+  sendMessage: (roomId: string, content: string, clientMessageId: string, parentId?: string) => void;
+  sendReaction: (roomId: string, messageId: string, emoji: string, active: boolean) => void;
   sendTyping: (roomId: string, isTyping: boolean) => void;
   loadMessages: (roomId: string) => Promise<void>;
   hasMoreMessages: Record<string, boolean>;
@@ -180,12 +183,12 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             );
             
             if (duplicate) {
-              // Update status from SENDING to SENT for matching local messages
+              // Update status from SENDING to SENT for matching local messages or update reactions if it's the same msg
               return {
                 ...prev,
                 [roomId]: currentRoomMsgs.map((m) => {
-                  if (chatMsg.clientMessageId && m.clientMessageId === chatMsg.clientMessageId) {
-                    return { ...chatMsg, status: 'SENT' as const };
+                  if (m.sequenceNumber === chatMsg.sequenceNumber || (chatMsg.clientMessageId && m.clientMessageId === chatMsg.clientMessageId)) {
+                    return { ...chatMsg, status: 'SENT' as const }; // Always take the latest state from server (includes reactions)
                   }
                   return m;
                 }),
@@ -314,7 +317,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
-  const sendMessage = (roomId: string, content: string, clientMessageId: string) => {
+  const sendMessage = (roomId: string, content: string, clientMessageId: string, parentId?: string) => {
     if (!clientRef.current || connectionStatus !== 'CONNECTED') {
       // Append as failed message locally
       const failedMsg: ChatMessage = {
@@ -325,6 +328,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         messageType: 'TEXT',
         createdAt: new Date().toISOString(),
         sequenceNumber: -1,
+        parentId,
         status: 'FAILED',
         clientMessageId,
       };
@@ -345,6 +349,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       messageType: 'TEXT',
       createdAt: new Date().toISOString(),
       sequenceNumber: -1,
+      parentId,
       status: 'SENDING',
       clientMessageId,
     };
@@ -356,7 +361,16 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     clientRef.current.publish({
       destination: `/app/rooms/${roomId}/message`,
-      body: JSON.stringify({ content, clientMessageId }),
+      body: JSON.stringify({ content, clientMessageId, parentId }),
+    });
+  };
+
+  const sendReaction = (roomId: string, messageId: string, emoji: string, active: boolean) => {
+    if (!clientRef.current || connectionStatus !== 'CONNECTED') return;
+
+    clientRef.current.publish({
+      destination: `/app/rooms/${roomId}/reactions`,
+      body: JSON.stringify({ messageId, emoji, active }),
     });
   };
 
@@ -438,6 +452,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         joinRoom,
         leaveRoom,
         sendMessage,
+        sendReaction,
         sendTyping,
         loadMessages,
         hasMoreMessages,

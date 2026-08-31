@@ -166,4 +166,18 @@ public class RoomController {
 
         return ResponseEntity.ok(messageService.getMessagesAfter(roomId, seq));
     }
+
+    @GetMapping("/{roomId}/messages/{messageId}/replies")
+    public ResponseEntity<?> getReplies(
+            @PathVariable String roomId,
+            @PathVariable String messageId,
+            @AuthenticationPrincipal User user) {
+        
+        if (!roomService.isMember(roomId, user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "You must be a member of the room to view replies"));
+        }
+
+        return ResponseEntity.ok(messageService.getReplies(messageId));
+    }
 }

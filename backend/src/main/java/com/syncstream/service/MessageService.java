@@ -27,7 +27,7 @@ public class MessageService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    public Message saveMessage(String roomId, String senderId, String content, MessageType messageType) {
+    public Message saveMessage(String roomId, String senderId, String content, MessageType messageType, String parentId) {
         String senderName = userRepository.findById(senderId)
                 .map(User::getUsername)
                 .orElse("Unknown");
@@ -42,6 +42,8 @@ public class MessageService {
                 .messageType(messageType)
                 .createdAt(Instant.now())
                 .sequenceNumber(sequenceNumber)
+                .parentId(parentId)
+                .reactions(new java.util.HashMap<>())
                 .build();
 
         return messageRepository.save(message);
@@ -72,5 +74,45 @@ public class MessageService {
             }
         }
         return seq;
+    }
+
+    public List<Message> getReplies(String messageId) {
+        return messageRepository.findByParentIdOrderByCreatedAtAsc(messageId);
+    }
+
+    public Message addReaction(String messageId, String emoji, String username) {
+        return messageRepository.findById(messageId).map(message -> {
+            java.util.Map<String, List<String>> reactions = message.getReactions();
+            if (reactions == null) {
+                reactions = new java.util.HashMap<>();
+            }
+            List<String> users = reactions.getOrDefault(emoji, new java.util.ArrayList<>());
+            if (!users.contains(username)) {
+                users.add(username);
+                reactions.put(emoji, users);
+                message.setReactions(reactions);
+                return messageRepository.save(message);
+            }
+            return message;
+        }).orElseThrow(() -> new IllegalArgumentException("Message not found"));
+    }
+
+    public Message removeReaction(String messageId, String emoji, String username) {
+        return messageRepository.findById(messageId).map(message -> {
+            java.util.Map<String, List<String>> reactions = message.getReactions();
+            if (reactions != null && reactions.containsKey(emoji)) {
+                List<String> users = reactions.get(emoji);
+                if (users.remove(username)) {
+                    if (users.isEmpty()) {
+                        reactions.remove(emoji);
+                    } else {
+                        reactions.put(emoji, users);
+                    }
+                    message.setReactions(reactions);
+                    return messageRepository.save(message);
+                }
+            }
+            return message;
+        }).orElseThrow(() -> new IllegalArgumentException("Message not found"));
     }
 }

@@ -4,6 +4,7 @@ import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { getAvatarForUser } from '../utils/avatarHelper';
+import { ThreadPanel } from '../components/chat/ThreadPanel';
 
 interface Member {
   id: string;
@@ -26,7 +27,7 @@ const RoomChatPage: React.FC = () => {
   const { user, logout } = useAuth();
   const { 
     connectionStatus, messages, typingUsers, presenceUsers,
-    joinRoom, leaveRoom, sendMessage, sendTyping, loadMessages
+    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages
   } = useSocket();
 
   const [room, setRoom] = useState<RoomDetails | null>(null);
@@ -35,11 +36,11 @@ const RoomChatPage: React.FC = () => {
   const [pinnedClosed, setPinnedClosed] = useState(false);
   const [showMembersSidebar, setShowMembersSidebar] = useState(true);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const [localReactions, setLocalReactions] = useState<Record<string, { emoji: string; count: number; active: boolean }[]>>({});
   const [isFavorite, setIsFavorite] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedEmojiCategory, setSelectedEmojiCategory] = useState(0);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const [selectedThreadMsg, setSelectedThreadMsg] = useState<any | null>(null);
 
   const feedEndRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<any>(null);
@@ -131,22 +132,11 @@ const RoomChatPage: React.FC = () => {
     }
   };
 
-  const handleAddReaction = (msgId: string, emoji: string) => {
-    setLocalReactions(prev => {
-      const reactions = prev[msgId] || [];
-      const existing = reactions.find(r => r.emoji === emoji);
-      if (existing) {
-        return {
-          ...prev,
-          [msgId]: reactions.map(r => r.emoji === emoji ? { ...r, count: r.active ? r.count - 1 : r.count + 1, active: !r.active } : r).filter(r => r.count > 0)
-        };
-      } else {
-        return {
-          ...prev,
-          [msgId]: [...reactions, { emoji, count: 1, active: true }]
-        };
-      }
-    });
+  const handleAddReaction = (msg: any, emoji: string) => {
+    if (!roomId || !user) return;
+    const existingUsers = msg.reactions?.[emoji] || [];
+    const isActive = existingUsers.includes(user.username);
+    sendReaction(roomId, msg.id || msg.sequenceNumber.toString(), emoji, !isActive);
   };
 
   const memberList: Member[] = (room?.members || []).map((userId) => {
@@ -418,7 +408,6 @@ const RoomChatPage: React.FC = () => {
         {/* Chat Message Logs */}
         <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6 scrollbar-thin">
           {roomMessages.map((msg: any, idx: number) => {
-            const reactions = localReactions[msg.id] || [];
             const isMention = msg.content?.includes(`@${user?.username}`);
             return (
               <React.Fragment key={msg.id || msg.sequenceNumber}>
@@ -443,32 +432,49 @@ const RoomChatPage: React.FC = () => {
                   </div>
                   
                   {/* Reactions */}
-                  <div className="flex gap-2 mt-2 items-center">
-                    {reactions.map((react, i) => (
-                      <button 
-                        key={i}
-                        onClick={() => handleAddReaction(msg.id, react.emoji)}
-                        className={`flex items-center gap-1.5 border rounded-full px-2.5 py-1 text-xs transition-colors ${
-                          react.active 
-                            ? 'bg-[#8b5cf6]/20 border-[#8b5cf6] text-white' 
-                            : 'bg-[#1f2233] border-white/10 hover:border-white/20 text-text-muted'
-                        }`}
-                      >
-                        <span>{react.emoji}</span>
-                        <span>{react.count}</span>
-                      </button>
-                    ))}
+                  <div className="flex gap-2 mt-2 items-center flex-wrap">
+                    {Object.entries(msg.reactions || {}).map(([emoji, users]: [string, any]) => {
+                      const userList = users as string[];
+                      const count = userList.length;
+                      if (count === 0) return null;
+                      const active = userList.includes(user?.username || '');
+                      return (
+                        <button 
+                          key={emoji}
+                          onClick={() => handleAddReaction(msg, emoji)}
+                          className={`flex items-center gap-1.5 border rounded-full px-2.5 py-1 text-xs transition-colors ${
+                            active 
+                              ? 'bg-[#8b5cf6]/20 border-[#8b5cf6] text-white' 
+                              : 'bg-[#1f2233] border-white/10 hover:border-white/20 text-text-muted'
+                          }`}
+                          title={userList.join(', ')}
+                        >
+                          <span>{emoji}</span>
+                          <span>{count}</span>
+                        </button>
+                      );
+                    })}
                     <button 
-                      onClick={() => handleAddReaction(msg.id, '👍')}
+                      onClick={() => handleAddReaction(msg, '👍')}
                       className="flex items-center justify-center w-7 h-7 bg-transparent border border-transparent rounded-full hover:bg-[#1f2233] hover:border-white/10 transition-colors text-text-muted opacity-0 group-hover:opacity-100"
                     >
                       👍
                     </button>
                     <button 
-                      onClick={() => handleAddReaction(msg.id, '🔥')}
+                      onClick={() => handleAddReaction(msg, '🔥')}
                       className="flex items-center justify-center w-7 h-7 bg-transparent border border-transparent rounded-full hover:bg-[#1f2233] hover:border-white/10 transition-colors text-text-muted opacity-0 group-hover:opacity-100"
                     >
                       🔥
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setSelectedThreadMsg(msg);
+                        setShowMembersSidebar(true);
+                      }}
+                      className="flex items-center gap-1.5 px-2 py-1 bg-transparent border border-transparent rounded-lg hover:bg-[#1f2233] hover:border-white/10 transition-colors text-text-muted opacity-0 group-hover:opacity-100 text-xs font-medium"
+                    >
+                      <svg fill="none" height="14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><polyline points="9 17 4 12 9 7"></polyline><path d="M20 18v-2a4 4 0 0 0-4-4H4"></path></svg>
+                      Reply
                     </button>
                   </div>
                 </div>
@@ -599,140 +605,148 @@ const RoomChatPage: React.FC = () => {
 
       </main>
 
-      {/* Right Sidebar: Collapsible presence list */}
+      {/* Right Sidebar */}
       {showMembersSidebar && (
-        <aside className="w-72 bg-[#151723] flex flex-col border-l border-white/5 flex-shrink-0 text-left font-sans">
-          <div className="h-16 flex items-center justify-between px-4 border-b border-white/5 shrink-0">
-            <h2 className="font-medium text-white flex items-center gap-1.5">
-              Members <span className="text-text-muted text-sm font-normal">({memberList.length})</span>
-            </h2>
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => alert(`Invite Link: Share this temporary access URL: https://syncstream.dev/invite/room-${roomId}`)}
-                className="flex items-center gap-1.5 text-xs text-brand-300 bg-brand-900/30 hover:bg-brand-900/50 border border-brand-800/50 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
-              >
-                Invite
-              </button>
-              <button 
-                onClick={() => setShowMembersSidebar(false)}
-                className="text-text-muted hover:text-white p-1 transition-colors"
-                title="Close Sidebar"
-              >
-                ✕
-              </button>
+        selectedThreadMsg ? (
+          <ThreadPanel 
+            roomId={roomId || ''} 
+            parentMessage={selectedThreadMsg} 
+            onClose={() => setSelectedThreadMsg(null)} 
+          />
+        ) : (
+          <aside className="w-72 bg-[#151723] flex flex-col border-l border-white/5 flex-shrink-0 text-left font-sans">
+            <div className="h-16 flex items-center justify-between px-4 border-b border-white/5 shrink-0">
+              <h2 className="font-medium text-white flex items-center gap-1.5">
+                Members <span className="text-text-muted text-sm font-normal">({memberList.length})</span>
+              </h2>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => alert(`Invite Link: Share this temporary access URL: https://syncstream.dev/invite/room-${roomId}`)}
+                  className="flex items-center gap-1.5 text-xs text-brand-300 bg-brand-900/30 hover:bg-brand-900/50 border border-brand-800/50 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                >
+                  Invite
+                </button>
+                <button 
+                  onClick={() => setShowMembersSidebar(false)}
+                  className="text-text-muted hover:text-white p-1 transition-colors"
+                  title="Close Sidebar"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
-          </div>
-          
-          <div className="p-4 border-b border-white/5 shrink-0">
-            <div className="relative flex items-center">
-              <svg className="absolute left-3 text-text-muted" fill="none" height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
-              <input className="w-full bg-[#1a1d2d] border border-white/5 text-sm rounded-lg pl-9 pr-4 py-2 focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition-all placeholder-text-muted/60 text-white outline-none" placeholder="Search members..." type="text"/>
+            
+            <div className="p-4 border-b border-white/5 shrink-0">
+              <div className="relative flex items-center">
+                <svg className="absolute left-3 text-text-muted" fill="none" height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
+                <input className="w-full bg-[#1a1d2d] border border-white/5 text-sm rounded-lg pl-9 pr-4 py-2 focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition-all placeholder-text-muted/60 text-white outline-none" placeholder="Search members..." type="text"/>
+              </div>
             </div>
-          </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin">
-            {onlineMembers.length > 0 && (
-              <div>
-                <div 
-                  onClick={() => alert("Online Members: " + onlineMembers.map(m => m.username).join(', '))}
-                  className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide cursor-pointer hover:text-white transition-colors"
-                >
-                  Online — <span className="text-status-online">{onlineMembers.length}</span>
-                </div>
-                <ul className="space-y-3">
-                  {onlineMembers.map(m => (
-                    <li key={m.id} className="flex items-center justify-between group cursor-pointer">
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <div className="w-8 h-8 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-lg select-none">
-                            {getAvatarForUser(m.username, presenceUsers)}
+            <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin">
+              {onlineMembers.length > 0 && (
+                <div>
+                  <div 
+                    onClick={() => alert("Online Members: " + onlineMembers.map(m => m.username).join(', '))}
+                    className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide cursor-pointer hover:text-white transition-colors"
+                  >
+                    Online — <span className="text-status-online">{onlineMembers.length}</span>
+                  </div>
+                  <ul className="space-y-3">
+                    {onlineMembers.map(m => (
+                      <li key={m.id} className="flex items-center justify-between group cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <div className="w-8 h-8 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-lg select-none">
+                              {getAvatarForUser(m.username, presenceUsers)}
+                            </div>
+                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-[#151723] rounded-full"></span>
                           </div>
-                          <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-[#151723] rounded-full"></span>
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium flex items-center gap-1.5">
-                            <span className="text-white">{m.username}</span>
-                            {m.username === user?.username && (
-                              <>
-                                <span className="text-text-muted text-xs font-normal">(You)</span>
-                                <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
-                              </>
-                            )}
+                          <div>
+                            <div className="text-sm font-medium flex items-center gap-1.5">
+                              <span className="text-white">{m.username}</span>
+                              {m.username === user?.username && (
+                                <>
+                                  <span className="text-text-muted text-xs font-normal">(You)</span>
+                                  <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
+                                </>
+                              )}
+                            </div>
+                            <div className="text-xs text-text-muted">Online</div>
                           </div>
-                          <div className="text-xs text-text-muted">Online</div>
                         </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-                <div 
-                  onClick={() => alert("Online Members: " + onlineMembers.map(m => m.username).join(', '))}
-                  className="mt-3 text-xs text-[#a78bfa] hover:underline cursor-pointer"
-                >
-                  View all online ({onlineMembers.length})
+                      </li>
+                    ))}
+                  </ul>
+                  <div 
+                    onClick={() => alert("Online Members: " + onlineMembers.map(m => m.username).join(', '))}
+                    className="mt-3 text-xs text-[#a78bfa] hover:underline cursor-pointer"
+                  >
+                    View all online ({onlineMembers.length})
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {awayMembers.length > 0 && (
-              <div>
-                <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide">
-                  Away — <span className="text-status-away">{awayMembers.length}</span>
-                </div>
-                <ul className="space-y-3">
-                  {awayMembers.map(m => (
-                    <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-70">
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <div className="w-8 h-8 rounded-full bg-[#3b4155]/20 flex items-center justify-center text-lg select-none">
-                            {getAvatarForUser(m.username, presenceUsers)}
+              {awayMembers.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide">
+                    Away — <span className="text-status-away">{awayMembers.length}</span>
+                  </div>
+                  <ul className="space-y-3">
+                    {awayMembers.map(m => (
+                      <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-70">
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <div className="w-8 h-8 rounded-full bg-[#3b4155]/20 flex items-center justify-center text-lg select-none">
+                              {getAvatarForUser(m.username, presenceUsers)}
+                            </div>
+                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-away border-2 border-[#151723] rounded-full"></span>
                           </div>
-                          <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-away border-2 border-[#151723] rounded-full"></span>
+                          <div>
+                            <div className="text-sm font-medium text-white">{m.username}</div>
+                            <div className="text-xs text-text-muted">Away</div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="text-sm font-medium text-white">{m.username}</div>
-                          <div className="text-xs text-text-muted">Away</div>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-            {offlineMembers.length > 0 && (
-              <div>
-                <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide">
-                  Offline — <span className="text-status-offline">{offlineMembers.length}</span>
-                </div>
-                <ul className="space-y-3">
-                  {offlineMembers.map(m => (
-                    <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-50 grayscale">
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <div className="w-8 h-8 rounded-full bg-[#1a1d2d]/20 flex items-center justify-center text-lg select-none">
-                            {getAvatarForUser(m.username, presenceUsers)}
+              {offlineMembers.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide">
+                    Offline — <span className="text-status-offline">{offlineMembers.length}</span>
+                  </div>
+                  <ul className="space-y-3">
+                    {offlineMembers.map(m => (
+                      <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-50 grayscale">
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <div className="w-8 h-8 rounded-full bg-[#1a1d2d]/20 flex items-center justify-center text-lg select-none">
+                              {getAvatarForUser(m.username, presenceUsers)}
+                            </div>
+                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-offline border-2 border-[#151723] rounded-full"></span>
                           </div>
-                          <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-offline border-2 border-[#151723] rounded-full"></span>
+                          <div>
+                            <div className="text-sm font-medium text-white">{m.username}</div>
+                            <div className="text-xs text-text-muted">Offline</div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="text-sm font-medium text-white">{m.username}</div>
-                          <div className="text-xs text-text-muted">Offline</div>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-                <div 
-                  onClick={() => alert("Offline Members: " + offlineMembers.map(m => m.username).join(', '))}
-                  className="mt-3 text-xs text-[#a78bfa] hover:underline cursor-pointer"
-                >
-                  View all offline ({offlineMembers.length})
+                      </li>
+                    ))}
+                  </ul>
+                  <div 
+                    onClick={() => alert("Offline Members: " + offlineMembers.map(m => m.username).join(', '))}
+                    className="mt-3 text-xs text-[#a78bfa] hover:underline cursor-pointer"
+                  >
+                    View all offline ({offlineMembers.length})
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        </aside>
+              )}
+            </div>
+          </aside>
+        )
       )}
 
       </div>

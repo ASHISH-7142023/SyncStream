@@ -55,16 +55,45 @@ public class ChatController {
                 roomId,
                 user.getId(),
                 request.getContent(),
-                MessageType.TEXT
+                MessageType.TEXT,
+                request.getParentId()
         );
 
-        // Include clientMessageId in the Redis broadcast if needed by the client
-        // To simplify, we can wrap the message or just send it with an extra property.
-        // Let's add clientMessageId as an header or keep the DTO clean. 
-        // We can just broadcast the savedMessage. 
-        
-        // Publish to Redis Pub/Sub topic to sync across multiple servers
+        // Include clientMessageId if needed, but here we just broadcast
         redisMessagePublisher.publish("syncstream:room:" + roomId, savedMessage);
+    }
+
+    @MessageMapping("/rooms/{roomId}/reactions")
+    public void handleReaction(
+            @DestinationVariable String roomId,
+            @Payload Map<String, Object> payload,
+            Principal principal) {
+        
+        User user = getUserFromPrincipal(principal);
+        if (user == null || !roomService.isMember(roomId, user.getId())) {
+            return;
+        }
+
+        String messageId = (String) payload.get("messageId");
+        String emoji = (String) payload.get("emoji");
+        Boolean active = (Boolean) payload.get("active");
+
+        if (messageId == null || emoji == null || active == null) {
+            return;
+        }
+
+        Message updatedMessage;
+        if (active) {
+            updatedMessage = messageService.addReaction(messageId, emoji, user.getUsername());
+        } else {
+            updatedMessage = messageService.removeReaction(messageId, emoji, user.getUsername());
+        }
+
+        // We can publish the updated message, or a special reaction event. Let's just publish the updated message.
+        // It will have the same sequenceNumber, so clients can just replace it or merge it.
+        // But to differentiate, maybe publish to a different channel, or just use the same channel and let the client handle updates.
+        // Publishing the updated message on the same channel works if the client merges by ID.
+        redisMessagePublisher.publish("syncstream:room:" + roomId, updatedMessage);
     }
 
     @MessageMapping("/rooms/{roomId}/typing")
