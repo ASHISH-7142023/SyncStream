@@ -72,4 +72,24 @@ public class RoomService {
                 .map(room -> room.getMembers().contains(userId))
                 .orElse(false);
     }
+
+    public Room getOrCreateDirectMessageRoom(String userId1, String userId2) {
+        if (userId1.equals(userId2)) {
+            throw new IllegalArgumentException("Cannot create DM with yourself");
+        }
+        return roomRepository.findDirectMessageRoom(userId1, userId2)
+                .orElseGet(() -> {
+                    Room room = Room.builder()
+                            .name("DM-" + userId1 + "-" + userId2)
+                            .isDirectMessage(true)
+                            .members(new HashSet<>(List.of(userId1, userId2)))
+                            .createdAt(Instant.now())
+                            .build();
+                    return roomRepository.save(room);
+                });
+    }
+
+    public List<Room> getUserRooms(String userId) {
+        return roomRepository.findByMembersContaining(userId);
+    }
 }

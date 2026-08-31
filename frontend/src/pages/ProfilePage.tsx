@@ -162,9 +162,13 @@ const ProfilePage: React.FC = () => {
               <i className="fa-solid fa-comments w-5 text-center group-hover:text-purple-400"></i>
               <span className="font-medium text-sm">Rooms Feed</span>
             </button>
-            <button onClick={() => navigate('/profile')} className="w-full flex items-center gap-3 px-3 py-2 bg-obsidian-700 text-white rounded-md border-l-2 border-purple-500 text-left">
-              <i className="fa-solid fa-user w-5 text-center text-purple-400"></i>
-              <span className="font-medium text-sm ml-3">My Profile</span>
+            <button onClick={() => navigate('/profile')} className="w-full flex items-center gap-3 px-3 py-2 bg-[#6b46c1]/20 border-l-2 border-[#8b5cf6] text-white rounded-r-lg group text-left">
+              <i className="fa-regular fa-user w-5 text-[#8b5cf6]"></i>
+              <span className="font-medium text-sm">My Profile</span>
+            </button>
+            <button onClick={() => navigate('/friends')} className="w-full flex items-center gap-3 px-3 py-2 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group text-left">
+              <i className="fa-solid fa-user-friends w-5 group-hover:text-white transition-colors"></i>
+              <span className="font-medium text-sm">Friends</span>
             </button>
           </div>
 

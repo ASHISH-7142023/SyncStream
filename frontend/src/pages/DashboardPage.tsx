@@ -8,6 +8,7 @@ interface Room {
   id: string;
   name: string;
   description?: string;
+  isDirectMessage?: boolean;
 }
 
 const DashboardPage: React.FC = () => {
@@ -42,8 +43,14 @@ const DashboardPage: React.FC = () => {
   }, []);
 
   const filteredRooms = rooms.filter(r => 
-    r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (r.description && r.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    !r.isDirectMessage &&
+    (r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (r.description && r.description.toLowerCase().includes(searchQuery.toLowerCase())))
+  );
+
+  const filteredDMs = rooms.filter(r => 
+    r.isDirectMessage &&
+    r.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const stats = [
@@ -140,8 +147,12 @@ const DashboardPage: React.FC = () => {
               <span className="font-medium text-sm">Rooms Feed</span>
             </button>
             <button onClick={() => navigate('/profile')} className="w-full flex items-center gap-3 px-3 py-2 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group text-left">
-              <i className="fa-regular fa-message w-5 group-hover:text-white transition-colors"></i>
+              <i className="fa-regular fa-user w-5 group-hover:text-white transition-colors"></i>
               <span className="font-medium text-sm">My Profile</span>
+            </button>
+            <button onClick={() => navigate('/friends')} className="w-full flex items-center gap-3 px-3 py-2 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group text-left">
+              <i className="fa-solid fa-user-friends w-5 group-hover:text-white transition-colors"></i>
+              <span className="font-medium text-sm">Friends</span>
             </button>
           </div>
 
@@ -168,6 +179,31 @@ const DashboardPage: React.FC = () => {
               ))}
               {filteredRooms.length === 0 && (
                 <div className="px-3 py-2 text-xs text-text-muted italic">No matching rooms</div>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between px-3 mb-2">
+              <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider">Direct Messages</h3>
+            </div>
+            <div className="space-y-0.5">
+              {filteredDMs.map((r) => (
+                <button 
+                  key={r.id} 
+                  onClick={() => navigate(`/rooms/${r.id}`)}
+                  className="w-full flex items-center justify-between px-3 py-1.5 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group text-left"
+                >
+                  <div className="flex items-center gap-3 truncate">
+                    <div className="w-5 h-5 rounded-full bg-accent-purple/20 flex items-center justify-center text-[10px] text-accent-purpleLight shrink-0 font-bold">
+                      {r.name.replace('DM-', '').slice(0,2).toUpperCase()}
+                    </div>
+                    <span className="text-sm truncate">Chat</span>
+                  </div>
+                </button>
+              ))}
+              {filteredDMs.length === 0 && (
+                <div className="px-3 py-2 text-xs text-text-muted italic">No DMs yet</div>
               )}
             </div>
           </div>

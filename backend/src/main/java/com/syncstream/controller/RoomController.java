@@ -180,4 +180,16 @@ public class RoomController {
 
         return ResponseEntity.ok(messageService.getReplies(messageId));
     }
+
+    @PostMapping("/dm/{targetUserId}")
+    public ResponseEntity<?> getOrCreateDirectMessage(
+            @PathVariable String targetUserId,
+            @AuthenticationPrincipal User user) {
+        try {
+            Room room = roomService.getOrCreateDirectMessageRoom(user.getId(), targetUserId);
+            return ResponseEntity.ok(room);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
 }

@@ -5,35 +5,25 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
-@Document(collection = "rooms")
+@Document(collection = "friendships")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Room {
-
+public class Friendship {
     @Id
     private String id;
-
-    @Indexed(unique = true)
-    private String name;
-
-    private String description;
-
+    
+    private String requesterId;
+    private String receiverId;
+    
     @Builder.Default
-    private boolean isDirectMessage = false;
-
-    private String ownerId;
-
-    @Builder.Default
-    private Set<String> members = new HashSet<>();
-
+    private FriendshipStatus status = FriendshipStatus.PENDING;
+    
     private Instant createdAt;
+    private Instant updatedAt;
 }

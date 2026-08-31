@@ -40,6 +40,7 @@ const RoomsPage: React.FC = () => {
   };
 
   const filteredRooms = rooms.filter((room) => {
+    if (room.isDirectMessage) return false;
     const matchesSearch = room.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           (room.description || '').toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -47,6 +48,8 @@ const RoomsPage: React.FC = () => {
     if (activeTab === 'Public') return matchesSearch && !room.isPrivate;
     return matchesSearch;
   });
+
+  const filteredDMs = rooms.filter(room => room.isDirectMessage);
 
   const roomColors = [
     'room-icon-purple',
@@ -98,8 +101,12 @@ const RoomsPage: React.FC = () => {
               <span className="font-medium ml-3">Rooms Feed</span>
             </button>
             <button onClick={() => navigate('/profile')} className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-dim hover:text-bright hover:bg-surface-200 transition-colors group text-left">
-              <svg className="group-hover:text-brand transition-colors" fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <svg className="group-hover:text-brand transition-colors" fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
               <span className="font-medium ml-3">My Profile</span>
+            </button>
+            <button onClick={() => navigate('/friends')} className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-dim hover:text-bright hover:bg-surface-200 transition-colors group text-left">
+              <svg className="group-hover:text-brand transition-colors" fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <span className="font-medium ml-3">Friends</span>
             </button>
           </div>
 
@@ -111,7 +118,7 @@ const RoomsPage: React.FC = () => {
               </button>
             </div>
             <div className="space-y-0.5">
-              {rooms.map((r) => (
+              {rooms.filter(r => !r.isDirectMessage).map((r) => (
                 <button 
                   key={r.id} 
                   onClick={() => navigate(`/rooms/${r.id}`)}
@@ -119,6 +126,26 @@ const RoomsPage: React.FC = () => {
                 >
                   <span className="text-xl leading-none text-surface-400 font-light">#</span>
                   <span className="font-medium truncate">{r.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between px-3">
+              <h3 className="text-xs font-semibold text-dim uppercase tracking-wider">Direct Messages</h3>
+            </div>
+            <div className="space-y-0.5">
+              {rooms.filter(r => r.isDirectMessage).map((r) => (
+                <button 
+                  key={r.id} 
+                  onClick={() => navigate(`/rooms/${r.id}`)}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-dim hover:text-bright hover:bg-surface-200 transition-colors text-left"
+                >
+                  <div className="w-5 h-5 rounded-full bg-brand/20 flex items-center justify-center text-[10px] text-brand shrink-0 font-bold">
+                    {r.name.replace('DM-', '').slice(0,2).toUpperCase()}
+                  </div>
+                  <span className="font-medium truncate">Chat</span>
                 </button>
               ))}
             </div>
