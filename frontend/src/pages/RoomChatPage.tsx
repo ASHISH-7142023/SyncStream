@@ -5,8 +5,6 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { getAvatarForUser } from '../utils/avatarHelper';
 import { ThreadPanel } from '../components/chat/ThreadPanel';
-import { useWebRTC } from '../context/WebRTCContext';
-import { VideoCall } from '../components/VideoCall';
 
 interface Member {
   id: string;
@@ -24,18 +22,14 @@ interface RoomDetails {
   members?: string[];
 }
 
-
 const RoomChatPage: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { 
     connectionStatus, messages, typingUsers, presenceUsers,
-    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages,
-    hasMoreMessages, loadMoreMessages
+    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages
   } = useSocket();
-
-  const { startCall, isCalling } = useWebRTC();
 
   const [room, setRoom] = useState<RoomDetails | null>(null);
   const [inputText, setInputText] = useState('');
@@ -50,7 +44,6 @@ const RoomChatPage: React.FC = () => {
   const [selectedThreadMsg, setSelectedThreadMsg] = useState<any | null>(null);
 
   const feedEndRef = useRef<HTMLDivElement | null>(null);
-  const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<any>(null);
   const isTypingRef = useRef(false);
 
@@ -95,36 +88,11 @@ const RoomChatPage: React.FC = () => {
     };
   }, [roomId]);
 
-  // Scroll to bottom only if we are already near the bottom or on first load
+  // Scroll to bottom
   const roomMessages = (roomId && messages[roomId]) || [];
-  
-  // Track scroll anchoring
-  const prevScrollHeightRef = useRef<number>(0);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-
   useEffect(() => {
-    const container = chatContainerRef.current;
-    if (container && prevScrollHeightRef.current > 0) {
-      // If we just loaded more messages, maintain scroll position
-      const heightDiff = container.scrollHeight - prevScrollHeightRef.current;
-      if (heightDiff > 0) {
-        container.scrollTop = heightDiff;
-      }
-      prevScrollHeightRef.current = 0;
-    } else {
-      feedEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
+    feedEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [roomMessages]);
-
-  const handleScroll = async (e: React.UIEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLDivElement;
-    if (target.scrollTop === 0 && roomId && hasMoreMessages[roomId] && !isLoadingMore) {
-      setIsLoadingMore(true);
-      prevScrollHeightRef.current = target.scrollHeight;
-      await loadMoreMessages(roomId);
-      setIsLoadingMore(false);
-    }
-  };
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -400,16 +368,7 @@ const RoomChatPage: React.FC = () => {
               )}
             </div>
 
-            <div className="flex items-center gap-2 border-l border-white/5 pl-4 shrink-0">
-              <button 
-                onClick={() => room && startCall(room.id)}
-                className={`p-2 rounded-lg transition-colors cursor-pointer flex items-center gap-2 ${isCalling ? 'bg-green-500/20 text-green-400' : 'text-text-muted hover:text-white hover:bg-white/5'}`}
-                title="Start Video Call"
-              >
-                <i className="fa-solid fa-video"></i>
-                <span className="hidden sm:inline text-sm font-medium">{isCalling ? 'In Call' : 'Call'}</span>
-              </button>
-              
+            <div className="flex items-center gap-1 border-l border-white/5 pl-4 shrink-0">
               <button 
                 onClick={() => alert("Search Messages: Type a keyword in the chat box or use Ctrl+F to find specific phrases.")}
                 className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer" 
@@ -441,9 +400,6 @@ const RoomChatPage: React.FC = () => {
             </div>
           </div>
         </header>
-
-        {/* Video Call Grid (if active) */}
-        <VideoCall />
  
         {/* Pinned Message */}
         {!pinnedClosed && (
@@ -465,16 +421,7 @@ const RoomChatPage: React.FC = () => {
         )}
 
         {/* Chat Message Logs */}
-        <div 
-          className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6 scrollbar-thin"
-          onScroll={handleScroll}
-          ref={chatContainerRef}
-        >
-          {isLoadingMore && (
-            <div className="text-center py-2 shrink-0 flex justify-center">
-              <div className="w-5 h-5 border-2 border-[#7c3aed] border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          )}
+        <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6 scrollbar-thin">
           {roomMessages.map((msg: any, idx: number) => {
             const isMention = msg.content?.includes(`@${user?.username}`);
             return (

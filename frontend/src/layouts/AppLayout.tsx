@@ -26,11 +26,6 @@ const AppLayout: React.FC = () => {
 
   useEffect(() => {
     fetchRooms();
-    
-    // Request notification permission on app load
-    if (Notification && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
   }, []);
 
   const handleRoomCreated = (newRoom: Room) => {
