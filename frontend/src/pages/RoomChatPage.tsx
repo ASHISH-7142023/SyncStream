@@ -28,7 +28,8 @@ const RoomChatPage: React.FC = () => {
   const { user, logout } = useAuth();
   const { 
     connectionStatus, messages, typingUsers, presenceUsers,
-    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages
+    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages,
+    hasMoreMessages, loadMoreMessages
   } = useSocket();
 
   const [room, setRoom] = useState<RoomDetails | null>(null);
@@ -44,6 +45,7 @@ const RoomChatPage: React.FC = () => {
   const [selectedThreadMsg, setSelectedThreadMsg] = useState<any | null>(null);
 
   const feedEndRef = useRef<HTMLDivElement | null>(null);
+  const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<any>(null);
   const isTypingRef = useRef(false);
 
@@ -88,11 +90,36 @@ const RoomChatPage: React.FC = () => {
     };
   }, [roomId]);
 
-  // Scroll to bottom
+  // Scroll to bottom only if we are already near the bottom or on first load
   const roomMessages = (roomId && messages[roomId]) || [];
+  
+  // Track scroll anchoring
+  const prevScrollHeightRef = useRef<number>(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
   useEffect(() => {
-    feedEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = chatContainerRef.current;
+    if (container && prevScrollHeightRef.current > 0) {
+      // If we just loaded more messages, maintain scroll position
+      const heightDiff = container.scrollHeight - prevScrollHeightRef.current;
+      if (heightDiff > 0) {
+        container.scrollTop = heightDiff;
+      }
+      prevScrollHeightRef.current = 0;
+    } else {
+      feedEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [roomMessages]);
+
+  const handleScroll = async (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLDivElement;
+    if (target.scrollTop === 0 && roomId && hasMoreMessages[roomId] && !isLoadingMore) {
+      setIsLoadingMore(true);
+      prevScrollHeightRef.current = target.scrollHeight;
+      await loadMoreMessages(roomId);
+      setIsLoadingMore(false);
+    }
+  };
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -421,7 +448,16 @@ const RoomChatPage: React.FC = () => {
         )}
 
         {/* Chat Message Logs */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6 scrollbar-thin">
+        <div 
+          className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6 scrollbar-thin"
+          onScroll={handleScroll}
+          ref={chatContainerRef}
+        >
+          {isLoadingMore && (
+            <div className="text-center py-2 shrink-0 flex justify-center">
+              <div className="w-5 h-5 border-2 border-[#7c3aed] border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
           {roomMessages.map((msg: any, idx: number) => {
             const isMention = msg.content?.includes(`@${user?.username}`);
             return (

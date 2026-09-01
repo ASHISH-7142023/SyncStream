@@ -120,6 +120,27 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       });
       subscriptionsRef.current['/topic/presence'] = presenceSub;
 
+      // Subscribe to user notifications
+      if (user?.id) {
+        const notifSub = client.subscribe(`/topic/user.${user.id}.notifications`, (message: IMessage) => {
+          try {
+            const chatMsg: ChatMessage = JSON.parse(message.body);
+            // Only show notification if we are NOT in the active room
+            if (!activeRoomsRef.current.has(chatMsg.roomId)) {
+              if (Notification.permission === 'granted') {
+                new Notification(`New message from ${chatMsg.senderName}`, {
+                  body: chatMsg.content,
+                  icon: '/favicon.ico'
+                });
+              }
+            }
+          } catch (e) {
+            console.error('Error parsing notification', e);
+          }
+        });
+        subscriptionsRef.current['/topic/notifications'] = notifSub;
+      }
+
       // Re-subscribe to existing rooms and sync missed messages
       const activeRooms = Array.from(activeRoomsRef.current);
       activeRooms.forEach(async (roomId) => {

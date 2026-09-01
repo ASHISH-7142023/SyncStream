@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.List;
+import com.syncstream.model.Room;
+import com.syncstream.service.RoomService;
 
 @Service
 @Slf4j
@@ -21,12 +24,26 @@ public class RedisMessageSubscriber {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private RoomService roomService;
+
     public void handleRoomMessage(String message) {
         log.info("Received room message from Redis Pub/Sub: {}", message);
         try {
             Message chatMessage = objectMapper.readValue(message, Message.class);
             // Broadcast to STOMP clients subscribed to /topic/rooms/{roomId}
             messagingTemplate.convertAndSend("/topic/rooms/" + chatMessage.getRoomId(), chatMessage);
+            
+            // Broadcast push notifications
+            if (chatMessage.getMessageType().equals("TEXT")) {
+                roomService.getRoomById(chatMessage.getRoomId()).ifPresent(room -> {
+                    for (String memberId : room.getMembers()) {
+                        if (!memberId.equals(chatMessage.getSenderId())) {
+                            messagingTemplate.convertAndSend("/topic/user." + memberId + ".notifications", chatMessage);
+                        }
+                    }
+                });
+            }
         } catch (IOException e) {
             log.error("Failed to deserialize room message", e);
         }
