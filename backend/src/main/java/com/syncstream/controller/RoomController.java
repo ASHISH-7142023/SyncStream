@@ -70,8 +70,12 @@ public class RoomController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Room>> getAllRooms() {
-        return ResponseEntity.ok(roomService.getAllRooms());
+    public ResponseEntity<List<Room>> getAllRooms(@AuthenticationPrincipal User user) {
+        List<Room> allRooms = roomService.getAllRooms();
+        List<Room> filtered = allRooms.stream()
+                .filter(room -> !room.isDirectMessage() || room.getMembers().contains(user.getId()))
+                .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(filtered);
     }
 
     @GetMapping("/{roomId}")

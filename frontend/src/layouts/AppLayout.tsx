@@ -7,6 +7,7 @@ interface Room {
   id: string;
   name: string;
   description?: string;
+  isDirectMessage?: boolean;
 }
 
 const AppLayout: React.FC = () => {

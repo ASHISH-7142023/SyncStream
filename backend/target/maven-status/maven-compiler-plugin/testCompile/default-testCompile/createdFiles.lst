@@ -1,5 +1,0 @@
-com\syncstream\service\MessageServiceTest.class
-com\syncstream\service\RoomServiceTest.class
-com\syncstream\controller\AuthControllerTest.class
-com\syncstream\controller\HealthControllerTest.class
-com\syncstream\controller\RoomControllerTest.class

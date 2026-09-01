@@ -18,6 +18,7 @@ interface RoomDetails {
   name: string;
   description?: string;
   isPrivate?: boolean;
+  isDirectMessage?: boolean;
   members?: string[];
 }
 
@@ -252,8 +253,14 @@ const RoomChatPage: React.FC = () => {
                       }`}
                     >
                       <div className="flex items-center gap-2 truncate">
-                        <span className="text-lg opacity-60 font-light">#</span>
-                        <span className="truncate">{r.name}</span>
+                        {r.isDirectMessage ? (
+                          <div className="w-5 h-5 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-[10px] text-[#8b5cf6] shrink-0 font-bold">
+                            {r.name.replace('DM-', '').slice(0,2).toUpperCase()}
+                          </div>
+                        ) : (
+                          <span className="text-lg opacity-60 font-light">#</span>
+                        )}
+                        <span className="truncate">{r.isDirectMessage ? 'DM Chat' : r.name}</span>
                       </div>
                     </button>
                   </li>
@@ -324,8 +331,14 @@ const RoomChatPage: React.FC = () => {
             </button>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="text-xl text-text-muted">#</span>
-                <h1 className="text-lg font-semibold text-white">{room ? room.name : 'developers'}</h1>
+                {room?.isDirectMessage ? (
+                  <span className="text-xl text-text-muted">@</span>
+                ) : (
+                  <span className="text-xl text-text-muted">#</span>
+                )}
+                <h1 className="text-lg font-semibold text-white">
+                  {room ? (room.isDirectMessage ? room.name.replace('DM-', '').replace(user?.id || '', '').replace('-', '') || 'Direct Message' : room.name) : 'developers'}
+                </h1>
                 <button 
                   onClick={() => setIsFavorite(!isFavorite)}
                   className={`transition-all hover:scale-115 active:scale-90 cursor-pointer ${
@@ -335,7 +348,9 @@ const RoomChatPage: React.FC = () => {
                   <svg fill={isFavorite ? 'currentColor' : 'none'} height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                 </button>
               </div>
-              <span className="text-xs text-text-muted">{room?.description || 'Development discussions & updates'}</span>
+              {!room?.isDirectMessage && (
+                <span className="text-xs text-text-muted">{room?.description || 'Development discussions & updates'}</span>
+              )}
             </div>
           </div>
 

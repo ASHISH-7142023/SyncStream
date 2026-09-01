@@ -9,6 +9,7 @@ interface Room {
   name: string;
   description?: string;
   isPrivate?: boolean;
+  isDirectMessage?: boolean;
 }
 
 const RoomsPage: React.FC = () => {
@@ -136,7 +137,7 @@ const RoomsPage: React.FC = () => {
               <h3 className="text-xs font-semibold text-dim uppercase tracking-wider">Direct Messages</h3>
             </div>
             <div className="space-y-0.5">
-              {rooms.filter(r => r.isDirectMessage).map((r) => (
+              {filteredDMs.map((r) => (
                 <button 
                   key={r.id} 
                   onClick={() => navigate(`/rooms/${r.id}`)}

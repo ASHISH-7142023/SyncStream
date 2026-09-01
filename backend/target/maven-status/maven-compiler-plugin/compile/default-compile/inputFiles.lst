@@ -3,14 +3,20 @@ D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\config\Security
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\config\WebSocketConfig.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\controller\AuthController.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\controller\ChatController.java
+D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\controller\FriendshipController.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\controller\HealthController.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\controller\RoomController.java
+D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\controller\UserController.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\dto\AuthResponse.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\dto\ChatMessageRequest.java
+D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\dto\FriendshipDto.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\dto\LoginRequest.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\dto\RegisterRequest.java
+D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\dto\UserDto.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\dto\UserPresenceDto.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\listener\WebSocketEventListener.java
+D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\model\Friendship.java
+D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\model\FriendshipStatus.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\model\Message.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\model\MessageType.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\model\PresenceStatus.java
@@ -18,6 +24,7 @@ D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\model\Room.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\model\User.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\pubsub\RedisMessagePublisher.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\pubsub\RedisMessageSubscriber.java
+D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\repository\FriendshipRepository.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\repository\MessageRepository.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\repository\RoomRepository.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\repository\UserRepository.java
@@ -25,6 +32,7 @@ D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\security\Custom
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\security\JwtAuthenticationFilter.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\security\JwtTokenProvider.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\security\WebSocketAuthInterceptor.java
+D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\service\FriendshipService.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\service\MessageService.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\service\PresenceService.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\service\RoomService.java
