@@ -126,6 +126,26 @@ public class ChatController {
         redisMessagePublisher.publish("syncstream:typing:" + roomId, typingEvent);
     }
 
+    @MessageMapping("/rooms/{roomId}/webrtc")
+    public void handleWebRtcSignaling(
+            @DestinationVariable String roomId,
+            @Payload Map<String, Object> payload,
+            Principal principal) {
+        
+        User user = getUserFromPrincipal(principal);
+        if (user == null || !roomService.isMember(roomId, user.getId())) {
+            return;
+        }
+
+        // Add the senderId automatically to prevent spoofing
+        payload.put("senderId", user.getId());
+        payload.put("senderName", user.getUsername());
+        payload.put("roomId", roomId);
+
+        // Publish to Redis
+        redisMessagePublisher.publish("syncstream:webrtc", payload);
+    }
+
     private User getUserFromPrincipal(Principal principal) {
         if (principal instanceof UsernamePasswordAuthenticationToken) {
             return (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();

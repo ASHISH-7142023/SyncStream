@@ -70,4 +70,18 @@ public class RedisMessageSubscriber {
             log.error("Failed to deserialize presence message", e);
         }
     }
+
+    public void handleWebRtcMessage(String message) {
+        log.info("Received WebRTC signaling message from Redis Pub/Sub");
+        try {
+            Map<?, ?> webrtcMap = objectMapper.readValue(message, Map.class);
+            String targetId = (String) webrtcMap.get("targetId");
+            if (targetId != null) {
+                // Forward the WebRTC signal strictly to the target user
+                messagingTemplate.convertAndSend("/topic/user." + targetId + ".webrtc", webrtcMap);
+            }
+        } catch (IOException e) {
+            log.error("Failed to deserialize WebRTC message", e);
+        }
+    }
 }

@@ -5,6 +5,8 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { getAvatarForUser } from '../utils/avatarHelper';
 import { ThreadPanel } from '../components/chat/ThreadPanel';
+import { useWebRTC } from '../context/WebRTCContext';
+import { VideoCall } from '../components/VideoCall';
 
 interface Member {
   id: string;
@@ -22,6 +24,12 @@ interface RoomDetails {
   members?: string[];
 }
 
+const emojiCategories = [
+  { name: 'Smileys', icon: '😀', emojis: ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌'] },
+  { name: 'Gestures', icon: '👍', emojis: ['👍', '👎', '👌', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '👇', '☝️', '✋'] },
+  { name: 'Activities', icon: '⚽', emojis: ['⚽', '🏀', '🏈', '⚾', '🎾', '🏐', '🏉', '🥏', '🎱', '🪀', '🏓', '🏸', '🏒', '🏑'] }
+];
+
 const RoomChatPage: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
@@ -31,6 +39,8 @@ const RoomChatPage: React.FC = () => {
     joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages,
     hasMoreMessages, loadMoreMessages
   } = useSocket();
+
+  const { startCall, isCalling } = useWebRTC();
 
   const [room, setRoom] = useState<RoomDetails | null>(null);
   const [inputText, setInputText] = useState('');
@@ -177,8 +187,6 @@ const RoomChatPage: React.FC = () => {
   });
 
   const onlineMembers = memberList.filter(m => m.status === 'ONLINE');
-  const awayMembers = memberList.filter(m => m.status === 'AWAY');
-  const offlineMembers = memberList.filter(m => m.status === 'OFFLINE');
 
   const currentRoomTypingMap = (roomId && typingUsers[roomId]) || {};
   const typingUsernames = Object.keys(currentRoomTypingMap).filter(
@@ -395,7 +403,16 @@ const RoomChatPage: React.FC = () => {
               )}
             </div>
 
-            <div className="flex items-center gap-1 border-l border-white/5 pl-4 shrink-0">
+            <div className="flex items-center gap-2 border-l border-white/5 pl-4 shrink-0">
+              <button 
+                onClick={() => room && startCall(room.id)}
+                className={`p-2 rounded-lg transition-colors cursor-pointer flex items-center gap-2 ${isCalling ? 'bg-green-500/20 text-green-400' : 'text-text-muted hover:text-white hover:bg-white/5'}`}
+                title="Start Video Call"
+              >
+                <i className="fa-solid fa-video"></i>
+                <span className="hidden sm:inline text-sm font-medium">{isCalling ? 'In Call' : 'Call'}</span>
+              </button>
+              
               <button 
                 onClick={() => alert("Search Messages: Type a keyword in the chat box or use Ctrl+F to find specific phrases.")}
                 className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer" 
@@ -427,6 +444,9 @@ const RoomChatPage: React.FC = () => {
             </div>
           </div>
         </header>
+
+        {/* Video Call Grid (if active) */}
+        <VideoCall />
  
         {/* Pinned Message */}
         {!pinnedClosed && (

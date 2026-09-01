@@ -44,6 +44,8 @@ interface SocketContextType {
   loadMessages: (roomId: string) => Promise<void>;
   hasMoreMessages: Record<string, boolean>;
   loadMoreMessages: (roomId: string) => Promise<void>;
+  sendWebRtcSignal: (roomId: string, payload: any) => void;
+  onWebRtcSignal: (callback: (signal: any) => void) => () => void;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -65,6 +67,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const activeRoomsRef = useRef<Set<String>>(new Set());
   const subscriptionsRef = useRef<Record<string, any>>({}); // topic -> subscription object
   const messagesRef = useRef<Record<string, ChatMessage[]>>({}); // keep mutable ref of messages to avoid closures
+  const webrtcListenersRef = useRef<Set<(signal: any) => void>>(new Set());
 
   // Keep ref up to date
   useEffect(() => {
@@ -139,6 +142,17 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           }
         });
         subscriptionsRef.current['/topic/notifications'] = notifSub;
+
+        // Subscribe to WebRTC signaling
+        const webrtcSub = client.subscribe(`/topic/user.${user.id}.webrtc`, (message: IMessage) => {
+          try {
+            const signal = JSON.parse(message.body);
+            webrtcListenersRef.current.forEach((listener) => listener(signal));
+          } catch (e) {
+            console.error('Error parsing WebRTC signal', e);
+          }
+        });
+        subscriptionsRef.current['/topic/webrtc'] = webrtcSub;
       }
 
       // Re-subscribe to existing rooms and sync missed messages
@@ -463,6 +477,22 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
+  const sendWebRtcSignal = (roomId: string, payload: any) => {
+    if (!clientRef.current || connectionStatus !== 'CONNECTED') return;
+
+    clientRef.current.publish({
+      destination: `/app/rooms/${roomId}/webrtc`,
+      body: JSON.stringify(payload),
+    });
+  };
+
+  const onWebRtcSignal = (callback: (signal: any) => void) => {
+    webrtcListenersRef.current.add(callback);
+    return () => {
+      webrtcListenersRef.current.delete(callback);
+    };
+  };
+
   return (
     <SocketContext.Provider
       value={{
@@ -478,6 +508,8 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         loadMessages,
         hasMoreMessages,
         loadMoreMessages,
+        sendWebRtcSignal,
+        onWebRtcSignal,
       }}
     >
       {children}
