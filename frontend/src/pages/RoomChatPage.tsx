@@ -24,11 +24,6 @@ interface RoomDetails {
   members?: string[];
 }
 
-const emojiCategories = [
-  { name: 'Smileys', icon: '😀', emojis: ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌'] },
-  { name: 'Gestures', icon: '👍', emojis: ['👍', '👎', '👌', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '👇', '☝️', '✋'] },
-  { name: 'Activities', icon: '⚽', emojis: ['⚽', '🏀', '🏈', '⚾', '🎾', '🏐', '🏉', '🥏', '🎱', '🪀', '🏓', '🏸', '🏒', '🏑'] }
-];
 
 const RoomChatPage: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
@@ -187,6 +182,8 @@ const RoomChatPage: React.FC = () => {
   });
 
   const onlineMembers = memberList.filter(m => m.status === 'ONLINE');
+  const awayMembers = memberList.filter(m => m.status === 'AWAY');
+  const offlineMembers = memberList.filter(m => m.status === 'OFFLINE');
 
   const currentRoomTypingMap = (roomId && typingUsers[roomId]) || {};
   const typingUsernames = Object.keys(currentRoomTypingMap).filter(

@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { useSocket } from './SocketContext';
-import { useAuth } from './AuthContext';
 
 interface WebRTCContextType {
   localStream: MediaStream | null;
@@ -28,7 +27,6 @@ const ICE_SERVERS = {
 };
 
 export const WebRTCProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
   const { sendWebRtcSignal, onWebRtcSignal } = useSocket();
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
