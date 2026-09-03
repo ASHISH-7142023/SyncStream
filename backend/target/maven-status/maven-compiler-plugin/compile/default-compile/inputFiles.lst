@@ -14,6 +14,7 @@ D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\dto\LoginReques
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\dto\RegisterRequest.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\dto\UserDto.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\dto\UserPresenceDto.java
+D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\dto\WebRtcSignalDto.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\listener\WebSocketEventListener.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\model\Friendship.java
 D:\ASHISH GITHUB\SyncStream\backend\src\main\java\com\syncstream\model\FriendshipStatus.java

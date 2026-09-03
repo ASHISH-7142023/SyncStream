@@ -44,6 +44,7 @@ interface SocketContextType {
   loadMessages: (roomId: string) => Promise<void>;
   hasMoreMessages: Record<string, boolean>;
   loadMoreMessages: (roomId: string) => Promise<void>;
+  getStompClient: () => Client | null;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -457,6 +458,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         loadMessages,
         hasMoreMessages,
         loadMoreMessages,
+        getStompClient: () => clientRef.current,
       }}
     >
       {children}

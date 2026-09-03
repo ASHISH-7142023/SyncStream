@@ -1,6 +1,7 @@
 package com.syncstream.controller;
 
 import com.syncstream.dto.ChatMessageRequest;
+import com.syncstream.dto.WebRtcSignalDto;
 import com.syncstream.model.Message;
 import com.syncstream.model.MessageType;
 import com.syncstream.model.User;
@@ -124,6 +125,25 @@ public class ChatController {
 
         // Publish typing status to Redis
         redisMessagePublisher.publish("syncstream:typing:" + roomId, typingEvent);
+    }
+
+    @MessageMapping("/rooms/{roomId}/webrtc")
+    public void handleWebRtcSignal(
+            @DestinationVariable String roomId,
+            @Payload WebRtcSignalDto signal,
+            Principal principal) {
+        
+        User user = getUserFromPrincipal(principal);
+        if (user == null || !roomService.isMember(roomId, user.getId())) {
+            return;
+        }
+
+        signal.setRoomId(roomId);
+        signal.setSenderId(user.getId());
+        signal.setSenderUsername(user.getUsername());
+        
+        // Broadcast the WebRTC signal via Redis PubSub
+        redisMessagePublisher.publish("syncstream:webrtc:" + roomId, signal);
     }
 
     private User getUserFromPrincipal(Principal principal) {

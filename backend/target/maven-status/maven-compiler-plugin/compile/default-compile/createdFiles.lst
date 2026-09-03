@@ -1,4 +1,5 @@
 com\syncstream\config\WebSocketConfig.class
+com\syncstream\dto\WebRtcSignalDto.class
 com\syncstream\service\FriendshipService.class
 com\syncstream\dto\RegisterRequest.class
 com\syncstream\service\MessageService.class

@@ -2,6 +2,7 @@ package com.syncstream.pubsub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syncstream.dto.UserPresenceDto;
+import com.syncstream.dto.WebRtcSignalDto;
 import com.syncstream.model.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,18 @@ public class RedisMessageSubscriber {
             messagingTemplate.convertAndSend("/topic/presence", presenceDto);
         } catch (IOException e) {
             log.error("Failed to deserialize presence message", e);
+        }
+    }
+
+    public void handleWebRtcMessage(String message) {
+        log.info("Received WebRTC message from Redis Pub/Sub: {}", message);
+        try {
+            WebRtcSignalDto signalDto = objectMapper.readValue(message, WebRtcSignalDto.class);
+            if (signalDto.getRoomId() != null) {
+                messagingTemplate.convertAndSend("/topic/rooms/" + signalDto.getRoomId() + "/webrtc", signalDto);
+            }
+        } catch (IOException e) {
+            log.error("Failed to deserialize WebRTC message", e);
         }
     }
 }
