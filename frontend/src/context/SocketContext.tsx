@@ -13,7 +13,7 @@ export interface ChatMessage {
   senderId: string;
   senderName: string;
   content: string;
-  messageType: 'TEXT' | 'JOIN' | 'LEAVE' | 'SYSTEM';
+  messageType: 'TEXT' | 'JOIN' | 'LEAVE' | 'SYSTEM' | 'FILE' | 'IMAGE';
   createdAt: string;
   sequenceNumber: number;
   parentId?: string;
@@ -21,6 +21,10 @@ export interface ChatMessage {
   // Local state helper for message reliability
   status?: 'SENDING' | 'SENT' | 'FAILED';
   clientMessageId?: string;
+  attachmentId?: string;
+  fileName?: string;
+  fileSize?: number;
+  fileType?: string;
 }
 
 export interface UserPresence {
@@ -38,7 +42,7 @@ interface SocketContextType {
   presenceUsers: Record<string, UserPresence>; // userId -> presence
   joinRoom: (roomId: string) => void;
   leaveRoom: (roomId: string) => void;
-  sendMessage: (roomId: string, content: string, clientMessageId: string, parentId?: string) => void;
+  sendMessage: (roomId: string, content: string, clientMessageId: string, parentId?: string, attachmentData?: any) => void;
   sendReaction: (roomId: string, messageId: string, emoji: string, active: boolean) => void;
   sendTyping: (roomId: string, isTyping: boolean) => void;
   loadMessages: (roomId: string) => Promise<void>;
@@ -318,7 +322,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
-  const sendMessage = (roomId: string, content: string, clientMessageId: string, parentId?: string) => {
+  const sendMessage = (roomId: string, content: string, clientMessageId: string, parentId?: string, attachmentData?: any) => {
     if (!clientRef.current || connectionStatus !== 'CONNECTED') {
       // Append as failed message locally
       const failedMsg: ChatMessage = {
@@ -332,6 +336,13 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         parentId,
         status: 'FAILED',
         clientMessageId,
+        ...(attachmentData && {
+          messageType: attachmentData.messageType || 'FILE',
+          attachmentId: attachmentData.attachmentId,
+          fileName: attachmentData.fileName,
+          fileSize: attachmentData.fileSize,
+          fileType: attachmentData.fileType,
+        }),
       };
 
       setMessages((prev) => ({
@@ -353,6 +364,13 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       parentId,
       status: 'SENDING',
       clientMessageId,
+      ...(attachmentData && {
+        messageType: attachmentData.messageType || 'FILE',
+        attachmentId: attachmentData.attachmentId,
+        fileName: attachmentData.fileName,
+        fileSize: attachmentData.fileSize,
+        fileType: attachmentData.fileType,
+      }),
     };
 
     setMessages((prev) => ({
@@ -362,7 +380,18 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     clientRef.current.publish({
       destination: `/app/rooms/${roomId}/message`,
-      body: JSON.stringify({ content, clientMessageId, parentId }),
+      body: JSON.stringify({ 
+        content, 
+        clientMessageId, 
+        parentId,
+        ...(attachmentData && {
+          messageType: attachmentData.messageType || 'FILE',
+          attachmentId: attachmentData.attachmentId,
+          fileName: attachmentData.fileName,
+          fileSize: attachmentData.fileSize,
+          fileType: attachmentData.fileType,
+        })
+      }),
     });
   };
 

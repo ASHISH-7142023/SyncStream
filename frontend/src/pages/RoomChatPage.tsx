@@ -7,6 +7,7 @@ import { getAvatarForUser } from '../utils/avatarHelper';
 import { ThreadPanel } from '../components/chat/ThreadPanel';
 import { useWebRTC } from '../context/WebRTCContext';
 import { VideoCall } from '../components/VideoCall';
+import { fileService } from '../services/fileService';
 
 interface Member {
   id: string;
@@ -45,6 +46,15 @@ const RoomChatPage: React.FC = () => {
   const [selectedEmojiCategory, setSelectedEmojiCategory] = useState(0);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const [selectedThreadMsg, setSelectedThreadMsg] = useState<any | null>(null);
+  
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [pinnedMessages, setPinnedMessages] = useState<any[]>([]);
 
   const feedEndRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<any>(null);
@@ -97,11 +107,35 @@ const RoomChatPage: React.FC = () => {
     feedEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [roomMessages]);
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!roomId || !inputText.trim()) return;
+    if (!roomId) return;
+    if (!inputText.trim() && !selectedFile) return;
 
-    sendMessage(roomId, inputText.trim(), Math.random().toString(36).substring(2, 15));
+    let attachmentData = null;
+    
+    if (selectedFile) {
+      setUploading(true);
+      try {
+        const uploadRes = await fileService.uploadFile(selectedFile);
+        attachmentData = {
+          messageType: selectedFile.type.startsWith('image/') ? 'IMAGE' : 'FILE',
+          attachmentId: uploadRes.fileId,
+          fileName: uploadRes.fileName,
+          fileSize: uploadRes.fileSize,
+          fileType: uploadRes.fileType,
+        };
+      } catch (err) {
+        console.error('File upload failed', err);
+        setUploading(false);
+        // Show alert or toast here ideally
+        return;
+      }
+      setUploading(false);
+      setSelectedFile(null);
+    }
+
+    sendMessage(roomId, inputText.trim(), Math.random().toString(36).substring(2, 15), undefined, attachmentData);
     setInputText('');
 
     isTypingRef.current = false;
@@ -396,13 +430,31 @@ const RoomChatPage: React.FC = () => {
                   Join Call
                 </button>
               )}
-              <button 
-                onClick={() => alert("Search Messages: Type a keyword in the chat box or use Ctrl+F to find specific phrases.")}
-                className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer" 
-                title="Search"
-              >
-                <i className="fa-solid fa-magnifying-glass text-xs"></i>
-              </button>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search messages..."
+                  value={searchQuery}
+                  onChange={async (e) => {
+                    const val = e.target.value;
+                    setSearchQuery(val);
+                    if (val.trim()) {
+                      setIsSearching(true);
+                      try {
+                        const response = await api.get(`/api/rooms/${roomId}/messages/search?q=${val}`);
+                        setSearchResults(response.data.content);
+                      } catch (err) {
+                        console.error('Search failed', err);
+                      }
+                    } else {
+                      setIsSearching(false);
+                      setSearchResults([]);
+                    }
+                  }}
+                  className="bg-black/20 border border-white/5 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-text-muted focus:outline-none focus:border-brand-500/50 w-32 focus:w-48 transition-all"
+                />
+                <i className="fa-solid fa-magnifying-glass text-xs absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted"></i>
+              </div>
               <button 
                 onClick={() => setPinnedClosed(!pinnedClosed)}
                 className={`p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer ${!pinnedClosed ? 'text-[#a78bfa]' : ''}`}
@@ -429,16 +481,17 @@ const RoomChatPage: React.FC = () => {
         </header>
  
         {/* Pinned Message */}
-        {!pinnedClosed && (
+        {!pinnedClosed && pinnedMessages.length > 0 && (
           <div className="px-6 py-2 shrink-0 animate-scale-in">
             <div className="bg-[#1f2233] rounded-xl p-3 flex items-center justify-between text-sm border border-white/5 text-left hover:border-[#a78bfa]/20 transition-all hover:scale-[1.01] active:scale-[0.99] duration-300">
               <div className="flex items-center gap-3">
-                <svg className="text-brand-400 text-[#a78bfa]" fill="none" height="14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="17" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.68V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.68a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
-                <span className="text-[#a78bfa] font-medium">Pinned</span>
-                <span className="text-text-muted text-xs">Project roadmap for #{room ? room.name : 'developers'} is now available in the workspace documents.</span>
+                <svg className="text-brand-400 text-[#a78bfa] shrink-0" fill="none" height="14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="17" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.68V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.68a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[#a78bfa] font-medium text-xs">Pinned by {pinnedMessages[0].senderName || 'User'}</span>
+                  <span className="text-text-muted text-xs truncate max-w-lg">{pinnedMessages[0].content}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <a href="#docs" className="text-xs bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg transition-colors text-text-muted font-semibold hover:scale-[1.03] active:scale-[0.97] transition-all">View Doc</a>
+              <div className="flex items-center gap-3 shrink-0">
                 <button onClick={() => setPinnedClosed(true)} className="text-text-muted hover:text-white transition-all hover:scale-115 active:scale-90 cursor-pointer">
                   ✕
                 </button>
@@ -451,7 +504,34 @@ const RoomChatPage: React.FC = () => {
         {isCallActive && <VideoCall />}
 
         {/* Chat Message Logs */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6 scrollbar-thin">
+        <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6 scrollbar-thin relative">
+          
+          {isSearching ? (
+            <div className="absolute inset-0 bg-[#0f111a]/95 backdrop-blur-sm z-20 overflow-y-auto px-6 py-4 flex flex-col gap-4">
+              <h3 className="text-sm font-semibold text-brand-400 mb-2">Search Results ({searchResults.length})</h3>
+              {searchResults.length === 0 ? (
+                <div className="text-text-muted text-sm text-center mt-10">No messages found for "{searchQuery}"</div>
+              ) : (
+                searchResults.map((msg: any) => (
+                  <div key={msg.id} className="bg-[#1f2233] p-4 rounded-xl border border-white/5 flex gap-4 text-left">
+                    <div className="w-8 h-8 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-sm shrink-0">
+                      {getAvatarForUser(msg.senderName || 'US', presenceUsers)}
+                    </div>
+                    <div>
+                      <div className="flex items-baseline gap-2 mb-1">
+                        <span className="font-semibold text-[#f8fafc] text-sm">{msg.senderName}</span>
+                        <span className="text-[10px] text-text-muted font-medium">{formatTime(msg.createdAt)}</span>
+                      </div>
+                      <div className="text-sm text-gray-300 bg-white/5 px-2.5 py-1.5 rounded inline-block">
+                        {msg.content}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          ) : null}
+
           {roomMessages.map((msg: any, idx: number) => {
             const isMention = msg.content?.includes(`@${user?.username}`);
             return (
@@ -463,68 +543,127 @@ const RoomChatPage: React.FC = () => {
                     <div className="flex-grow h-px bg-purple-500/20"></div>
                   </div>
                 )}
-                <div className="flex gap-4 group text-left">
-                <div className="w-10 h-10 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-xl shrink-0 select-none mt-1">
-                  {getAvatarForUser(msg.sender || 'US', presenceUsers)}
-                </div>
-                <div className="flex-grow min-w-0">
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="font-semibold text-white text-sm">{msg.sender}</span>
-                    <span className="text-[10px] text-text-muted">{formatTime(msg.timestamp)}</span>
+                <div className="flex gap-4 group text-left relative">
+                  <div className="w-10 h-10 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-xl shrink-0 select-none mt-1">
+                    {getAvatarForUser(msg.sender || 'US', presenceUsers)}
                   </div>
-                  <div className={`text-[15px] leading-relaxed text-gray-200 ${isMention ? 'bg-[#7c3aed]/15 border border-[#7c3aed]/20 rounded px-2.5 py-1.5 w-fit my-1' : ''}`}>
-                    {msg.content}
+                  <div className="flex-grow min-w-0">
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <span className="font-semibold text-white text-sm">{msg.sender}</span>
+                      <span className="text-[10px] text-text-muted">{formatTime(msg.timestamp)}</span>
+                    </div>
+                    <div className={`text-[15px] leading-relaxed text-gray-200 ${isMention ? 'bg-[#7c3aed]/15 border border-[#7c3aed]/20 rounded px-2.5 py-1.5 w-fit my-1' : ''}`}>
+                      {msg.content}
+                    </div>
+                    
+                    {msg.attachmentId && (
+                      <div className="mt-2 max-w-sm rounded-lg overflow-hidden border border-white/10 bg-[#1f2233]">
+                        {msg.messageType === 'IMAGE' ? (
+                          <img 
+                            src={fileService.getFileUrl(msg.attachmentId)} 
+                            alt={msg.fileName} 
+                            className="w-full h-auto max-h-60 object-contain bg-black/20"
+                          />
+                        ) : (
+                          <a 
+                            href={fileService.getFileUrl(msg.attachmentId)} 
+                            download={msg.fileName}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-3 p-3 hover:bg-white/5 transition-colors"
+                          >
+                            <div className="w-10 h-10 rounded bg-[#8b5cf6]/20 text-[#a78bfa] flex items-center justify-center shrink-0">
+                              <i className="fa-solid fa-file"></i>
+                            </div>
+                            <div className="min-w-0 flex-1 text-left">
+                              <div className="text-sm font-medium text-white truncate">{msg.fileName}</div>
+                              <div className="text-xs text-text-muted">{msg.fileSize ? (msg.fileSize / 1024).toFixed(1) + ' KB' : 'Unknown size'}</div>
+                            </div>
+                            <div className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white">
+                              <i className="fa-solid fa-download"></i>
+                            </div>
+                          </a>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Reactions */}
+                    <div className="flex gap-2 mt-2 items-center flex-wrap">
+                      {Object.entries(msg.reactions || {}).map(([emoji, users]: [string, any]) => {
+                        const userList = users as string[];
+                        const count = userList.length;
+                        if (count === 0) return null;
+                        const active = userList.includes(user?.username || '');
+                        return (
+                          <button 
+                            key={emoji}
+                            onClick={() => handleAddReaction(msg, emoji)}
+                            className={`flex items-center gap-1.5 border rounded-full px-2.5 py-1 text-xs transition-colors ${
+                              active 
+                                ? 'bg-[#8b5cf6]/20 border-[#8b5cf6] text-white' 
+                                : 'bg-[#1f2233] border-white/10 hover:border-white/20 text-text-muted'
+                            }`}
+                            title={userList.join(', ')}
+                          >
+                            <span>{emoji}</span>
+                            <span>{count}</span>
+                          </button>
+                        );
+                      })}
+                      <button 
+                        onClick={() => handleAddReaction(msg, '👍')}
+                        className="flex items-center justify-center w-7 h-7 bg-transparent border border-transparent rounded-full hover:bg-[#1f2233] hover:border-white/10 transition-colors text-text-muted opacity-0 group-hover:opacity-100"
+                      >
+                        👍
+                      </button>
+                      <button 
+                        onClick={() => handleAddReaction(msg, '🔥')}
+                        className="flex items-center justify-center w-7 h-7 bg-transparent border border-transparent rounded-full hover:bg-[#1f2233] hover:border-white/10 transition-colors text-text-muted opacity-0 group-hover:opacity-100"
+                      >
+                        🔥
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setSelectedThreadMsg(msg);
+                          setShowMembersSidebar(true);
+                        }}
+                        className="flex items-center gap-1.5 px-2 py-1 bg-transparent border border-transparent rounded-lg hover:bg-[#1f2233] hover:border-white/10 transition-colors text-text-muted opacity-0 group-hover:opacity-100 text-xs font-medium"
+                      >
+                        <svg fill="none" height="14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><polyline points="9 17 4 12 9 7"></polyline><path d="M20 18v-2a4 4 0 0 0-4-4H4"></path></svg>
+                        Reply
+                      </button>
+                    </div>
                   </div>
                   
-                  {/* Reactions */}
-                  <div className="flex gap-2 mt-2 items-center flex-wrap">
-                    {Object.entries(msg.reactions || {}).map(([emoji, users]: [string, any]) => {
-                      const userList = users as string[];
-                      const count = userList.length;
-                      if (count === 0) return null;
-                      const active = userList.includes(user?.username || '');
-                      return (
-                        <button 
-                          key={emoji}
-                          onClick={() => handleAddReaction(msg, emoji)}
-                          className={`flex items-center gap-1.5 border rounded-full px-2.5 py-1 text-xs transition-colors ${
-                            active 
-                              ? 'bg-[#8b5cf6]/20 border-[#8b5cf6] text-white' 
-                              : 'bg-[#1f2233] border-white/10 hover:border-white/20 text-text-muted'
-                          }`}
-                          title={userList.join(', ')}
-                        >
-                          <span>{emoji}</span>
-                          <span>{count}</span>
-                        </button>
-                      );
-                    })}
+                  {/* Message Action Menu */}
+                  <div className="absolute right-0 -top-4 bg-[#1f2233] border border-white/10 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center">
                     <button 
-                      onClick={() => handleAddReaction(msg, '👍')}
-                      className="flex items-center justify-center w-7 h-7 bg-transparent border border-transparent rounded-full hover:bg-[#1f2233] hover:border-white/10 transition-colors text-text-muted opacity-0 group-hover:opacity-100"
-                    >
-                      👍
-                    </button>
-                    <button 
-                      onClick={() => handleAddReaction(msg, '🔥')}
-                      className="flex items-center justify-center w-7 h-7 bg-transparent border border-transparent rounded-full hover:bg-[#1f2233] hover:border-white/10 transition-colors text-text-muted opacity-0 group-hover:opacity-100"
-                    >
-                      🔥
-                    </button>
-                    <button 
-                      onClick={() => {
-                        setSelectedThreadMsg(msg);
-                        setShowMembersSidebar(true);
+                      onClick={async () => {
+                        try {
+                          await api.post(`/api/rooms/${roomId}/messages/${msg.id}/pin`, { pinned: !msg.pinned });
+                          setRoomMessages(prev => prev.map(m => m.id === msg.id ? { ...m, pinned: !msg.pinned } : m));
+                          if (!msg.pinned) {
+                            setPinnedMessages(prev => [msg, ...prev]);
+                            setPinnedClosed(false);
+                          } else {
+                            setPinnedMessages(prev => prev.filter(m => m.id !== msg.id));
+                          }
+                        } catch (e) { console.error('Failed to pin', e); }
                       }}
-                      className="flex items-center gap-1.5 px-2 py-1 bg-transparent border border-transparent rounded-lg hover:bg-[#1f2233] hover:border-white/10 transition-colors text-text-muted opacity-0 group-hover:opacity-100 text-xs font-medium"
+                      className="p-1.5 text-text-muted hover:text-white hover:bg-white/5 transition-colors cursor-pointer" 
+                      title={msg.pinned ? "Unpin message" : "Pin message"}
                     >
-                      <svg fill="none" height="14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><polyline points="9 17 4 12 9 7"></polyline><path d="M20 18v-2a4 4 0 0 0-4-4H4"></path></svg>
-                      Reply
+                      <i className={`fa-solid fa-thumbtack text-xs ${msg.pinned ? 'text-brand-400' : ''}`}></i>
+                    </button>
+                    <button onClick={() => setSelectedThreadMsg(msg)} className="p-1.5 text-text-muted hover:text-white hover:bg-white/5 transition-colors cursor-pointer" title="Reply in thread">
+                      <i className="fa-solid fa-reply text-xs"></i>
+                    </button>
+                    <button className="p-1.5 text-text-muted hover:text-white hover:bg-white/5 transition-colors cursor-pointer" title="More actions">
+                      <i className="fa-solid fa-ellipsis-vertical text-xs"></i>
                     </button>
                   </div>
                 </div>
-              </div>
-            </React.Fragment>
+              </React.Fragment>
             );
           })}
           
@@ -555,6 +694,27 @@ const RoomChatPage: React.FC = () => {
           </div>
 
           <form onSubmit={handleSendMessage} className="bg-[#1f2233] border border-white/10 rounded-2xl flex flex-col focus-within:border-brand-500/50 focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.3)] transition-all">
+            {selectedFile && (
+              <div className="px-4 pt-3 flex items-center gap-3">
+                <div className="w-12 h-12 rounded bg-black/20 flex items-center justify-center relative group">
+                  {selectedFile.type.startsWith('image/') ? (
+                    <img src={URL.createObjectURL(selectedFile)} alt="preview" className="w-full h-full object-cover rounded opacity-80" />
+                  ) : (
+                    <i className="fa-solid fa-file text-[#a78bfa] text-xl"></i>
+                  )}
+                  <button 
+                    type="button" 
+                    onClick={() => setSelectedFile(null)}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="text-xs text-text-muted truncate flex-1">
+                  {selectedFile.name}
+                </div>
+              </div>
+            )}
             <textarea 
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
@@ -633,15 +793,25 @@ const RoomChatPage: React.FC = () => {
                 </button>
               </div>
               <div className="flex items-center gap-2">
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  onChange={(e) => e.target.files && setSelectedFile(e.target.files[0])} 
+                />
                 <button 
-                  onClick={() => alert("Attachment upload: Drag and drop files directly into the composer or upgrade to Pro to share files up to 100MB.")}
+                  onClick={() => fileInputRef.current?.click()}
                   type="button" 
                   className="p-2 hover:bg-white/5 rounded-lg transition-colors text-text-muted cursor-pointer"
                 >
                   <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
                 </button>
-                <button type="submit" disabled={!inputText.trim()} className="bg-brand-600 hover:bg-brand-500 text-white p-2 rounded-xl transition-colors shadow-lg shadow-brand-500/20 disabled:opacity-40">
-                  <svg fill="none" height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                <button type="submit" disabled={(!inputText.trim() && !selectedFile) || uploading} className="bg-brand-600 hover:bg-brand-500 text-white p-2 rounded-xl transition-colors shadow-lg shadow-brand-500/20 disabled:opacity-40">
+                  {uploading ? (
+                    <i className="fa-solid fa-spinner fa-spin"></i>
+                  ) : (
+                    <svg fill="none" height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                  )}
                 </button>
               </div>
             </div>

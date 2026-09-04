@@ -55,9 +55,7 @@ public class ChatController {
         Message savedMessage = messageService.saveMessage(
                 roomId,
                 user.getId(),
-                request.getContent(),
-                MessageType.TEXT,
-                request.getParentId()
+                request
         );
 
         // Include clientMessageId if needed, but here we just broadcast

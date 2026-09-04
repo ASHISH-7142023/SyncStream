@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
@@ -34,6 +35,7 @@ public class Message {
 
     private String senderName;
 
+    @TextIndexed
     private String content;
 
     private MessageType messageType;
@@ -43,6 +45,16 @@ public class Message {
     private Long sequenceNumber;
 
     private String parentId;
+
+    private String attachmentId;
+
+    private String fileName;
+
+    private Long fileSize;
+
+    private String fileType;
+
+    private boolean pinned;
 
     private java.util.Map<String, java.util.List<String>> reactions = new java.util.HashMap<>();
 }

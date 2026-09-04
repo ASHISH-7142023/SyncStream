@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
+import { useNotification } from '../../context/NotificationContext';
 import SyncStreamLogo from '../ui/SyncStreamLogo';
 
 interface Room {
@@ -31,12 +32,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const location = useLocation();
   const { user, logout } = useAuth();
   const { presenceUsers } = useSocket();
+  const { unreadCount } = useNotification();
 
   const menuItems = [
     { id: 'home', label: 'Home', icon: Home, path: '/dashboard' },
     { id: 'threads', label: 'Threads', icon: MessageSquare, path: '/threads', badge: 0 },
     { id: 'dms', label: 'Direct Messages', icon: MessageSquare, path: '/messages', badge: 3 },
-    { id: 'mentions', label: 'Mentions', icon: AtSign, path: '/mentions', badge: 0 },
+    { id: 'mentions', label: 'Notifications', icon: AtSign, path: '/notifications', badge: unreadCount },
     { id: 'saved', label: 'Saved Messages', icon: Bookmark, path: '/saved', badge: 0 },
   ];
 

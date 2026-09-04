@@ -1,5 +1,6 @@
 package com.syncstream.service;
 
+import com.syncstream.dto.ChatMessageRequest;
 import com.syncstream.model.Message;
 import com.syncstream.model.MessageType;
 import com.syncstream.model.User;
@@ -33,6 +34,9 @@ public class MessageServiceTest {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Mock
+    private NotificationService notificationService;
+
+    @Mock
     private ValueOperations<String, Object> valueOperations;
 
     @InjectMocks
@@ -55,7 +59,11 @@ public class MessageServiceTest {
         when(valueOperations.increment(anyString())).thenReturn(5L);
         when(messageRepository.save(any(Message.class))).thenReturn(mockSaved);
 
-        Message saved = messageService.saveMessage("room-1", "user-1", "Hello World", MessageType.TEXT, null);
+        ChatMessageRequest request = new ChatMessageRequest();
+        request.setContent("Hello World");
+        request.setMessageType("TEXT");
+
+        Message saved = messageService.saveMessage("room-1", "user-1", request);
 
         assertNotNull(saved);
         assertEquals(5L, saved.getSequenceNumber());

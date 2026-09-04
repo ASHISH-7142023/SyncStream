@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syncstream.dto.UserPresenceDto;
 import com.syncstream.dto.WebRtcSignalDto;
 import com.syncstream.model.Message;
+import com.syncstream.model.Notification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -64,6 +65,17 @@ public class RedisMessageSubscriber {
             }
         } catch (IOException e) {
             log.error("Failed to deserialize WebRTC message", e);
+        }
+    }
+
+    public void handleNotificationMessage(String message) {
+        log.info("Received notification message from Redis Pub/Sub: {}", message);
+        try {
+            Notification notification = objectMapper.readValue(message, Notification.class);
+            // Broadcast to STOMP client subscribed to /topic/user/{userId}/notifications
+            messagingTemplate.convertAndSend("/topic/user/" + notification.getUserId() + "/notifications", notification);
+        } catch (IOException e) {
+            log.error("Failed to deserialize notification message", e);
         }
     }
 }

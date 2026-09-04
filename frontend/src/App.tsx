@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import { WebRTCProvider } from './context/WebRTCContext';
+import { NotificationProvider } from './context/NotificationContext';
 
 // Layout wrappers
 import PublicLayout from './layouts/PublicLayout';
@@ -53,7 +54,9 @@ function AppContent() {
           <ProtectedRoute>
             <SocketProvider>
               <WebRTCProvider>
-                <AppLayout />
+                <NotificationProvider>
+                  <AppLayout />
+                </NotificationProvider>
               </WebRTCProvider>
             </SocketProvider>
           </ProtectedRoute>

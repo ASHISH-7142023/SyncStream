@@ -1,5 +1,6 @@
 package com.syncstream.service;
 
+import com.syncstream.dto.ChatMessageRequest;
 import com.syncstream.model.Message;
 import com.syncstream.model.MessageType;
 import com.syncstream.model.User;
@@ -27,26 +28,62 @@ public class MessageService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    public Message saveMessage(String roomId, String senderId, String content, MessageType messageType, String parentId) {
+    @Autowired
+    private NotificationService notificationService;
+
+    public Message saveMessage(String roomId, String senderId, ChatMessageRequest request) {
         String senderName = userRepository.findById(senderId)
                 .map(User::getUsername)
                 .orElse("Unknown");
 
         Long sequenceNumber = getNextSequenceNumber(roomId);
 
+        MessageType type = MessageType.TEXT;
+        if (request.getMessageType() != null) {
+            try {
+                type = MessageType.valueOf(request.getMessageType().toUpperCase());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
         Message message = Message.builder()
                 .roomId(roomId)
                 .senderId(senderId)
                 .senderName(senderName)
-                .content(content)
-                .messageType(messageType)
+                .content(request.getContent())
+                .messageType(type)
                 .createdAt(Instant.now())
                 .sequenceNumber(sequenceNumber)
-                .parentId(parentId)
+                .parentId(request.getParentId())
+                .attachmentId(request.getAttachmentId())
+                .fileName(request.getFileName())
+                .fileSize(request.getFileSize())
+                .fileType(request.getFileType())
+                .pinned(false)
                 .reactions(new java.util.HashMap<>())
                 .build();
 
-        return messageRepository.save(message);
+        Message savedMessage = messageRepository.save(message);
+
+        // Parse mentions
+        if (request.getContent() != null && !request.getContent().trim().isEmpty()) {
+            java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("@([a-zA-Z0-9_]+)").matcher(request.getContent());
+            while (matcher.find()) {
+                String mentionedUsername = matcher.group(1);
+                userRepository.findByUsername(mentionedUsername).ifPresent(mentionedUser -> {
+                    if (!mentionedUser.getId().equals(senderId)) {
+                        notificationService.createNotification(
+                                mentionedUser.getId(),
+                                "New Mention",
+                                senderName + " mentioned you in a message.",
+                                "MENTION",
+                                roomId
+                        );
+                    }
+                });
+            }
+        }
+
+        return savedMessage;
     }
 
     public Page<Message> getRoomMessages(String roomId, int page, int size) {
@@ -113,6 +150,22 @@ public class MessageService {
                 }
             }
             return message;
+        }).orElseThrow(() -> new IllegalArgumentException("Message not found"));
+    }
+
+    public Page<Message> searchMessages(String roomId, String keyword, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return messageRepository.searchMessagesInRoom(roomId, keyword, pageRequest);
+    }
+
+    public List<Message> getPinnedMessages(String roomId) {
+        return messageRepository.findByRoomIdAndPinnedTrueOrderByCreatedAtDesc(roomId);
+    }
+
+    public Message togglePin(String messageId, boolean pinned) {
+        return messageRepository.findById(messageId).map(message -> {
+            message.setPinned(pinned);
+            return messageRepository.save(message);
         }).orElseThrow(() -> new IllegalArgumentException("Message not found"));
     }
 }

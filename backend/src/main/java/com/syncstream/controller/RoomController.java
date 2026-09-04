@@ -185,6 +185,64 @@ public class RoomController {
         return ResponseEntity.ok(messageService.getReplies(messageId));
     }
 
+    @GetMapping("/{roomId}/messages/search")
+    public ResponseEntity<?> searchMessages(
+            @PathVariable String roomId,
+            @RequestParam String q,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            @AuthenticationPrincipal User user) {
+        
+        if (!roomService.isMember(roomId, user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "You must be a member of the room to search messages"));
+        }
+
+        Page<Message> messagePage = messageService.searchMessages(roomId, q, page, size);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", messagePage.getContent());
+        response.put("pageNumber", messagePage.getNumber());
+        response.put("pageSize", messagePage.getSize());
+        response.put("totalElements", messagePage.getTotalElements());
+        response.put("totalPages", messagePage.getTotalPages());
+        response.put("last", messagePage.isLast());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{roomId}/messages/pinned")
+    public ResponseEntity<?> getPinnedMessages(
+            @PathVariable String roomId,
+            @AuthenticationPrincipal User user) {
+        
+        if (!roomService.isMember(roomId, user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "You must be a member of the room to view pinned messages"));
+        }
+
+        return ResponseEntity.ok(messageService.getPinnedMessages(roomId));
+    }
+
+    @PostMapping("/{roomId}/messages/{messageId}/pin")
+    public ResponseEntity<?> togglePin(
+            @PathVariable String roomId,
+            @PathVariable String messageId,
+            @RequestBody Map<String, Boolean> body,
+            @AuthenticationPrincipal User user) {
+        
+        if (!roomService.isMember(roomId, user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "You must be a member of the room to pin messages"));
+        }
+
+        Boolean pin = body.get("pinned");
+        if (pin == null) pin = true;
+
+        Message updated = messageService.togglePin(messageId, pin);
+        return ResponseEntity.ok(updated);
+    }
+
     @PostMapping("/dm/{targetUserId}")
     public ResponseEntity<?> getOrCreateDirectMessage(
             @PathVariable String targetUserId,
