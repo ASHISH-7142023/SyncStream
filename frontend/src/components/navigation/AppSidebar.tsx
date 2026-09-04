@@ -4,6 +4,7 @@ import {
   Home, MessageSquare, AtSign, Bookmark, Plus, Sparkles, LogOut, ChevronLeft
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useSocket } from '../../context/SocketContext';
 import SyncStreamLogo from '../ui/SyncStreamLogo';
 
 interface Room {
@@ -29,6 +30,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { presenceUsers } = useSocket();
 
   const menuItems = [
     { id: 'home', label: 'Home', icon: Home, path: '/dashboard' },
@@ -186,15 +188,25 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#7C3AED] to-[#38BDF8] flex items-center justify-center font-bold text-[#F8FAFC] text-sm">
                 {user ? getInitials(user.username) : 'U'}
               </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#111318] bg-[#22C55E] animate-pulse-online" />
+              <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#111318] ${
+                user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'bg-status-offline' :
+                user && presenceUsers[user.id]?.status === 'AWAY' ? 'bg-status-away' :
+                'bg-status-online animate-pulse-online'
+              }`} />
             </div>
             {!isCollapsed && (
               <div className="text-left flex-1 min-w-0">
                 <div className="text-xs font-bold text-[#F8FAFC] truncate group-hover:text-[#A78BFA] transition-colors">
                   {user ? user.username : 'User'}
                 </div>
-                <div className="text-[10px] text-[#94A3B8] font-medium tracking-wide">
-                  Online
+                <div className={`text-[10px] font-medium tracking-wide ${
+                  user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'text-status-offline' :
+                  user && presenceUsers[user.id]?.status === 'AWAY' ? 'text-status-away' :
+                  'text-status-online'
+                }`}>
+                  {user && presenceUsers[user.id]?.status ? 
+                    presenceUsers[user.id].status.charAt(0) + presenceUsers[user.id].status.slice(1).toLowerCase() 
+                    : 'Online'}
                 </div>
               </div>
             )}

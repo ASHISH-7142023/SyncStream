@@ -55,7 +55,7 @@ public class MessageServiceTest {
         when(valueOperations.increment(anyString())).thenReturn(5L);
         when(messageRepository.save(any(Message.class))).thenReturn(mockSaved);
 
-        Message saved = messageService.saveMessage("room-1", "user-1", "Hello World", MessageType.TEXT);
+        Message saved = messageService.saveMessage("room-1", "user-1", "Hello World", MessageType.TEXT, null);
 
         assertNotNull(saved);
         assertEquals(5L, saved.getSequenceNumber());

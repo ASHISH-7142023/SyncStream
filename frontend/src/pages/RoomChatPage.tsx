@@ -300,11 +300,23 @@ const RoomChatPage: React.FC = () => {
               <div className="w-9 h-9 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-xl text-white select-none">
                 {getAvatarForUser(user ? user.username : 'Alex Johnson', presenceUsers)}
               </div>
-              <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-[#151723] rounded-full"></div>
+              <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 border-2 border-[#151723] rounded-full ${
+                user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'bg-status-offline' :
+                user && presenceUsers[user.id]?.status === 'AWAY' ? 'bg-status-away' :
+                'bg-status-online animate-pulse-online'
+              }`}></div>
             </div>
             <div>
               <div className="text-sm font-medium text-white">{user ? user.username : 'Alex Johnson'}</div>
-              <div className="text-xs text-status-online">Online</div>
+              <div className={`text-xs ${
+                user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'text-status-offline' :
+                user && presenceUsers[user.id]?.status === 'AWAY' ? 'text-status-away' :
+                'text-status-online'
+              }`}>
+                {user && presenceUsers[user.id]?.status ? 
+                  presenceUsers[user.id].status.charAt(0) + presenceUsers[user.id].status.slice(1).toLowerCase() 
+                  : 'Online'}
+              </div>
             </div>
           </div>
           <button 

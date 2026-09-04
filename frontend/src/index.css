@@ -35,7 +35,7 @@
   --surface-bright: #151923;
   --status-online: #22C55E;
   --status-away: #F59E0B;
-  --status-offline: #EF4444;
+  --status-offline: #000000;
   
   /* User profile specific variables */
   --obsidian-900: #09090B;
@@ -99,6 +99,14 @@ html, body, #root {
 .bg-obsidian-800 { background-color: var(--obsidian-800); }
 .bg-obsidian-700 { background-color: var(--obsidian-700); }
 .bg-obsidian-600 { background-color: var(--obsidian-600); }
+
+.bg-status-online { background-color: var(--status-online); }
+.bg-status-away { background-color: var(--status-away); }
+.bg-status-offline { background-color: var(--status-offline); }
+
+.text-status-online { color: var(--status-online); }
+.text-status-away { color: var(--status-away); }
+.text-status-offline { color: var(--status-offline); }
 
 .border-obsidian-900 { border-color: var(--obsidian-900); }
 .border-obsidian-800 { border-color: var(--obsidian-800); }
