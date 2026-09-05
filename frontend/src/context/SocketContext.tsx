@@ -25,6 +25,7 @@ export interface ChatMessage {
   fileName?: string;
   fileSize?: number;
   fileType?: string;
+  pinned?: boolean;
 }
 
 export interface UserPresence {
