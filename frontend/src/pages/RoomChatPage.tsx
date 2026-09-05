@@ -33,7 +33,7 @@ const RoomChatPage: React.FC = () => {
   const { user, logout } = useAuth();
   const { 
     connectionStatus, messages, typingUsers, presenceUsers,
-    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages
+    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, updateMessage
   } = useSocket();
   const { isCallActive, joinCall } = useWebRTC();
 
@@ -645,7 +645,7 @@ const RoomChatPage: React.FC = () => {
                       onClick={async () => {
                         try {
                           await api.post(`/api/rooms/${roomId}/messages/${msg.id}/pin`, { pinned: !msg.pinned });
-                          setRoomMessages(prev => prev.map(m => m.id === msg.id ? { ...m, pinned: !msg.pinned } : m));
+                          if (roomId) updateMessage(roomId, msg.id, { pinned: !msg.pinned });
                           if (!msg.pinned) {
                             setPinnedMessages(prev => [msg, ...prev]);
                             setPinnedClosed(false);

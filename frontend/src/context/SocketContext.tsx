@@ -46,6 +46,7 @@ interface SocketContextType {
   sendReaction: (roomId: string, messageId: string, emoji: string, active: boolean) => void;
   sendTyping: (roomId: string, isTyping: boolean) => void;
   loadMessages: (roomId: string) => Promise<void>;
+  updateMessage: (roomId: string, messageId: string, updates: Partial<ChatMessage>) => void;
   hasMoreMessages: Record<string, boolean>;
   loadMoreMessages: (roomId: string) => Promise<void>;
   getStompClient: () => Client | null;
@@ -405,11 +406,21 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   };
 
   const sendTyping = (roomId: string, isTyping: boolean) => {
-    if (!clientRef.current || connectionStatus !== 'CONNECTED') return;
+    if (clientRef.current?.connected) {
+      clientRef.current.publish({
+        destination: `/app/rooms/${roomId}/typing`,
+        body: JSON.stringify({ isTyping }),
+      });
+    }
+  };
 
-    clientRef.current.publish({
-      destination: `/app/rooms/${roomId}/typing`,
-      body: JSON.stringify({ isTyping }),
+  const updateMessage = (roomId: string, messageId: string, updates: Partial<ChatMessage>) => {
+    setMessages(prev => {
+      const roomMsgs = prev[roomId] || [];
+      return {
+        ...prev,
+        [roomId]: roomMsgs.map(m => m.id === messageId ? { ...m, ...updates } : m)
+      };
     });
   };
 
@@ -484,6 +495,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         sendMessage,
         sendReaction,
         sendTyping,
+        updateMessage,
         loadMessages,
         hasMoreMessages,
         loadMoreMessages,
