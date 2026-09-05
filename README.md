@@ -9,9 +9,21 @@ SyncStream is a production-grade, real-time collaborative room chat application 
 SyncStream was engineered to solve a fundamental challenge in real-time communication: **How do we build an interface that feels rich, beautiful, and fluid, while ensuring the underlying architecture can scale horizontally to support millions of concurrent connections?**
 
 Most collaborative chat projects fall into one of two traps: either they are visually simple and lack modern styling, or their server layers cannot scale beyond a single thread. SyncStream bridges this gap by combining:
-* **Rich Premium Aesthetics**: A glassmorphic design system featuring HSL-curated color tones, custom typography, and dynamic spring micro-animations.
+* **Rich Premium Aesthetics**: A glassmorphic design system featuring HSL-curated color tones, custom typography, dynamic theming, and dynamic spring micro-animations.
+* **Feature-Packed Workspaces**: Fully integrated with WebRTC Video/Audio calling, Markdown-rendered chat streams, GridFS file sharing, and cross-server Redis push notifications.
 * **Horizontal Scalability**: A distributed backend cluster synchronized via Redis Pub/Sub to allow users on different server instances to chat instantly.
 * **Guaranteed Reliability**: Sequence-numbered message buffers, connection presence caching, and automatic recovery protocols for network dropouts.
+
+---
+
+## Core Features
+
+- 💬 **Real-Time Group Chat**: Scalable room-based messaging using STOMP WebSockets and Redis Pub/Sub.
+- 📹 **WebRTC Video & Audio Calling**: Low-latency peer-to-peer media streaming with dynamic grid and Presentation mode layouts for screen sharing.
+- 🎨 **Dynamic UI Theming**: Real-time context-driven CSS variable overrides, allowing users to customize their workspace accent colors without page reloads.
+- 📝 **Markdown & Code Rendering**: Full support for GitHub-flavored markdown, code block syntax highlighting, and text formatting inside chat.
+- 📁 **File & Media Attachments**: Seamlessly upload and share images, PDFs, and code snippets powered by MongoDB GridFS chunked streaming.
+- 🔔 **Targeted Push Notifications**: Global Redis event broadcasting that maps `@mentions` and alerts across specific user sessions regardless of which server node they are connected to.
 
 ---
 
@@ -118,13 +130,34 @@ sequenceDiagram
     Server-->>Client: Recovery payload (re-aligns local feed)
 ```
 
+### 4. WebRTC Signaling Flow
+```mermaid
+sequenceDiagram
+    participant PeerA as User A Browser
+    participant Server as SyncStream Backend
+    participant PeerB as User B Browser
+    
+    Note over PeerA,PeerB: Signaling Phase (Via WebSocket)
+    PeerA->>Server: Send WebRTC Offer (SDP)
+    Server->>PeerB: Route Offer to User B
+    PeerB->>Server: Send WebRTC Answer (SDP)
+    Server->>PeerA: Route Answer to User A
+    
+    PeerA->>Server: Send ICE Candidates
+    Server->>PeerB: Route ICE Candidates
+    
+    Note over PeerA,PeerB: Peer-to-Peer Phase (Bypasses Backend)
+    PeerA->>PeerB: Direct Encrypted Video/Audio Stream
+```
+
 ---
 
 ## Key Use Cases
 
 1. **Horizontal Enterprise Team Collaboration**: Deploy SyncStream to multi-container Kubernetes nodes where team members remain connected to separate instances but can interact instantaneously with zero message lag.
-2. **Persistent Discussion Hubs**: Users can create rooms for project areas, track online presence, read pinned announcements, and scroll through complete history logs.
-3. **Secure Workspace Control**: Administrators can secure their credentials using segmented passwords, track recent log activities, and manage preference settings.
+2. **Persistent Discussion Hubs**: Users can create rooms for project areas, track online presence, read pinned announcements, share large files, and scroll through complete history logs.
+3. **Seamless Video Conferences**: Users can join a room and jump directly into a WebRTC video call with zero external plugins, utilizing dynamic Presentation Mode for easy screen sharing.
+4. **Secure Workspace Control**: Administrators can secure their credentials using segmented passwords, track recent log activities, and manage preference settings.
 
 ---
 
