@@ -8,6 +8,8 @@ interface User {
   createdAt?: string;
   gender?: string;
   avatar?: string;
+  themeColor?: string;
+  notificationsEnabled?: boolean;
 }
 
 interface AuthContextType {
@@ -19,6 +21,7 @@ interface AuthContextType {
   register: (username: string, password: string, gender: string, avatar: string) => Promise<void>;
   logout: () => void;
   clearError: () => void;
+  updateSettings: (themeColor?: string, notificationsEnabled?: boolean) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,6 +42,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           localStorage.setItem('username', response.data.username);
           if (response.data.gender) localStorage.setItem('user-gender', response.data.gender);
           if (response.data.avatar) localStorage.setItem('user-avatar', response.data.avatar);
+          if (response.data.themeColor) document.documentElement.setAttribute('data-theme', response.data.themeColor);
           setToken(storedToken);
         } catch (err: any) {
           console.error("Token validation failed. Logging out.", err);
@@ -59,14 +63,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setError(null);
     try {
       const response = await api.post('/api/auth/login', { username, password });
-      const { token: receivedToken, userId, username: resUsername, gender, avatar } = response.data;
+      const { token: receivedToken, userId, username: resUsername, gender, avatar, themeColor, notificationsEnabled } = response.data;
       
       localStorage.setItem('token', receivedToken);
       localStorage.setItem('username', resUsername);
       if (gender) localStorage.setItem('user-gender', gender);
       if (avatar) localStorage.setItem('user-avatar', avatar);
       setToken(receivedToken);
-      setUser({ id: userId, username: resUsername, gender, avatar });
+      setUser({ id: userId, username: resUsername, gender, avatar, themeColor, notificationsEnabled });
+      if (themeColor) document.documentElement.setAttribute('data-theme', themeColor);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
       throw err;
@@ -80,14 +85,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setError(null);
     try {
       const response = await api.post('/api/auth/register', { username, password, gender, avatar });
-      const { token: receivedToken, userId, username: resUsername } = response.data;
+      const { token: receivedToken, userId, username: resUsername, themeColor, notificationsEnabled } = response.data;
       
       localStorage.setItem('token', receivedToken);
       localStorage.setItem('username', resUsername);
       localStorage.setItem('user-gender', gender);
       localStorage.setItem('user-avatar', avatar);
       setToken(receivedToken);
-      setUser({ id: userId, username: resUsername, gender, avatar });
+      setUser({ id: userId, username: resUsername, gender, avatar, themeColor, notificationsEnabled });
+      if (themeColor) document.documentElement.setAttribute('data-theme', themeColor);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed. Username might be taken.');
       throw err;
@@ -106,8 +112,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const clearError = () => setError(null);
 
+  const updateSettings = async (themeColor?: string, notificationsEnabled?: boolean) => {
+    try {
+      const payload: any = {};
+      if (themeColor !== undefined) payload.themeColor = themeColor;
+      if (notificationsEnabled !== undefined) payload.notificationsEnabled = notificationsEnabled;
+      
+      const response = await api.put('/api/auth/settings', payload);
+      setUser(response.data);
+      if (response.data.themeColor) {
+        document.documentElement.setAttribute('data-theme', response.data.themeColor);
+      }
+    } catch (err) {
+      console.error("Failed to update settings", err);
+      throw err;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, error, login, register, logout, clearError }}>
+    <AuthContext.Provider value={{ user, token, loading, error, login, register, logout, clearError, updateSettings }}>
       {children}
     </AuthContext.Provider>
   );

@@ -36,6 +36,10 @@ public class User implements UserDetails {
 
     private String avatar;
 
+    private String themeColor;
+
+    private Boolean notificationsEnabled;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));

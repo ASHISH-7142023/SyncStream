@@ -52,6 +52,8 @@ public class AuthController {
                 .createdAt(Instant.now())
                 .gender(registerRequest.getGender())
                 .avatar(registerRequest.getAvatar())
+                .themeColor("purple")
+                .notificationsEnabled(true)
                 .build();
 
         userRepository.save(user);
@@ -67,7 +69,7 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.generateToken(authentication);
 
-        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getGender(), user.getAvatar()));
+        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getGender(), user.getAvatar(), user.getThemeColor(), user.getNotificationsEnabled()));
     }
 
     @PostMapping("/login")
@@ -83,7 +85,7 @@ public class AuthController {
         String jwt = tokenProvider.generateToken(authentication);
         User user = (User) authentication.getPrincipal();
 
-        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getGender(), user.getAvatar()));
+        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getGender(), user.getAvatar(), user.getThemeColor(), user.getNotificationsEnabled()));
     }
 
     @GetMapping("/me")
@@ -97,6 +99,8 @@ public class AuthController {
         response.put("createdAt", user.getCreatedAt());
         response.put("gender", user.getGender());
         response.put("avatar", user.getAvatar());
+        response.put("themeColor", user.getThemeColor());
+        response.put("notificationsEnabled", user.getNotificationsEnabled());
         return ResponseEntity.ok(response);
     }
 
@@ -121,6 +125,31 @@ public class AuthController {
         response.put("username", user.getUsername());
         response.put("gender", user.getGender());
         response.put("avatar", user.getAvatar());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/settings")
+    public ResponseEntity<?> updateSettings(
+            @RequestBody Map<String, Object> request,
+            @AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
+
+        String themeColor = (String) request.get("themeColor");
+        Boolean notificationsEnabled = (Boolean) request.get("notificationsEnabled");
+
+        if (themeColor != null) user.setThemeColor(themeColor);
+        if (notificationsEnabled != null) user.setNotificationsEnabled(notificationsEnabled);
+
+        userRepository.save(user);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", user.getId());
+        response.put("username", user.getUsername());
+        response.put("themeColor", user.getThemeColor());
+        response.put("notificationsEnabled", user.getNotificationsEnabled());
 
         return ResponseEntity.ok(response);
     }

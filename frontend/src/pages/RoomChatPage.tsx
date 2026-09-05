@@ -8,6 +8,8 @@ import { ThreadPanel } from '../components/chat/ThreadPanel';
 import { useWebRTC } from '../context/WebRTCContext';
 import { VideoCall } from '../components/VideoCall';
 import { fileService } from '../services/fileService';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Member {
   id: string;
@@ -488,7 +490,9 @@ const RoomChatPage: React.FC = () => {
                 <svg className="text-brand-400 text-[#a78bfa] shrink-0" fill="none" height="14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="17" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.68V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.68a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
                 <div className="flex flex-col min-w-0">
                   <span className="text-[#a78bfa] font-medium text-xs">Pinned by {pinnedMessages[0].senderName || 'User'}</span>
-                  <span className="text-text-muted text-xs truncate max-w-lg">{pinnedMessages[0].content}</span>
+                  <span className="text-text-muted text-xs truncate max-w-lg line-clamp-1 prose prose-invert prose-p:my-0 prose-p:inline prose-a:text-[#a78bfa]">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{pinnedMessages[0].content}</ReactMarkdown>
+                  </span>
                 </div>
               </div>
               <div className="flex items-center gap-3 shrink-0">
@@ -522,8 +526,8 @@ const RoomChatPage: React.FC = () => {
                         <span className="font-semibold text-[#f8fafc] text-sm">{msg.senderName}</span>
                         <span className="text-[10px] text-text-muted font-medium">{formatTime(msg.createdAt)}</span>
                       </div>
-                      <div className="text-sm text-gray-300 bg-white/5 px-2.5 py-1.5 rounded inline-block">
-                        {msg.content}
+                      <div className="text-sm text-gray-300 bg-white/5 px-2.5 py-1.5 rounded inline-block prose prose-invert prose-sm max-w-none prose-p:my-0 prose-a:text-[#a78bfa] prose-code:text-[#a78bfa] prose-code:bg-[#8b5cf6]/10 prose-code:px-1 prose-code:rounded">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
                       </div>
                     </div>
                   </div>
@@ -552,8 +556,8 @@ const RoomChatPage: React.FC = () => {
                       <span className="font-semibold text-white text-sm">{msg.sender}</span>
                       <span className="text-[10px] text-text-muted">{formatTime(msg.timestamp)}</span>
                     </div>
-                    <div className={`text-[15px] leading-relaxed text-gray-200 ${isMention ? 'bg-[#7c3aed]/15 border border-[#7c3aed]/20 rounded px-2.5 py-1.5 w-fit my-1' : ''}`}>
-                      {msg.content}
+                    <div className={`text-[15px] leading-relaxed text-gray-200 prose prose-invert max-w-none prose-p:my-1 prose-a:text-[#a78bfa] prose-code:text-[#a78bfa] prose-code:bg-[#8b5cf6]/10 prose-code:px-1 prose-code:rounded prose-pre:bg-[#1f2233] prose-pre:border prose-pre:border-white/10 ${isMention ? 'bg-[#7c3aed]/15 border border-[#7c3aed]/20 rounded px-2.5 py-1.5 w-fit my-1' : ''}`}>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
                     </div>
                     
                     {msg.attachmentId && (

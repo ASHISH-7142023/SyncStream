@@ -415,3 +415,23 @@ html[data-theme="midnight"] .glass-panel {
   background: linear-gradient(145deg, rgba(11, 25, 44, 0.8) 0%, rgba(7, 15, 43, 0.8) 100%) !important;
   border: 1px solid rgba(59, 130, 246, 0.15) !important;
 }
+
+html[data-theme="blue"] {
+  --primary: #3b82f6;
+  --on-primary-container: #60a5fa;
+  --accent-purple: #3b82f6;
+  --accent-purple-light: #60a5fa;
+}
+html[data-theme="emerald"] {
+  --primary: #10b981;
+  --on-primary-container: #34d399;
+  --accent-purple: #10b981;
+  --accent-purple-light: #34d399;
+}
+html[data-theme="rose"] {
+  --primary: #e11d48;
+  --on-primary-container: #fb7185;
+  --accent-purple: #e11d48;
+  --accent-purple-light: #fb7185;
+}
+

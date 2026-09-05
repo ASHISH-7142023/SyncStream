@@ -1,12 +1,13 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
-  Home, MessageSquare, AtSign, Bookmark, Plus, Sparkles, LogOut, ChevronLeft
+  Home, MessageSquare, AtSign, Bookmark, Plus, Sparkles, LogOut, ChevronLeft, Settings
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 import { useNotification } from '../../context/NotificationContext';
 import SyncStreamLogo from '../ui/SyncStreamLogo';
+import { SettingsModal } from '../modals/SettingsModal';
 
 interface Room {
   id: string;
@@ -33,6 +34,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const { user, logout } = useAuth();
   const { presenceUsers } = useSocket();
   const { unreadCount } = useNotification();
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
 
   const menuItems = [
     { id: 'home', label: 'Home', icon: Home, path: '/dashboard' },
@@ -215,16 +217,27 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           </div>
 
           {!isCollapsed && (
-            <button
-              onClick={handleLogout}
-              className="p-2 hover:bg-[#151923] text-[#94A3B8] hover:text-[#EF4444] rounded-lg transition-colors ml-1"
-              title="Terminate Session"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            <div className="flex items-center space-x-1 shrink-0">
+              <button
+                onClick={() => setIsSettingsOpen(true)}
+                className="p-2 hover:bg-[#151923] text-[#94A3B8] hover:text-[#F8FAFC] rounded-lg transition-colors"
+                title="Settings"
+              >
+                <Settings className="w-4 h-4" />
+              </button>
+              <button
+                onClick={handleLogout}
+                className="p-2 hover:bg-[#151923] text-[#94A3B8] hover:text-[#EF4444] rounded-lg transition-colors"
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
           )}
         </div>
       </div>
+      
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </aside>
   );
 };

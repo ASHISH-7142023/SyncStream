@@ -53,19 +53,38 @@ export const VideoCall: React.FC = () => {
     <div className="flex flex-col h-64 md:h-80 lg:h-96 w-full bg-surface-950 border-b border-surface-800 p-4 gap-4 transition-all duration-300">
       
       {/* Video Grid */}
-      <div className={`flex-1 grid ${gridCols} gap-4 overflow-y-auto custom-scrollbar content-center justify-items-center`}>
-        {localStream && (
-          <VideoStream stream={localStream} muted={true} isLocal={!isScreenSharing} />
-        )}
-        {remoteStreamEntries.map(([userId, stream]) => (
-          <VideoStream key={userId} stream={stream} />
-        ))}
-        {!localStream && (
-          <div className="flex items-center justify-center text-surface-400 animate-pulse w-full h-full">
-            Starting camera...
+      {isScreenSharing ? (
+        <div className="flex-1 flex flex-col lg:flex-row gap-4 overflow-hidden">
+          {/* Presentation Area */}
+          <div className="lg:flex-[3] h-full flex items-center justify-center bg-black/40 rounded-xl overflow-hidden">
+            {localStream && (
+              <VideoStream stream={localStream} muted={true} isLocal={false} />
+            )}
           </div>
-        )}
-      </div>
+          {/* Sidebar for Participants */}
+          <div className="lg:flex-1 flex lg:flex-col gap-4 overflow-x-auto lg:overflow-y-auto custom-scrollbar p-1">
+            {remoteStreamEntries.map(([userId, stream]) => (
+              <div className="w-32 lg:w-full shrink-0" key={userId}>
+                <VideoStream stream={stream} />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className={`flex-1 grid ${gridCols} gap-4 overflow-y-auto custom-scrollbar content-center justify-items-center`}>
+          {localStream && (
+            <VideoStream stream={localStream} muted={true} isLocal={true} />
+          )}
+          {remoteStreamEntries.map(([userId, stream]) => (
+            <VideoStream key={userId} stream={stream} />
+          ))}
+          {!localStream && (
+            <div className="flex items-center justify-center text-surface-400 animate-pulse w-full h-full">
+              Starting camera...
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Controls Bar */}
       <div className="flex items-center justify-center gap-3 mt-auto pt-2">
