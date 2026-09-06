@@ -1,8 +1,9 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
-  Home, MessageSquare, AtSign, Bookmark, Plus, Sparkles, LogOut, ChevronLeft, Settings
+  Home, MessageSquare, AtSign, Bookmark, Plus, Sparkles, LogOut, ChevronLeft, Settings, Volume2
 } from 'lucide-react';
+import { useWebRTC } from '../../context/WebRTCContext';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 import { useNotification } from '../../context/NotificationContext';
@@ -35,6 +36,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const { user, logout } = useAuth();
   const { presenceUsers } = useSocket();
   const { unreadCount } = useNotification();
+  const { joinCall, isCallActive, activeRoomId: webRtcRoomId, remoteStreams } = useWebRTC();
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
 
   const menuItems = [
@@ -130,21 +132,43 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
             {rooms.map((room) => {
               const isActive = activeRoomId === room.id;
               return (
-                <button
-                  key={room.id}
-                  onClick={() => navigate(`/rooms/${room.id}`)}
-                  className={`w-full flex items-center rounded-lg px-3 py-2 text-xs font-medium transition-all ${
-                    isActive 
-                      ? 'bg-[#7C3AED]/15 border-l-2 border-[#7C3AED] text-white' 
-                      : 'text-[#CBD5E1] hover:bg-[#111318] hover:text-[#F8FAFC]'
-                  }`}
-                  title={isCollapsed ? `# ${room.name}` : undefined}
-                >
-                  <span className={`font-mono text-sm shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-2.5 text-[#94A3B8]'}`}>#</span>
+                <div key={room.id} className="space-y-0.5">
+                  <button
+                    onClick={() => navigate(`/rooms/${room.id}`)}
+                    className={`w-full flex items-center rounded-lg px-3 py-2 text-xs font-medium transition-all ${
+                      isActive 
+                        ? 'bg-[#7C3AED]/15 border-l-2 border-[#7C3AED] text-white' 
+                        : 'text-[#CBD5E1] hover:bg-[#111318] hover:text-[#F8FAFC]'
+                    }`}
+                    title={isCollapsed ? `# ${room.name}` : undefined}
+                  >
+                    <span className={`font-mono text-sm shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-2.5 text-[#94A3B8]'}`}>#</span>
+                    {!isCollapsed && (
+                      <span className="truncate flex-1 text-left">{room.name}</span>
+                    )}
+                  </button>
+
+                  {/* Voice Channel */}
                   {!isCollapsed && (
-                    <span className="truncate flex-1 text-left">{room.name}</span>
+                    <button
+                      onClick={() => joinCall(room.id)}
+                      className={`w-full flex items-center rounded-lg pl-8 pr-3 py-1.5 text-xs font-medium transition-all ${
+                        isCallActive && webRtcRoomId === room.id
+                          ? 'text-[#A78BFA] bg-[#7C3AED]/10' 
+                          : 'text-[#94A3B8] hover:text-white hover:bg-[#111318]'
+                      }`}
+                    >
+                      <Volume2 className="w-3.5 h-3.5 mr-2 shrink-0" />
+                      <span className="truncate flex-1 text-left">General Voice</span>
+                      {isCallActive && webRtcRoomId === room.id && (
+                        <div className="flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                          <span className="text-[10px] text-green-500 font-bold">{Object.keys(remoteStreams).length + 1}</span>
+                        </div>
+                      )}
+                    </button>
                   )}
-                </button>
+                </div>
               );
             })}
 

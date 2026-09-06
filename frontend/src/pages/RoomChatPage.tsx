@@ -5,8 +5,6 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { getAvatarForUser } from '../utils/avatarHelper';
 import { ThreadPanel } from '../components/chat/ThreadPanel';
-import { useWebRTC } from '../context/WebRTCContext';
-import { VideoCall } from '../components/VideoCall';
 import { fileService } from '../services/fileService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -38,7 +36,7 @@ const RoomChatPage: React.FC = () => {
     connectionStatus, messages, typingUsers, presenceUsers,
     joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, updateMessage
   } = useSocket();
-  const { isCallActive, joinCall } = useWebRTC();
+
   const { addToast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -433,18 +431,7 @@ const RoomChatPage: React.FC = () => {
             </div>
             
             <div className="flex items-center gap-1 border-l border-white/5 pl-4 shrink-0">
-              {!isCallActive && (
-                <button 
-                  onClick={() => {
-                    if (roomId) joinCall(roomId);
-                  }}
-                  className="mr-2 flex items-center gap-1.5 px-3 py-1.5 bg-[#8b5cf6]/20 text-[#a78bfa] hover:bg-[#8b5cf6]/30 hover:text-white rounded-lg transition-all font-medium text-xs cursor-pointer"
-                  title="Join Video Call"
-                >
-                  <svg fill="none" height="14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect height="14" rx="2" ry="2" width="15" x="1" y="5"></rect></svg>
-                  Join Call
-                </button>
-              )}
+
               <div className="relative">
                 <input
                   type="text"
@@ -517,8 +504,7 @@ const RoomChatPage: React.FC = () => {
           </div>
         )}
 
-        {/* Video Call Grid */}
-        {isCallActive && <VideoCall />}
+
 
         {/* Chat Message Logs */}
         <div 

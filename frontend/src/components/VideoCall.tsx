@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useWebRTC } from '../context/WebRTCContext';
-import { PhoneOff, Mic, MicOff, Video, VideoOff, MonitorUp } from 'lucide-react';
+import { PhoneOff, Mic, MicOff, Video, VideoOff, MonitorUp, Maximize2, Minimize2 } from 'lucide-react';
 
 const VideoStream: React.FC<{ stream: MediaStream; muted?: boolean; isLocal?: boolean }> = ({ stream, muted = false, isLocal = false }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -12,7 +12,7 @@ const VideoStream: React.FC<{ stream: MediaStream; muted?: boolean; isLocal?: bo
   }, [stream]);
 
   return (
-    <div className="relative rounded-xl overflow-hidden bg-surface-900 border border-surface-700/50 aspect-video flex-1 min-w-[200px] max-w-full shadow-lg">
+    <div className="relative rounded-xl overflow-hidden bg-surface-900 border border-surface-700/50 aspect-video flex-1 min-w-[120px] max-w-full shadow-lg">
       <video
         ref={videoRef}
         autoPlay
@@ -20,7 +20,7 @@ const VideoStream: React.FC<{ stream: MediaStream; muted?: boolean; isLocal?: bo
         muted={muted}
         className={`w-full h-full object-cover ${isLocal ? 'scale-x-[-1]' : ''}`}
       />
-      <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-md px-2 py-1 rounded-md text-xs font-medium text-white/90">
+      <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-md text-[10px] font-medium text-white/90">
         {isLocal ? 'You' : 'Participant'}
       </div>
     </div>
@@ -28,7 +28,9 @@ const VideoStream: React.FC<{ stream: MediaStream; muted?: boolean; isLocal?: bo
 };
 
 export const VideoCall: React.FC = () => {
+  const [isMinimized, setIsMinimized] = React.useState(false);
   const {
+    isCallActive,
     localStream,
     remoteStreams,
     leaveCall,
@@ -49,9 +51,41 @@ export const VideoCall: React.FC = () => {
                    totalParticipants <= 4 ? 'grid-cols-2 lg:grid-cols-2' :
                    'grid-cols-2 lg:grid-cols-3';
 
+  if (!isCallActive) return null;
+
+  if (isMinimized) {
+    return (
+      <div className="fixed bottom-6 right-6 z-[100] bg-surface-900 border border-brand-500/30 p-3 rounded-2xl shadow-2xl flex items-center gap-4 animate-scale-in">
+        <div className="flex -space-x-2">
+          {totalParticipants} in call
+        </div>
+        <div className="flex gap-2">
+          <button onClick={toggleMute} className={`p-2 rounded-full ${isMuted ? 'bg-red-500/20 text-red-400' : 'bg-surface-800 text-surface-200'}`}>
+            {isMuted ? <MicOff size={16} /> : <Mic size={16} />}
+          </button>
+          <button onClick={() => setIsMinimized(false)} className="p-2 rounded-full bg-surface-800 hover:bg-surface-700 text-surface-200">
+            <Maximize2 size={16} />
+          </button>
+          <button onClick={leaveCall} className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600">
+            <PhoneOff size={16} />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col h-64 md:h-80 lg:h-96 w-full bg-surface-950 border-b border-surface-800 p-4 gap-4 transition-all duration-300">
-      
+    <div className="fixed bottom-6 right-6 z-[100] flex flex-col h-[400px] w-[350px] bg-surface-950/95 backdrop-blur-xl border border-surface-800/80 rounded-2xl p-4 gap-4 shadow-2xl transition-all duration-300 animate-scale-in">
+      {/* Header */}
+      <div className="flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+          <span className="text-xs font-bold text-white tracking-wider uppercase">Voice Connected</span>
+        </div>
+        <button onClick={() => setIsMinimized(true)} className="text-surface-400 hover:text-white p-1 rounded-lg transition-colors">
+          <Minimize2 size={16} />
+        </button>
+      </div>
       {/* Video Grid */}
       {isScreenSharing ? (
         <div className="flex-1 flex flex-col lg:flex-row gap-4 overflow-hidden">

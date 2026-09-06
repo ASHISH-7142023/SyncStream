@@ -5,6 +5,7 @@ import type { IMessage } from '@stomp/stompjs';
 
 interface WebRTCContextType {
   isCallActive: boolean;
+  activeRoomId: string | null;
   localStream: MediaStream | null;
   remoteStreams: Record<string, MediaStream>;
   joinCall: (roomId: string) => Promise<void>;
@@ -276,6 +277,7 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     <WebRTCContext.Provider
       value={{
         isCallActive,
+        activeRoomId,
         localStream,
         remoteStreams,
         joinCall,

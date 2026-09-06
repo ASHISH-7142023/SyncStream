@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import CreateRoomModal from '../components/modals/CreateRoomModal';
+import { VideoCall } from '../components/VideoCall';
 
 interface Room {
   id: string;
@@ -44,6 +45,9 @@ const AppLayout: React.FC = () => {
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={handleRoomCreated}
       />
+
+      {/* Global Picture-in-Picture Video Call Overlay */}
+      <VideoCall />
     </div>
   );
 };
