@@ -329,29 +329,20 @@ const RoomChatPage: React.FC = () => {
           </div>
         </div>
 
-        {/* User Profile Footer */}
-        <div className="p-4 border-t border-white/5 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer" onClick={() => navigate('/profile')}>
+        {/* Profile Info block */}
+        <div className="p-4 border-t border-obsidian-700 mt-auto flex items-center justify-between cursor-pointer hover:bg-obsidian-700 transition-colors" onClick={() => navigate('/profile')}>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-9 h-9 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-xl text-white select-none">
-                {getAvatarForUser(user ? user.username : 'Alex Johnson', presenceUsers)}
+              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none">
+                {getAvatarForUser(user ? user.username : 'User', presenceUsers)}
               </div>
-              <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 border-2 border-[#151723] rounded-full ${
-                user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'bg-status-offline' :
-                user && presenceUsers[user.id]?.status === 'AWAY' ? 'bg-status-away' :
-                'bg-status-online animate-pulse-online'
-              }`}></div>
+              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-obsidian-900 rounded-full"></div>
             </div>
             <div>
-              <div className="text-sm font-medium text-white">{user ? user.username : 'Alex Johnson'}</div>
-              <div className={`text-xs ${
-                user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'text-status-offline' :
-                user && presenceUsers[user.id]?.status === 'AWAY' ? 'text-status-away' :
-                'text-status-online'
-              }`}>
-                {user && presenceUsers[user.id]?.status ? 
-                  presenceUsers[user.id].status.charAt(0) + presenceUsers[user.id].status.slice(1).toLowerCase() 
-                  : 'Online'}
+              <p className="text-sm font-semibold text-white">{user ? user.username : 'User'}</p>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                <p className="text-xs text-slate-400">Online</p>
               </div>
             </div>
           </div>
@@ -360,7 +351,8 @@ const RoomChatPage: React.FC = () => {
               e.stopPropagation();
               logout();
             }}
-            className="text-text-muted hover:text-red-400 p-1"
+            className="text-slate-500 hover:text-red-400 p-1 transition-colors"
+            title="Log Out"
           >
             <i className="fa-solid fa-right-from-bracket"></i>
           </button>

@@ -177,20 +177,21 @@ const RoomsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Profile Footer */}
-        <div className="p-4 shrink-0 border-t border-[#28292d] flex items-center justify-between cursor-pointer hover:bg-surface-100 transition-colors rounded-tr-2xl" onClick={() => navigate('/profile')}>
+        {/* Profile Info block */}
+        <div className="p-4 border-t border-obsidian-700 mt-auto flex items-center justify-between cursor-pointer hover:bg-obsidian-700 transition-colors" onClick={() => navigate('/profile')}>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-[#6366f1]/20 flex items-center justify-center text-xl text-white select-none">
-                {getAvatarForUser(user ? user.username : 'Alex Johnson')}
+              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none">
+                {getAvatarForUser(user ? user.username : 'User')}
               </div>
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-success border-2 border-surface-50 rounded-full"></div>
+              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-obsidian-900 rounded-full"></div>
             </div>
-            <div className="flex flex-col">
-              <span className="font-medium text-bright text-sm">{user ? user.username : 'Alex Johnson'}</span>
-              <span className="text-xs text-dim flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-success"></span> Online
-              </span>
+            <div>
+              <p className="text-sm font-semibold text-white">{user ? user.username : 'User'}</p>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                <p className="text-xs text-slate-400">Online</p>
+              </div>
             </div>
           </div>
           <button 
@@ -198,7 +199,8 @@ const RoomsPage: React.FC = () => {
               e.stopPropagation();
               logout();
             }}
-            className="text-dim hover:text-red-400 p-1"
+            className="text-slate-500 hover:text-red-400 p-1 transition-colors"
+            title="Log Out"
           >
             <i className="fa-solid fa-right-from-bracket"></i>
           </button>

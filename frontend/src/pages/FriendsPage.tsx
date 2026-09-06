@@ -196,17 +196,20 @@ const FriendsPage: React.FC = () => {
         </nav>
 
         {/* Profile Info block */}
-        <div className="p-4 border-t border-gray-800 flex items-center justify-between cursor-pointer hover:bg-bg-hover transition-colors rounded-tr-2xl" onClick={() => navigate('/profile')}>
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="relative shrink-0">
-              <div className="w-8 h-8 rounded-full bg-accent-purple/20 flex items-center justify-center text-lg select-none">
-                {getAvatarForUser(user ? user.username : 'Alex Johnson')}
+        <div className="p-4 border-t border-obsidian-700 mt-auto flex items-center justify-between cursor-pointer hover:bg-obsidian-700 transition-colors" onClick={() => navigate('/profile')}>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none">
+                {getAvatarForUser(user ? user.username : 'User')}
               </div>
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-accent-green border-2 border-bg-sidebar rounded-full"></span>
+              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-obsidian-900 rounded-full"></div>
             </div>
-            <div className="text-left min-w-0">
-              <div className="text-sm font-semibold leading-none mb-1 text-white truncate">{user ? user.username : 'Alex Johnson'}</div>
-              <div className="text-xs text-text-muted">Online</div>
+            <div>
+              <p className="text-sm font-semibold text-white">{user ? user.username : 'User'}</p>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                <p className="text-xs text-slate-400">Online</p>
+              </div>
             </div>
           </div>
           <button 
@@ -214,7 +217,7 @@ const FriendsPage: React.FC = () => {
               e.stopPropagation();
               logout();
             }}
-            className="text-text-muted hover:text-red-400 p-1 transition-colors"
+            className="text-slate-500 hover:text-red-400 p-1 transition-colors"
             title="Log Out"
           >
             <i className="fa-solid fa-right-from-bracket"></i>
