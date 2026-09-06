@@ -141,7 +141,13 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (isCallActive) return;
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const savedMicId = localStorage.getItem('syncstream_micId');
+      const savedCamId = localStorage.getItem('syncstream_camId');
+      
+      const audioConstraints = savedMicId && savedMicId !== 'default' ? { deviceId: { exact: savedMicId } } : true;
+      const videoConstraints = savedCamId && savedCamId !== 'default' ? { deviceId: { exact: savedCamId } } : true;
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: audioConstraints });
       setLocalStream(stream);
       localStreamRef.current = stream;
       setIsCallActive(true);
@@ -244,7 +250,9 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const stopScreenShare = async () => {
     try {
       // Get camera stream back
-      const cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const savedCamId = localStorage.getItem('syncstream_camId');
+      const videoConstraints = savedCamId && savedCamId !== 'default' ? { deviceId: { exact: savedCamId } } : true;
+      const cameraStream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints });
       const cameraTrack = cameraStream.getVideoTracks()[0];
       cameraTrack.enabled = !isVideoOff;
 

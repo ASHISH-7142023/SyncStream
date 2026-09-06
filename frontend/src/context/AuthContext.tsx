@@ -22,6 +22,7 @@ interface AuthContextType {
   logout: () => void;
   clearError: () => void;
   updateSettings: (themeColor?: string, notificationsEnabled?: boolean) => Promise<void>;
+  updateProfile: (gender?: string, avatar?: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -129,8 +130,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const updateProfile = async (gender?: string, avatar?: string) => {
+    try {
+      const payload: any = {};
+      if (gender !== undefined) payload.gender = gender;
+      if (avatar !== undefined) payload.avatar = avatar;
+      
+      const response = await api.put('/api/auth/profile', payload);
+      setUser(prev => prev ? { ...prev, gender: response.data.gender, avatar: response.data.avatar } : response.data);
+      if (response.data.gender) localStorage.setItem('user-gender', response.data.gender);
+      if (response.data.avatar) localStorage.setItem('user-avatar', response.data.avatar);
+    } catch (err) {
+      console.error("Failed to update profile", err);
+      throw err;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, error, login, register, logout, clearError, updateSettings }}>
+    <AuthContext.Provider value={{ user, token, loading, error, login, register, logout, clearError, updateSettings, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
