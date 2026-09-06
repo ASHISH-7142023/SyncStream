@@ -7,6 +7,8 @@ import com.syncstream.model.User;
 import com.syncstream.repository.UserRepository;
 import com.syncstream.security.CustomUserDetailsService;
 import com.syncstream.security.JwtTokenProvider;
+import com.syncstream.service.PresenceService;
+import com.syncstream.pubsub.RedisMessagePublisher;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -57,6 +59,12 @@ public class AuthControllerTest {
 
     @MockBean
     private CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    private PresenceService presenceService;
+
+    @MockBean
+    private RedisMessagePublisher redisMessagePublisher;
 
     @Test
     public void testRegisterUser_Success() throws Exception {
