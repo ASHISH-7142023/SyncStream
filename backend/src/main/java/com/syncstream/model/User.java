@@ -40,6 +40,10 @@ public class User implements UserDetails {
 
     private Boolean notificationsEnabled;
 
+    private PresenceStatus statusPreference;
+
+    private String customStatusText;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));

@@ -17,6 +17,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import com.syncstream.service.PresenceService;
+import com.syncstream.pubsub.RedisMessagePublisher;
+import com.syncstream.dto.UserPresenceDto;
+import com.syncstream.model.PresenceStatus;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -37,6 +41,12 @@ public class AuthController {
 
     @Autowired
     private JwtTokenProvider tokenProvider;
+
+    @Autowired
+    private PresenceService presenceService;
+
+    @Autowired
+    private RedisMessagePublisher redisMessagePublisher;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
@@ -152,5 +162,34 @@ public class AuthController {
         response.put("notificationsEnabled", user.getNotificationsEnabled());
 
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/status")
+    public ResponseEntity<?> updateStatus(@AuthenticationPrincipal User currentUser, @RequestBody Map<String, Object> request) {
+        User user = userRepository.findById(currentUser.getId()).orElse(null);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        String statusStr = (String) request.get("status");
+        String customStatusText = (String) request.get("customStatusText");
+
+        if (statusStr != null) {
+            try {
+                user.setStatusPreference(PresenceStatus.valueOf(statusStr));
+            } catch (IllegalArgumentException e) {
+                // Invalid status
+            }
+        }
+        
+        user.setCustomStatusText(customStatusText);
+        userRepository.save(user);
+
+        // Update in Redis and broadcast
+        PresenceStatus currentStatus = user.getStatusPreference() != null ? user.getStatusPreference() : PresenceStatus.ONLINE;
+        UserPresenceDto presence = presenceService.updateUserStatus(user.getId(), currentStatus);
+        redisMessagePublisher.publish("syncstream:presence", presence);
+
+        return ResponseEntity.ok(presence);
     }
 }

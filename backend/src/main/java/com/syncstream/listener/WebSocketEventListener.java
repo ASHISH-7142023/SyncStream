@@ -35,7 +35,8 @@ public class WebSocketEventListener {
             User user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
             log.info("User connected via STOMP: {}", user.getUsername());
             
-            UserPresenceDto presence = presenceService.updateUserStatus(user.getId(), PresenceStatus.ONLINE);
+            PresenceStatus status = user.getStatusPreference() != null ? user.getStatusPreference() : PresenceStatus.ONLINE;
+            UserPresenceDto presence = presenceService.updateUserStatus(user.getId(), status);
             redisMessagePublisher.publish("syncstream:presence", presence);
         }
     }

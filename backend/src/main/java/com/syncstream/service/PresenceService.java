@@ -29,6 +29,7 @@ public class PresenceService {
         User user = userRepository.findById(userId).orElse(null);
         String username = user != null ? user.getUsername() : "Unknown";
         String avatar = user != null ? user.getAvatar() : null;
+        String customStatusText = user != null ? user.getCustomStatusText() : null;
 
         UserPresenceDto presence = UserPresenceDto.builder()
                 .userId(userId)
@@ -36,6 +37,7 @@ public class PresenceService {
                 .avatar(avatar)
                 .serverId(serverId)
                 .status(status)
+                .customStatusText(customStatusText)
                 .lastSeen(Instant.now())
                 .build();
 
@@ -56,6 +58,7 @@ public class PresenceService {
             User user = userRepository.findById(userId).orElse(null);
             String username = user != null ? user.getUsername() : "Unknown";
             String avatar = user != null ? user.getAvatar() : null;
+            String customStatusText = user != null ? user.getCustomStatusText() : null;
             
             return UserPresenceDto.builder()
                     .userId(userId)
@@ -63,6 +66,7 @@ public class PresenceService {
                     .avatar(avatar)
                     .serverId(null)
                     .status(PresenceStatus.OFFLINE)
+                    .customStatusText(customStatusText)
                     .lastSeen(Instant.EPOCH)
                     .build();
         }

@@ -32,7 +32,8 @@ export interface UserPresence {
   userId: string;
   username: string;
   serverId: string | null;
-  status: 'ONLINE' | 'AWAY' | 'OFFLINE';
+  status: 'ONLINE' | 'AWAY' | 'OFFLINE' | 'DO_NOT_DISTURB';
+  customStatusText?: string;
   lastSeen: string;
 }
 

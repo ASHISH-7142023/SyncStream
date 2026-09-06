@@ -16,7 +16,7 @@ interface Member {
   id: string;
   username: string;
   role?: string;
-  status?: 'ONLINE' | 'AWAY' | 'OFFLINE';
+  status?: 'ONLINE' | 'AWAY' | 'OFFLINE' | 'DO_NOT_DISTURB';
 }
 
 interface RoomDetails {
@@ -203,6 +203,7 @@ const RoomChatPage: React.FC = () => {
 
   const onlineMembers = memberList.filter(m => m.status === 'ONLINE');
   const awayMembers = memberList.filter(m => m.status === 'AWAY');
+  const dndMembers = memberList.filter(m => m.status === 'DO_NOT_DISTURB');
   const offlineMembers = memberList.filter(m => m.status === 'OFFLINE');
 
   const currentRoomTypingMap = (roomId && typingUsers[roomId]) || {};
@@ -358,10 +359,31 @@ const RoomChatPage: React.FC = () => {
               <p className="text-sm font-semibold text-white">{user ? user.username : 'User'}</p>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <div className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                    user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'bg-status-offline' :
+                    user && presenceUsers[user.id]?.status === 'AWAY' ? 'bg-status-away' :
+                    user && presenceUsers[user.id]?.status === 'DO_NOT_DISTURB' ? 'bg-red-400' :
+                    'bg-green-400 animate-ping'
+                  }`}></span>
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${
+                    user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'bg-status-offline' :
+                    user && presenceUsers[user.id]?.status === 'AWAY' ? 'bg-status-away' :
+                    user && presenceUsers[user.id]?.status === 'DO_NOT_DISTURB' ? 'bg-red-500' :
+                    'bg-green-500'
+                  }`}></span>
                 </div>
-                <p className="text-xs text-slate-400">Online</p>
+                <p className={`text-xs truncate ${
+                  user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'text-status-offline' :
+                  user && presenceUsers[user.id]?.status === 'AWAY' ? 'text-status-away' :
+                  user && presenceUsers[user.id]?.status === 'DO_NOT_DISTURB' ? 'text-red-400' :
+                  'text-slate-400'
+                }`}>
+                  {user && presenceUsers[user.id]?.customStatusText 
+                    ? presenceUsers[user.id].customStatusText 
+                    : (user && presenceUsers[user.id]?.status ? 
+                        presenceUsers[user.id].status.charAt(0) + presenceUsers[user.id].status.slice(1).toLowerCase().replace(/_/g, ' ') 
+                        : 'Online')}
+                </p>
               </div>
             </div>
           </div>
@@ -958,7 +980,11 @@ const RoomChatPage: React.FC = () => {
                                 </>
                               )}
                             </div>
-                            <div className="text-xs text-text-muted">Online</div>
+                            <div className="text-xs text-text-muted truncate w-40">
+                              {presenceUsers[m.id]?.customStatusText 
+                                ? presenceUsers[m.id].customStatusText 
+                                : 'Online'}
+                            </div>
                           </div>
                         </div>
                       </li>
@@ -990,7 +1016,41 @@ const RoomChatPage: React.FC = () => {
                           </div>
                           <div>
                             <div className="text-sm font-medium text-white">{m.username}</div>
-                            <div className="text-xs text-text-muted">Away</div>
+                            <div className="text-xs text-text-muted truncate w-40">
+                              {presenceUsers[m.id]?.customStatusText 
+                                ? presenceUsers[m.id].customStatusText 
+                                : 'Away'}
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {dndMembers.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide">
+                    Do Not Disturb — <span className="text-red-400">{dndMembers.length}</span>
+                  </div>
+                  <ul className="space-y-3">
+                    {dndMembers.map(m => (
+                      <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-90">
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <div className="w-8 h-8 rounded-full bg-[#ef4444]/20 flex items-center justify-center text-lg select-none">
+                              {getAvatarForUser(m.username, presenceUsers)}
+                            </div>
+                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-red-500 border-2 border-[#151723] rounded-full"></span>
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-white">{m.username}</div>
+                            <div className="text-xs text-text-muted truncate w-40">
+                              {presenceUsers[m.id]?.customStatusText 
+                                ? presenceUsers[m.id].customStatusText 
+                                : 'Do Not Disturb'}
+                            </div>
                           </div>
                         </div>
                       </li>
@@ -1016,7 +1076,11 @@ const RoomChatPage: React.FC = () => {
                           </div>
                           <div>
                             <div className="text-sm font-medium text-white">{m.username}</div>
-                            <div className="text-xs text-text-muted">Offline</div>
+                            <div className="text-xs text-text-muted truncate w-40">
+                              {presenceUsers[m.id]?.customStatusText 
+                                ? presenceUsers[m.id].customStatusText 
+                                : 'Offline'}
+                            </div>
                           </div>
                         </div>
                       </li>

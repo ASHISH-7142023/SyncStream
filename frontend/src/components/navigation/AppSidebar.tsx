@@ -1,8 +1,9 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
-  Home, MessageSquare, AtSign, Bookmark, Plus, Sparkles, LogOut, ChevronLeft, Settings, Volume2
+  Home, MessageSquare, AtSign, Bookmark, Plus, Sparkles, LogOut, ChevronLeft, Settings, Volume2, Check
 } from 'lucide-react';
+import api from '../../services/api';
 import { useWebRTC } from '../../context/WebRTCContext';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
@@ -39,6 +40,34 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const { unreadCount } = useNotification();
   const { joinCall, isCallActive, activeRoomId: webRtcRoomId, remoteStreams } = useWebRTC();
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+  const [isStatusPopoverOpen, setIsStatusPopoverOpen] = React.useState(false);
+  const [customStatusInput, setCustomStatusInput] = React.useState('');
+
+  const handleStatusChange = async (status: string) => {
+    try {
+      await api.put('/api/auth/status', { status, customStatusText: customStatusInput });
+      setIsStatusPopoverOpen(false);
+    } catch (e) {
+      console.error('Failed to update status', e);
+    }
+  };
+
+  const handleCustomStatusSubmit = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      try {
+        await api.put('/api/auth/status', { customStatusText: customStatusInput });
+        setIsStatusPopoverOpen(false);
+      } catch (e) {
+        console.error('Failed to update custom status', e);
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    if (user && presenceUsers[user.id]?.customStatusText) {
+      setCustomStatusInput(presenceUsers[user.id].customStatusText || '');
+    }
+  }, [user, presenceUsers]);
 
   const menuItems = [
     { id: 'home', label: 'Home', icon: Home, path: '/dashboard' },
@@ -265,7 +294,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         <div className="flex items-center justify-between">
           <div 
             className="flex items-center space-x-3 cursor-pointer select-none group flex-1 min-w-0"
-            onClick={() => navigate('/profile')}
+            onClick={() => setIsStatusPopoverOpen(true)}
           >
             <div className="relative shrink-0">
               <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none">
@@ -274,6 +303,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-obsidian-900 ${
                 user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'bg-status-offline' :
                 user && presenceUsers[user.id]?.status === 'AWAY' ? 'bg-status-away' :
+                user && presenceUsers[user.id]?.status === 'DO_NOT_DISTURB' ? 'bg-red-500' :
                 'bg-green-500'
               }`} />
             </div>
@@ -286,21 +316,71 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                   <div className={`w-1.5 h-1.5 rounded-full ${
                     user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'bg-status-offline' :
                     user && presenceUsers[user.id]?.status === 'AWAY' ? 'bg-status-away' :
+                    user && presenceUsers[user.id]?.status === 'DO_NOT_DISTURB' ? 'bg-red-500' :
                     'bg-green-500'
                   }`}></div>
-                  <div className={`text-xs ${
+                  <div className={`text-xs truncate ${
                     user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'text-status-offline' :
                     user && presenceUsers[user.id]?.status === 'AWAY' ? 'text-status-away' :
+                    user && presenceUsers[user.id]?.status === 'DO_NOT_DISTURB' ? 'text-red-400' :
                     'text-slate-400'
                   }`}>
-                    {user && presenceUsers[user.id]?.status ? 
-                      presenceUsers[user.id].status.charAt(0) + presenceUsers[user.id].status.slice(1).toLowerCase() 
-                      : 'Online'}
+                    {user && presenceUsers[user.id]?.customStatusText 
+                      ? presenceUsers[user.id].customStatusText 
+                      : (user && presenceUsers[user.id]?.status ? 
+                          presenceUsers[user.id].status.charAt(0) + presenceUsers[user.id].status.slice(1).toLowerCase().replace(/_/g, ' ') 
+                          : 'Online')}
                   </div>
                 </div>
               </div>
             )}
           </div>
+
+          {isStatusPopoverOpen && user && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setIsStatusPopoverOpen(false)}></div>
+              <div className="absolute bottom-[72px] left-4 w-64 bg-[#111318] border border-[#27272A] rounded-xl shadow-xl z-50 overflow-hidden flex flex-col p-2">
+                <input 
+                  type="text"
+                  placeholder="Set a custom status..."
+                  value={customStatusInput}
+                  onChange={(e) => setCustomStatusInput(e.target.value)}
+                  onKeyDown={handleCustomStatusSubmit}
+                  className="w-full bg-[#1A1D24] border border-[#27272A] rounded-md px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#7C3AED] mb-2"
+                />
+                <div className="h-px bg-[#27272A] w-full mb-2"></div>
+                
+                <button onClick={() => handleStatusChange('ONLINE')} className="flex items-center justify-between px-2 py-1.5 hover:bg-[#1A1D24] rounded-md group">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                    <span className="text-xs text-slate-300 group-hover:text-white">Online</span>
+                  </div>
+                  {presenceUsers[user.id]?.status === 'ONLINE' && <Check className="w-3.5 h-3.5 text-[#7C3AED]" />}
+                </button>
+                <button onClick={() => handleStatusChange('AWAY')} className="flex items-center justify-between px-2 py-1.5 hover:bg-[#1A1D24] rounded-md group">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-status-away"></span>
+                    <span className="text-xs text-slate-300 group-hover:text-white">Away</span>
+                  </div>
+                  {presenceUsers[user.id]?.status === 'AWAY' && <Check className="w-3.5 h-3.5 text-[#7C3AED]" />}
+                </button>
+                <button onClick={() => handleStatusChange('DO_NOT_DISTURB')} className="flex items-center justify-between px-2 py-1.5 hover:bg-[#1A1D24] rounded-md group">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                    <span className="text-xs text-slate-300 group-hover:text-white">Do Not Disturb</span>
+                  </div>
+                  {presenceUsers[user.id]?.status === 'DO_NOT_DISTURB' && <Check className="w-3.5 h-3.5 text-[#7C3AED]" />}
+                </button>
+                <button onClick={() => handleStatusChange('OFFLINE')} className="flex items-center justify-between px-2 py-1.5 hover:bg-[#1A1D24] rounded-md group">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-status-offline"></span>
+                    <span className="text-xs text-slate-300 group-hover:text-white">Invisible</span>
+                  </div>
+                  {presenceUsers[user.id]?.status === 'OFFLINE' && <Check className="w-3.5 h-3.5 text-[#7C3AED]" />}
+                </button>
+              </div>
+            </>
+          )}
 
           {!isCollapsed && (
             <div className="flex items-center space-x-2 shrink-0">
