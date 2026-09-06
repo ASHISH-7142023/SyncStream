@@ -3,6 +3,7 @@ import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 import { getAvatarForUser } from '../utils/avatarHelper';
+import { useToast } from '../context/ToastContext';
 
 interface Room {
   id: string;
@@ -25,6 +26,7 @@ const DashboardPage: React.FC = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const { addToast } = useToast();
 
   // Keydown listener for hotkeys (Ctrl+K or Cmd+K focuses search, Esc blurs/clears)
   useEffect(() => {
@@ -134,8 +136,9 @@ const DashboardPage: React.FC = () => {
             ✕
           </button>
           <button 
-            onClick={() => alert("Sidebar collapse toggle is a Pro feature!")}
+            onClick={() => setShowUpgradeModal(true)}
             className="hidden md:block text-text-muted hover:text-white transition-colors cursor-pointer"
+            title="Collapse Sidebar (Pro Feature)"
           >
             <i className="fa-solid fa-angles-left text-sm"></i>
           </button>
@@ -344,7 +347,7 @@ const DashboardPage: React.FC = () => {
             </div>
             <button 
               className="text-text-muted hover:text-white transition-colors cursor-pointer" 
-              onClick={() => alert("Dashboard Help: You can view total active rooms, online member list, send new invites, or join rooms from the active feed.")}
+              onClick={() => addToast("Dashboard Help: You can view total active rooms, online member list, send new invites, or join rooms from the active feed.", 'info')}
             >
               <i className="fa-regular fa-circle-question text-base"></i>
             </button>
@@ -452,7 +455,7 @@ const DashboardPage: React.FC = () => {
                 </div>
                 <div className="p-3 border-t border-gray-800 shrink-0">
                   <button 
-                    onClick={() => alert("You are fully up-to-date! No more activities found.")}
+                    onClick={() => addToast("You are fully up-to-date! No more activities found.", 'success')}
                     className="w-full py-2.5 text-sm font-medium text-accent-purpleLight hover:text-white hover:bg-bg-hover rounded-lg transition-colors cursor-pointer"
                   >
                     Load more
@@ -508,7 +511,7 @@ const DashboardPage: React.FC = () => {
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="font-semibold text-lg">Online Members</h2>
                     <button 
-                      onClick={() => alert(`Online Members (${rooms.length * 3 + 5}): Sarah Wilson, David Brown, Emily Davis, Michael Chen, Lisa Anderson, and ${rooms.length * 3} others.`)}
+                      onClick={() => addToast(`Online Members (${rooms.length * 3 + 5}): Sarah Wilson, David Brown, Emily Davis, Michael Chen, Lisa Anderson, and ${rooms.length * 3} others.`, 'info')}
                       className="text-sm text-accent-purpleLight hover:text-accent-purple transition-colors cursor-pointer"
                     >
                       View all
@@ -594,7 +597,7 @@ const DashboardPage: React.FC = () => {
             <div className="flex gap-3">
               <button 
                 onClick={() => {
-                  alert('Thank you for trying SyncStream! This is a demo checkout flow.');
+                  addToast('Thank you for trying SyncStream! This is a demo checkout flow.', 'success');
                   setShowUpgradeModal(false);
                 }}
                 className="flex-1 py-2.5 bg-gradient-to-r from-accent-purple to-accent-purpleLight hover:from-accent-purpleLight hover:to-accent-purple text-white font-semibold rounded-lg text-sm shadow-lg shadow-accent-purple/35 transition-all text-center cursor-pointer"

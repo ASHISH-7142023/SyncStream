@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import SyncStreamLogo from '../components/ui/SyncStreamLogo';
+import OAuthConnectModal from '../components/modals/OAuthConnectModal';
+import { useToast } from '../context/ToastContext';
 
 import { getAvatarsForGender } from '../utils/avatarHelper';
 
@@ -21,6 +23,8 @@ const RegisterPage: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [gender, setGender] = useState('male');
+  const [oauthModal, setOauthModal] = useState<{ isOpen: boolean; provider: 'Google' | 'GitHub' }>({ isOpen: false, provider: 'Google' });
+  const { addToast } = useToast();
 
   const getPasswordStrength = () => {
     if (!password) return 0;
@@ -321,7 +325,7 @@ const RegisterPage: React.FC = () => {
             {/* Social Logins */}
             <div className="space-y-3 mb-6">
               <button 
-                onClick={() => alert("Google OAuth: Redirecting to Google secure authentication flow...")}
+                onClick={() => setOauthModal({ isOpen: true, provider: 'Google' })}
                 type="button"
                 className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-[#374151] bg-[#0a0a0f] hover:bg-[#374151]/50 transition-colors text-sm font-semibold cursor-pointer"
               >
@@ -334,7 +338,7 @@ const RegisterPage: React.FC = () => {
                 Continue with Google
               </button>
               <button 
-                onClick={() => alert("GitHub OAuth: Redirecting to GitHub developer portal...")}
+                onClick={() => setOauthModal({ isOpen: true, provider: 'GitHub' })}
                 type="button"
                 className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-[#374151] bg-[#0a0a0f] hover:bg-[#374151]/50 transition-colors text-sm font-semibold cursor-pointer"
               >
@@ -528,7 +532,7 @@ const RegisterPage: React.FC = () => {
                   />
                 </div>
                 <div className="text-xs text-[#9ca3af] leading-tight text-left">
-                  <label htmlFor="terms">I agree to the <a onClick={(e) => { e.preventDefault(); alert("SyncStream Terms of Service: By registering, you agree to respect our code of conduct and service quotas."); }} className="text-[#6366f1] hover:underline cursor-pointer" href="#terms">Terms of Service</a> and <a onClick={(e) => { e.preventDefault(); alert("SyncStream Privacy Policy: We secure your email and profile configurations natively using JWT and encrypted MongoDB clusters."); }} className="text-[#6366f1] hover:underline cursor-pointer" href="#privacy">Privacy Policy</a></label>
+                  <label htmlFor="terms">I agree to the <a onClick={(e) => { e.preventDefault(); addToast("SyncStream Terms of Service: By registering, you agree to respect our code of conduct and service quotas.", "info"); }} className="text-[#6366f1] hover:underline cursor-pointer" href="#terms">Terms of Service</a> and <a onClick={(e) => { e.preventDefault(); addToast("SyncStream Privacy Policy: We secure your email and profile configurations natively using JWT and encrypted MongoDB clusters.", "info"); }} className="text-[#6366f1] hover:underline cursor-pointer" href="#privacy">Privacy Policy</a></label>
                 </div>
               </div>
 

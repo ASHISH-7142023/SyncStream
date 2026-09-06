@@ -3,6 +3,8 @@ import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { getAvatarForUser } from '../utils/avatarHelper';
+import { useToast } from '../context/ToastContext';
+import UpgradeProModal from '../components/modals/UpgradeProModal';
 
 interface Room {
   id: string;
@@ -25,6 +27,8 @@ const RoomsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('Recently Active');
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [showUpgradePro, setShowUpgradePro] = useState(false);
+  const { addToast } = useToast();
 
   const handleJoinAndNavigate = async (room: Room) => {
     try {
@@ -169,7 +173,7 @@ const RoomsPage: React.FC = () => {
               </div>
             </div>
             <button 
-              onClick={() => alert("Redirecting to Pro Payment Gateway...")}
+              onClick={() => setShowUpgradePro(true)}
               className="w-full bg-[#6366f1] hover:bg-[#4f46e5] text-white font-medium py-2 px-4 rounded-xl transition-colors shadow-sm relative z-10 text-sm cursor-pointer"
             >
               Upgrade Now
@@ -247,7 +251,7 @@ const RoomsPage: React.FC = () => {
           
           <div className="flex items-center gap-4 ml-4 shrink-0">
             <button 
-              onClick={() => alert("You have no new notifications.")}
+              onClick={() => addToast("You have no new notifications.", "info")}
               aria-label="Notifications" 
               className="relative p-2 rounded-xl text-dim hover:text-bright hover:bg-surface-100 transition-colors cursor-pointer"
             >
@@ -255,7 +259,7 @@ const RoomsPage: React.FC = () => {
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-surface"></span>
             </button>
             <button 
-              onClick={() => alert("SyncStream Help Center: Search for rooms or use the 'Create Room' button to create custom spaces.")}
+              onClick={() => addToast("SyncStream Help Center: Search for rooms or use the 'Create Room' button to create custom spaces.", "info")}
               aria-label="Help" 
               className="p-2 rounded-xl text-dim hover:text-bright hover:bg-surface-100 transition-colors cursor-pointer"
             >
@@ -363,7 +367,7 @@ const RoomsPage: React.FC = () => {
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
-                          alert(`Room settings for #${room.name}: Join, invite, or view archives.`);
+                          addToast(`Room settings for #${room.name}: Join, invite, or view archives.`, "info");
                         }}
                         className="p-2 rounded-lg text-dim hover:text-bright hover:bg-surface-200 transition-colors ml-2 shrink-0 z-10 cursor-pointer"
                         title="Options"
@@ -389,20 +393,20 @@ const RoomsPage: React.FC = () => {
                   <span className="text-dim">Showing 1 to {filteredRooms.length} of {filteredRooms.length} rooms</span>
                   <div className="flex items-center gap-2">
                     <button 
-                      onClick={() => alert("You are on the first page.")}
-                      className="p-1.5 rounded-lg border border-[#28292d] text-dim hover:text-bright hover:bg-surface-200 transition-colors cursor-pointer"
+                      disabled
+                      className="p-1.5 rounded-lg border border-[#28292d] text-dim transition-colors opacity-50 cursor-not-allowed"
                     >
                       <i className="fa-solid fa-chevron-left text-xs"></i>
                     </button>
                     <button 
-                      onClick={() => alert("You are on page 1.")}
-                      className="px-3 py-1 rounded-lg bg-[#6366f1] text-white font-semibold text-xs cursor-pointer"
+                      disabled
+                      className="px-3 py-1 rounded-lg bg-[#6366f1] text-white font-semibold text-xs cursor-default"
                     >
                       1
                     </button>
                     <button 
-                      onClick={() => alert("You are on the first page.")}
-                      className="p-1.5 rounded-lg border border-[#28292d] text-dim hover:text-bright hover:bg-surface-200 transition-colors cursor-pointer"
+                      disabled
+                      className="p-1.5 rounded-lg border border-[#28292d] text-dim transition-colors opacity-50 cursor-not-allowed"
                     >
                       <i className="fa-solid fa-chevron-right text-xs"></i>
                     </button>
@@ -480,6 +484,10 @@ const RoomsPage: React.FC = () => {
 
       </main>
 
+      <UpgradeProModal 
+        isOpen={showUpgradePro} 
+        onClose={() => setShowUpgradePro(false)} 
+      />
     </div>
   );
 };

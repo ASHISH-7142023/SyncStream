@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { getAvatarForUser, getAvatarsForGender } from '../utils/avatarHelper';
 import api from '../services/api';
 
@@ -12,6 +13,7 @@ interface Room {
 
 const ProfilePage: React.FC = () => {
   const { user, logout } = useAuth();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const { rooms, onOpenCreateModal } = useOutletContext<{ 
     rooms: Room[]; 
@@ -86,10 +88,10 @@ const ProfilePage: React.FC = () => {
 
   const handleUpdatePassword = () => {
     if (!currentPassword || !newPassword) {
-      alert('Please fill in both current and new password fields.');
+      addToast('Please fill in both current and new password fields.', 'error');
       return;
     }
-    alert('Password updated successfully!');
+    addToast('Password updated successfully!', 'success');
     setCurrentPassword('');
     setNewPassword('');
   };
@@ -728,7 +730,7 @@ const ProfilePage: React.FC = () => {
                         <button 
                           onClick={() => {
                             setIs2faEnabled(!is2faEnabled);
-                            alert(is2faEnabled ? 'Two-Factor Authentication disabled.' : 'Two-Factor Authentication enabled.');
+                            addToast(is2faEnabled ? 'Two-Factor Authentication disabled.' : 'Two-Factor Authentication enabled.', is2faEnabled ? 'info' : 'success');
                           }}
                           className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all hover:scale-[1.03] active:scale-[0.97] cursor-pointer ${
                             is2faEnabled 

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 import { getAvatarForUser } from '../utils/avatarHelper';
+import { useToast } from '../context/ToastContext';
 
 interface Room {
   id: string;
@@ -27,6 +28,7 @@ const FriendsPage: React.FC = () => {
     rooms: Room[]; 
     onOpenCreateModal: () => void;
   }>();
+  const { addToast } = useToast();
 
   const [activeTab, setActiveTab] = useState<'Friends' | 'Pending' | 'Find'>('Friends');
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
@@ -87,9 +89,9 @@ const FriendsPage: React.FC = () => {
   const sendRequest = async (targetId: string) => {
     try {
       await api.post(`/api/friends/request/${targetId}`);
-      alert('Friend request sent!');
+      addToast('Friend request sent!', 'success');
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to send request');
+      addToast(error.response?.data?.message || 'Failed to send request', 'error');
     }
   };
 
@@ -98,7 +100,7 @@ const FriendsPage: React.FC = () => {
       await api.post(`/api/friends/accept/${targetId}`);
       fetchPendingRequests();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to accept request');
+      addToast(error.response?.data?.message || 'Failed to accept request', 'error');
     }
   };
 
@@ -107,7 +109,7 @@ const FriendsPage: React.FC = () => {
       await api.post(`/api/friends/decline/${targetId}`);
       fetchPendingRequests();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to decline request');
+      addToast(error.response?.data?.message || 'Failed to decline request', 'error');
     }
   };
 
@@ -116,7 +118,7 @@ const FriendsPage: React.FC = () => {
       const res = await api.post(`/api/rooms/dm/${targetId}`);
       navigate(`/rooms/${res.data.id}`);
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to create DM');
+      addToast(error.response?.data?.message || 'Failed to create DM', 'error');
     }
   };
 

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SyncStreamLogo from '../components/ui/SyncStreamLogo';
+import { useToast } from '../context/ToastContext';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [showDemoVideo, setShowDemoVideo] = useState(false);
+  const { addToast } = useToast();
 
   const features = [
     {
@@ -202,8 +204,8 @@ const LandingPage: React.FC = () => {
                       <span className="font-semibold text-white text-sm">SyncStream</span>
                     </div>
                     <button 
-                      onClick={() => alert("Notification center is active in your authenticated dashboard.")}
-                      className="text-gray-400 hover:text-white cursor-pointer"
+                      onClick={() => addToast("Notification center is active in your authenticated dashboard.", "info")}
+                      className="text-gray-400 hover:text-white transition-colors cursor-pointer"
                     >
                       🔔
                     </button>
@@ -440,7 +442,7 @@ const LandingPage: React.FC = () => {
                         <svg className="w-4 h-4 hover:text-white transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                         <svg className="w-4 h-4 hover:text-white transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                         <button 
-                          onClick={() => alert("Sign up or log in to start typing and sending real-time messages!")}
+                          onClick={() => addToast("Sign up or log in to start typing and sending real-time messages!", "info")}
                           className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white p-1 rounded transition-colors cursor-pointer"
                         >
                           <svg fill="none" height="10" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" viewBox="0 0 24 24" width="10" xmlns="http://www.w3.org/2000/svg"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
@@ -542,21 +544,21 @@ const LandingPage: React.FC = () => {
           </div>
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-gray-500">
             <a 
-              onClick={(e) => { e.preventDefault(); alert("SyncStream Terms of Service: By using our platform, you agree to respect our code of conduct and service quotas."); }}
+              onClick={(e) => { e.preventDefault(); addToast("SyncStream Terms of Service: By using our platform, you agree to respect our code of conduct and service quotas.", "info"); }}
               className="hover:text-white transition-colors cursor-pointer" 
               href="#terms"
             >
               Terms of Service
             </a>
             <a 
-              onClick={(e) => { e.preventDefault(); alert("SyncStream Privacy Policy: We secure your email and profile configurations natively using JWT and encrypted MongoDB clusters."); }}
+              onClick={(e) => { e.preventDefault(); addToast("SyncStream Privacy Policy: We secure your email and profile configurations natively using JWT and encrypted MongoDB clusters.", "info"); }}
               className="hover:text-white transition-colors cursor-pointer" 
               href="#privacy"
             >
               Privacy Policy
             </a>
             <a 
-              onClick={(e) => { e.preventDefault(); alert("SyncStream Support: For inquiries or support requests, please contact help@syncstream.dev."); }}
+              onClick={(e) => { e.preventDefault(); addToast("SyncStream Support: For inquiries or support requests, please contact help@syncstream.dev.", "info"); }}
               className="hover:text-white transition-colors cursor-pointer" 
               href="#help"
             >

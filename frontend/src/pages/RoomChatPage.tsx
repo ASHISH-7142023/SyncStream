@@ -10,6 +10,9 @@ import { VideoCall } from '../components/VideoCall';
 import { fileService } from '../services/fileService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import RoomDetailsModal from '../components/modals/RoomDetailsModal';
+import UpgradeProModal from '../components/modals/UpgradeProModal';
+import { useToast } from '../context/ToastContext';
 
 interface Member {
   id: string;
@@ -36,6 +39,8 @@ const RoomChatPage: React.FC = () => {
     joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, updateMessage
   } = useSocket();
   const { isCallActive, joinCall } = useWebRTC();
+  const { addToast } = useToast();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [room, setRoom] = useState<RoomDetails | null>(null);
   const [inputText, setInputText] = useState('');
@@ -48,6 +53,8 @@ const RoomChatPage: React.FC = () => {
   const [selectedEmojiCategory, setSelectedEmojiCategory] = useState(0);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const [selectedThreadMsg, setSelectedThreadMsg] = useState<any | null>(null);
+  const [showRoomDetails, setShowRoomDetails] = useState(false);
+  const [showUpgradePro, setShowUpgradePro] = useState(false);
   
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -328,7 +335,7 @@ const RoomChatPage: React.FC = () => {
               <h4 className="font-medium text-[#a78bfa] text-sm mb-1">Upgrade to Pro</h4>
               <p className="text-xs text-text-muted mb-4 leading-relaxed">Unlock unlimited history and features.</p>
               <button 
-                onClick={() => alert("Redirecting to Pro Payment Gateway...")}
+                onClick={() => setShowUpgradePro(true)}
                 className="w-full bg-[#8b5cf6] hover:bg-[#7c3aed] text-white text-sm font-medium py-2 px-4 rounded-xl transition-colors cursor-pointer"
               >
                 Upgrade Now
@@ -478,7 +485,7 @@ const RoomChatPage: React.FC = () => {
                 <i className="fa-solid fa-users text-xs"></i>
               </button>
               <button 
-                onClick={() => alert(`Room Details for #${room?.name || 'developers'}: \nType: Public \nMembers: ${memberList.length}`)}
+                onClick={() => setShowRoomDetails(true)}
                 className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer" 
                 title="More Options"
               >
@@ -784,21 +791,24 @@ const RoomChatPage: React.FC = () => {
                 </div>
               </div>
             )}
-            <textarea 
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={handleKeyPress}
-              className="w-full bg-transparent border-0 text-[15px] placeholder-text-muted/70 resize-none py-3 px-4 focus:ring-0 min-h-[48px] outline-none text-white" 
-              placeholder="Type a message..." 
-              rows={1}
-            />
+            <div className="flex items-center min-h-[44px]">
+              <textarea 
+                ref={textareaRef}
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={handleKeyPress}
+                className="w-full bg-transparent border-0 text-[15px] placeholder-text-muted/70 resize-none py-3 px-4 focus:ring-0 min-h-[48px] outline-none text-white" 
+                placeholder="Type a message..." 
+                rows={1}
+              />
+            </div>
             <div className="flex items-center justify-between px-2 pb-2">
               <div className="flex items-center gap-1 text-text-muted">
                 <button type="button" className="p-2 hover:bg-white/5 rounded-lg transition-colors">
                   <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg>
                 </button>
                 <button 
-                  onClick={() => alert("Rich text formatting tools: Use standard Markdown tags like **bold**, *italic*, or `code` to format your messages.")}
+                  onClick={() => addToast("Rich text formatting tools: Use standard Markdown tags like **bold**, *italic*, or `code`.", 'info')}
                   type="button" 
                   className="p-2 hover:bg-white/5 rounded-lg transition-colors font-serif font-bold text-sm cursor-pointer"
                 >
@@ -854,7 +864,10 @@ const RoomChatPage: React.FC = () => {
                   )}
                 </div>
                 <button 
-                  onClick={() => alert("Mentions list: Type @ followed by a member name (e.g. @Sarah) to notify them in the chat.")}
+                  onClick={() => {
+                    setInputText(prev => prev + '@');
+                    setTimeout(() => textareaRef.current?.focus(), 0);
+                  }}
                   type="button" 
                   className="p-2 hover:bg-white/5 rounded-lg transition-colors font-bold cursor-pointer"
                 >
@@ -905,7 +918,10 @@ const RoomChatPage: React.FC = () => {
               </h2>
               <div className="flex items-center gap-2">
                 <button 
-                  onClick={() => alert(`Invite Link: Share this temporary access URL: https://syncstream.dev/invite/room-${roomId}`)}
+                  onClick={() => {
+                    navigator.clipboard.writeText(`https://syncstream.dev/invite/room-${roomId}`);
+                    addToast("Invite link copied to clipboard!", 'success');
+                  }}
                   className="flex items-center gap-1.5 text-xs text-brand-300 bg-brand-900/30 hover:bg-brand-900/50 border border-brand-800/50 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
                 >
                   Invite
@@ -931,7 +947,7 @@ const RoomChatPage: React.FC = () => {
               {onlineMembers.length > 0 && (
                 <div>
                   <div 
-                    onClick={() => alert("Online Members: " + onlineMembers.map(m => m.username).join(', '))}
+                    onClick={() => addToast("Online Members: " + onlineMembers.map(m => m.username).join(', '), 'info')}
                     className="flex items-center gap-2 mb-3 text-xs font-semibold text-text-muted tracking-wide cursor-pointer hover:text-white transition-colors"
                   >
                     Online — <span className="text-status-online">{onlineMembers.length}</span>
@@ -963,7 +979,7 @@ const RoomChatPage: React.FC = () => {
                     ))}
                   </ul>
                   <div 
-                    onClick={() => alert("Online Members: " + onlineMembers.map(m => m.username).join(', '))}
+                    onClick={() => addToast("Online Members: " + onlineMembers.map(m => m.username).join(', '), 'info')}
                     className="mt-3 text-xs text-[#a78bfa] hover:underline cursor-pointer"
                   >
                     View all online ({onlineMembers.length})
@@ -1021,8 +1037,8 @@ const RoomChatPage: React.FC = () => {
                     ))}
                   </ul>
                   <div 
-                    onClick={() => alert("Offline Members: " + offlineMembers.map(m => m.username).join(', '))}
-                    className="mt-3 text-xs text-[#a78bfa] hover:underline cursor-pointer"
+                    onClick={() => addToast("Offline Members: " + offlineMembers.map(m => m.username).join(', '), 'info')}
+                    className="mt-3 text-xs text-text-muted hover:text-white hover:underline cursor-pointer"
                   >
                     View all offline ({offlineMembers.length})
                   </div>

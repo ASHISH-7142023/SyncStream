@@ -3,10 +3,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import SyncStreamLogo from '../components/ui/SyncStreamLogo';
+import OAuthConnectModal from '../components/modals/OAuthConnectModal';
+import { useToast } from '../context/ToastContext';
 
 const LoginPage: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { addToast } = useToast();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,6 +17,7 @@ const LoginPage: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [oauthModal, setOauthModal] = useState<{ isOpen: boolean; provider: 'Google' | 'GitHub' }>({ isOpen: false, provider: 'Google' });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -275,7 +279,7 @@ const LoginPage: React.FC = () => {
           {/* Social Logins */}
           <div className="space-y-3 mb-6">
             <button 
-              onClick={() => alert("Google OAuth: Redirecting to Google secure authentication flow...")}
+              onClick={() => setOauthModal({ isOpen: true, provider: 'Google' })}
               type="button"
               className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-[#1b2336] hover:bg-[#252d41] border border-white/5 transition-colors text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#6d28d9]/50 cursor-pointer"
             >
@@ -288,7 +292,7 @@ const LoginPage: React.FC = () => {
               Continue with Google
             </button>
             <button 
-              onClick={() => alert("GitHub OAuth: Redirecting to GitHub developer portal...")}
+              onClick={() => setOauthModal({ isOpen: true, provider: 'GitHub' })}
               type="button"
               className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-[#1b2336] hover:bg-[#252d41] border border-white/5 transition-colors text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#6d28d9]/50 cursor-pointer"
             >
@@ -381,8 +385,8 @@ const LoginPage: React.FC = () => {
                 />
                 <label className="ml-2 block text-sm text-[#e2e8f0] cursor-pointer" htmlFor="remember-me">Remember me</label>
               </div>
-              <div className="text-sm">
-                <a onClick={(e) => { e.preventDefault(); alert("Forgot Password: Password recovery instructions have been simulated to your email inbox."); }} className="font-medium text-[#818cf8] hover:text-[#a78bfa] transition-colors cursor-pointer" href="#forgot">Forgot password?</a>
+              <div className="flex justify-end">
+                <a onClick={(e) => { e.preventDefault(); addToast("Forgot Password: Password recovery instructions have been simulated to your email inbox.", "info"); }} className="font-medium text-[#818cf8] hover:text-[#a78bfa] transition-colors cursor-pointer" href="#forgot">Forgot password?</a>
               </div>
             </div>
 
@@ -400,8 +404,8 @@ const LoginPage: React.FC = () => {
             <div className="shrink-0 pt-0.5">
               <svg className="w-5 h-5 text-[#818cf8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
             </div>
-            <p className="text-sm text-[#94a3b8]">
-              We never share your data with third parties. Read our <a onClick={(e) => { e.preventDefault(); alert("SyncStream Privacy Policy: We secure your email and profile configurations natively using JWT and encrypted MongoDB clusters."); }} className="text-[#818cf8] hover:underline cursor-pointer" href="#privacy">Privacy Policy</a> to learn more.
+            <p className="text-center text-xs text-[#9ca3af] mt-6">
+              We never share your data with third parties. Read our <a onClick={(e) => { e.preventDefault(); addToast("SyncStream Privacy Policy: We secure your email and profile configurations natively using JWT and encrypted MongoDB clusters.", "info"); }} className="text-[#818cf8] hover:underline cursor-pointer" href="#privacy">Privacy Policy</a> to learn more.
             </p>
           </div>
 
@@ -412,7 +416,12 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
+      <OAuthConnectModal 
+        isOpen={oauthModal.isOpen} 
+        onClose={() => setOauthModal(prev => ({ ...prev, isOpen: false }))} 
+        provider={oauthModal.provider} 
+      />
     </div>
   );
 };
