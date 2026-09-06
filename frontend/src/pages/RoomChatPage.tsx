@@ -612,18 +612,40 @@ const RoomChatPage: React.FC = () => {
                           </button>
                         );
                       })}
-                      <button 
-                        onClick={() => handleAddReaction(msg, '👍')}
-                        className="flex items-center justify-center w-7 h-7 bg-transparent border border-transparent rounded-full hover:bg-[#1f2233] hover:border-white/10 transition-colors text-text-muted opacity-0 group-hover:opacity-100"
-                      >
-                        👍
-                      </button>
-                      <button 
-                        onClick={() => handleAddReaction(msg, '🔥')}
-                        className="flex items-center justify-center w-7 h-7 bg-transparent border border-transparent rounded-full hover:bg-[#1f2233] hover:border-white/10 transition-colors text-text-muted opacity-0 group-hover:opacity-100"
-                      >
-                        🔥
-                      </button>
+                      {/* Quick Reactions */}
+                      <div className="flex items-center bg-[#151723] border border-white/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity overflow-hidden shadow-lg ml-2">
+                        <div className="flex items-center px-1 border-r border-white/5 bg-[#0f111a]">
+                          <i className="fa-regular fa-face-smile text-text-muted text-xs mx-1"></i>
+                        </div>
+                        <button 
+                          onClick={() => handleAddReaction(msg, '👍')}
+                          className="flex items-center justify-center w-7 h-7 hover:bg-white/10 transition-colors text-text-muted hover:text-white"
+                          title="Thumbs Up"
+                        >
+                          👍
+                        </button>
+                        <button 
+                          onClick={() => handleAddReaction(msg, '❤️')}
+                          className="flex items-center justify-center w-7 h-7 hover:bg-white/10 transition-colors text-text-muted hover:text-white"
+                          title="Heart"
+                        >
+                          ❤️
+                        </button>
+                        <button 
+                          onClick={() => handleAddReaction(msg, '😂')}
+                          className="flex items-center justify-center w-7 h-7 hover:bg-white/10 transition-colors text-text-muted hover:text-white"
+                          title="Laugh"
+                        >
+                          😂
+                        </button>
+                        <button 
+                          onClick={() => handleAddReaction(msg, '🔥')}
+                          className="flex items-center justify-center w-7 h-7 hover:bg-white/10 transition-colors text-text-muted hover:text-white"
+                          title="Fire"
+                        >
+                          🔥
+                        </button>
+                      </div>
                       <button 
                         onClick={() => {
                           setSelectedThreadMsg(msg);
