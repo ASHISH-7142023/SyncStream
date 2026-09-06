@@ -8,6 +8,7 @@ import { useSocket } from '../../context/SocketContext';
 import { useNotification } from '../../context/NotificationContext';
 import SyncStreamLogo from '../ui/SyncStreamLogo';
 import { SettingsModal } from '../modals/SettingsModal';
+import { getAvatarForUser } from '../../utils/avatarHelper';
 
 interface Room {
   id: string;
@@ -47,11 +48,6 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const handleLogout = () => {
     logout();
     navigate('/login');
-  };
-
-  // Generate username avatar initials
-  const getInitials = (name: string) => {
-    return name.slice(0, 2).toUpperCase();
   };
 
   return (
@@ -182,52 +178,65 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       </div>
 
       {/* User Session Footer Block */}
-      <div className="p-3 border-t border-[#1D2028] bg-[#111318] shrink-0">
+      <div className="p-4 border-t border-[#1D2028] bg-obsidian-900 shrink-0 hover:bg-obsidian-800 transition-colors">
         <div className="flex items-center justify-between">
           <div 
             className="flex items-center space-x-3 cursor-pointer select-none group flex-1 min-w-0"
             onClick={() => navigate('/profile')}
           >
             <div className="relative shrink-0">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#7C3AED] to-[#38BDF8] flex items-center justify-center font-bold text-[#F8FAFC] text-sm">
-                {user ? getInitials(user.username) : 'U'}
+              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none">
+                {getAvatarForUser(user ? user.username : 'User', presenceUsers)}
               </div>
-              <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#111318] ${
+              <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-obsidian-900 ${
                 user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'bg-status-offline' :
                 user && presenceUsers[user.id]?.status === 'AWAY' ? 'bg-status-away' :
-                'bg-status-online animate-pulse-online'
+                'bg-green-500'
               }`} />
             </div>
             {!isCollapsed && (
               <div className="text-left flex-1 min-w-0">
-                <div className="text-xs font-bold text-[#F8FAFC] truncate group-hover:text-[#A78BFA] transition-colors">
+                <div className="text-sm font-semibold text-white truncate group-hover:text-[#A78BFA] transition-colors">
                   {user ? user.username : 'User'}
                 </div>
-                <div className={`text-[10px] font-medium tracking-wide ${
-                  user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'text-status-offline' :
-                  user && presenceUsers[user.id]?.status === 'AWAY' ? 'text-status-away' :
-                  'text-status-online'
-                }`}>
-                  {user && presenceUsers[user.id]?.status ? 
-                    presenceUsers[user.id].status.charAt(0) + presenceUsers[user.id].status.slice(1).toLowerCase() 
-                    : 'Online'}
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <div className={`w-1.5 h-1.5 rounded-full ${
+                    user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'bg-status-offline' :
+                    user && presenceUsers[user.id]?.status === 'AWAY' ? 'bg-status-away' :
+                    'bg-green-500'
+                  }`}></div>
+                  <div className={`text-xs ${
+                    user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'text-status-offline' :
+                    user && presenceUsers[user.id]?.status === 'AWAY' ? 'text-status-away' :
+                    'text-slate-400'
+                  }`}>
+                    {user && presenceUsers[user.id]?.status ? 
+                      presenceUsers[user.id].status.charAt(0) + presenceUsers[user.id].status.slice(1).toLowerCase() 
+                      : 'Online'}
+                  </div>
                 </div>
               </div>
             )}
           </div>
 
           {!isCollapsed && (
-            <div className="flex items-center space-x-1 shrink-0">
+            <div className="flex items-center space-x-2 shrink-0">
               <button
-                onClick={() => setIsSettingsOpen(true)}
-                className="p-2 hover:bg-[#151923] text-[#94A3B8] hover:text-[#F8FAFC] rounded-lg transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsSettingsOpen(true);
+                }}
+                className="text-slate-500 hover:text-white p-1 transition-colors"
                 title="Settings"
               >
                 <Settings className="w-4 h-4" />
               </button>
               <button
-                onClick={handleLogout}
-                className="p-2 hover:bg-[#151923] text-[#94A3B8] hover:text-[#EF4444] rounded-lg transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleLogout();
+                }}
+                className="text-slate-500 hover:text-red-400 p-1 transition-colors"
                 title="Logout"
               >
                 <LogOut className="w-4 h-4" />
