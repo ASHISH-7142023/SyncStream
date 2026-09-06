@@ -336,12 +336,18 @@ const RoomChatPage: React.FC = () => {
               <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none">
                 {getAvatarForUser(user ? user.username : 'User', presenceUsers)}
               </div>
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-obsidian-900 rounded-full"></div>
+              <div className="absolute bottom-0 right-0 flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500 border-2 border-obsidian-900"></span>
+              </div>
             </div>
             <div>
               <p className="text-sm font-semibold text-white">{user ? user.username : 'User'}</p>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                <div className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </div>
                 <p className="text-xs text-slate-400">Online</p>
               </div>
             </div>
