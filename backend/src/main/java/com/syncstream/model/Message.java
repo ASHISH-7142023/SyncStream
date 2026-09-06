@@ -46,6 +46,8 @@ public class Message {
 
     private String parentId;
 
+    private String clientMessageId;
+
     private String attachmentId;
 
     private String fileName;

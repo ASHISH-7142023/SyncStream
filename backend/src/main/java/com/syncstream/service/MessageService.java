@@ -54,6 +54,7 @@ public class MessageService {
                 .createdAt(Instant.now())
                 .sequenceNumber(sequenceNumber)
                 .parentId(request.getParentId())
+                .clientMessageId(request.getClientMessageId())
                 .attachmentId(request.getAttachmentId())
                 .fileName(request.getFileName())
                 .fileSize(request.getFileSize())
