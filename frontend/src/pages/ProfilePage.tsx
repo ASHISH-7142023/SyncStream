@@ -588,7 +588,6 @@ const ProfilePage: React.FC = () => {
                           className="bg-obsidian-900 border border-[#2e3346] text-white text-xs rounded-lg px-3 py-2 focus:ring-1 focus:ring-purple-500 outline-none cursor-pointer"
                         >
                           <option value="default">Dark Obsidian (Default)</option>
-                          <option value="light">Frosted Glass Light</option>
                           <option value="midnight">Midnight Blue</option>
                         </select>
                       </div>
