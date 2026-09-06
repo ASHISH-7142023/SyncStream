@@ -57,6 +57,7 @@ const RoomChatPage: React.FC = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [pinnedMessages, setPinnedMessages] = useState<any[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
 
   const feedEndRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<any>(null);
@@ -506,7 +507,44 @@ const RoomChatPage: React.FC = () => {
         {isCallActive && <VideoCall />}
 
         {/* Chat Message Logs */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6 scrollbar-thin relative">
+        <div 
+          className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6 scrollbar-thin relative"
+          onDragOver={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!isDragging) setIsDragging(true);
+          }}
+        >
+          {isDragging && (
+            <div 
+              className="absolute inset-4 bg-[#8b5cf6]/10 backdrop-blur-sm z-50 flex items-center justify-center border-2 border-dashed border-[#8b5cf6] rounded-2xl transition-all"
+              onDragLeave={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsDragging(false);
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsDragging(false);
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                  setSelectedFile(e.dataTransfer.files[0]);
+                }
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              <div className="flex flex-col items-center gap-4 text-[#8b5cf6] pointer-events-none">
+                <div className="w-20 h-20 bg-[#8b5cf6]/20 rounded-full flex items-center justify-center">
+                  <i className="fa-solid fa-cloud-arrow-up text-4xl"></i>
+                </div>
+                <h3 className="text-2xl font-bold text-white">Drop file to attach</h3>
+                <p className="text-sm text-[#a78bfa]">Share images, videos, or documents</p>
+              </div>
+            </div>
+          )}
           
           {isSearching ? (
             <div className="absolute inset-0 bg-[#0f111a]/95 backdrop-blur-sm z-20 overflow-y-auto px-6 py-4 flex flex-col gap-4">
