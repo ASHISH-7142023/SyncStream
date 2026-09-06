@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const [showDemoVideo, setShowDemoVideo] = useState(false);
 
   const features = [
     {
@@ -123,7 +124,7 @@ const LandingPage: React.FC = () => {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                 </button>
                 <button 
-                  onClick={() => alert("Watch Demo: Connecting rooms, active presence, typing sync, and low-latency audio/video calling are fully interactive inside.")}
+                  onClick={() => setShowDemoVideo(true)}
                   className="flex items-center gap-2 text-white bg-transparent border border-white/10 hover:bg-white/5 px-6 py-3.5 rounded-xl font-medium transition-all cursor-pointer"
                 >
                   <svg className="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path></svg>
@@ -507,6 +508,30 @@ const LandingPage: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {showDemoVideo && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="relative w-full max-w-5xl rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(124,58,237,0.3)] bg-[#050614] border border-white/10 flex flex-col">
+            <button 
+              onClick={() => setShowDemoVideo(false)}
+              className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-white/10 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
+            </button>
+            <div className="w-full flex-grow flex items-center justify-center bg-black">
+              <img 
+                src="/syncstream-demo.webp" 
+                alt="SyncStream Demo Walkthrough" 
+                className="w-full h-auto max-h-[80vh] object-contain"
+              />
+            </div>
+            <div className="p-4 border-t border-white/10 flex justify-between items-center text-sm bg-[#050614]">
+              <div className="text-white font-medium">SyncStream Demo Walkthrough</div>
+              <div className="text-gray-400">Complete end-to-end user journey</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/5 bg-[#050614]/80 mt-20">
