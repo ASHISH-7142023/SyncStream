@@ -110,8 +110,8 @@ const RoomChatPage: React.FC = () => {
     feedEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [roomMessages]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSendMessage = async (e?: React.FormEvent | React.KeyboardEvent) => {
+    if (e) e.preventDefault();
     if (!roomId) return;
     if (!inputText.trim() && !selectedFile) return;
 
@@ -145,8 +145,15 @@ const RoomChatPage: React.FC = () => {
     sendTyping(roomId, false);
   };
 
-  const handleKeyPress = () => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (!roomId) return;
+
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage(e);
+      return;
+    }
+
     if (!isTypingRef.current) {
       isTypingRef.current = true;
       sendTyping(roomId, true);
