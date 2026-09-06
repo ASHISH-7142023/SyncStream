@@ -21,6 +21,13 @@ interface UserDto {
   gender?: string;
 }
 
+interface FriendshipDto {
+  id: string;
+  user: UserDto;
+  status: 'PENDING' | 'ACCEPTED' | 'DECLINED';
+  createdAt: string;
+}
+
 const FriendsPage: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -33,8 +40,8 @@ const FriendsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'Friends' | 'Pending' | 'Find'>('Friends');
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
-  const [friends, setFriends] = useState<UserDto[]>([]);
-  const [pendingRequests, setPendingRequests] = useState<UserDto[]>([]);
+  const [friends, setFriends] = useState<FriendshipDto[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<FriendshipDto[]>([]);
   const [searchResults, setSearchResults] = useState<UserDto[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -95,18 +102,18 @@ const FriendsPage: React.FC = () => {
     }
   };
 
-  const acceptRequest = async (targetId: string) => {
+  const acceptRequest = async (friendshipId: string) => {
     try {
-      await api.post(`/api/friends/accept/${targetId}`);
+      await api.post(`/api/friends/accept/${friendshipId}`);
       fetchPendingRequests();
     } catch (error: any) {
       addToast(error.response?.data?.message || 'Failed to accept request', 'error');
     }
   };
 
-  const declineRequest = async (targetId: string) => {
+  const declineRequest = async (friendshipId: string) => {
     try {
-      await api.post(`/api/friends/decline/${targetId}`);
+      await api.post(`/api/friends/decline/${friendshipId}`);
       fetchPendingRequests();
     } catch (error: any) {
       addToast(error.response?.data?.message || 'Failed to decline request', 'error');
@@ -118,9 +125,10 @@ const FriendsPage: React.FC = () => {
       const res = await api.post(`/api/rooms/dm/${targetId}`);
       navigate(`/rooms/${res.data.id}`);
     } catch (error: any) {
-      addToast(error.response?.data?.message || 'Failed to create DM', 'error');
+      addToast(error.response?.data?.message || 'Failed to message friend', 'error');
     }
   };
+
 
   return (
     <div className="h-screen flex overflow-hidden bg-bg-main text-text-main font-sans selection:bg-accent-purple selection:text-white">
@@ -315,22 +323,22 @@ const FriendsPage: React.FC = () => {
 
             {activeTab === 'Pending' && (
               <div className="space-y-3 animate-fade-in-up">
-                {pendingRequests.map(u => (
-                  <div key={u.id} className="bg-bg-card border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-accent-purple/30 transition-colors">
+                {pendingRequests.map(f => (
+                  <div key={f.id} className="bg-bg-card border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-accent-purple/30 transition-colors">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-full bg-accent-purple/20 flex items-center justify-center text-2xl select-none">
-                        {getAvatarForUser(u.username)}
+                        {getAvatarForUser(f.user.username)}
                       </div>
                       <div>
-                        <h4 className="font-semibold text-lg text-white">{u.username}</h4>
+                        <h4 className="font-semibold text-lg text-white">{f.user.username}</h4>
                         <p className="text-xs text-text-muted">Sent you a friend request</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <button onClick={() => acceptRequest(u.id)} className="px-4 py-2 bg-accent-green hover:bg-green-600 text-white rounded-lg text-sm font-semibold transition-colors">
+                      <button onClick={() => acceptRequest(f.id)} className="px-4 py-2 bg-accent-green hover:bg-green-600 text-white rounded-lg text-sm font-semibold transition-colors">
                         Accept
                       </button>
-                      <button onClick={() => declineRequest(u.id)} className="px-4 py-2 bg-bg-sidebar border border-gray-700 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/50 text-text-muted rounded-lg text-sm font-semibold transition-colors">
+                      <button onClick={() => declineRequest(f.id)} className="px-4 py-2 bg-bg-sidebar border border-gray-700 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/50 text-text-muted rounded-lg text-sm font-semibold transition-colors">
                         Decline
                       </button>
                     </div>
@@ -347,22 +355,22 @@ const FriendsPage: React.FC = () => {
 
             {activeTab === 'Friends' && (
               <div className="space-y-3 animate-fade-in-up">
-                {friends.map(u => (
-                  <div key={u.id} className="bg-bg-card border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-accent-purple/30 transition-colors">
+                {friends.map(f => (
+                  <div key={f.id} className="bg-bg-card border border-gray-800 rounded-xl p-4 flex items-center justify-between hover:border-accent-purple/30 transition-colors">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-full bg-accent-purple/20 flex items-center justify-center text-2xl select-none relative">
-                        {getAvatarForUser(u.username)}
+                        {getAvatarForUser(f.user.username)}
                         <div className="absolute bottom-0 right-0 flex h-3 w-3">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-75"></span>
                           <span className="relative inline-flex rounded-full h-3 w-3 bg-accent-green border-2 border-bg-card"></span>
                         </div>
                       </div>
                       <div>
-                        <h4 className="font-semibold text-lg text-white">{u.username}</h4>
+                        <h4 className="font-semibold text-lg text-white">{f.user.username}</h4>
                         <p className="text-xs text-text-muted">Online</p>
                       </div>
                     </div>
-                    <button onClick={() => messageFriend(u.id)} className="px-4 py-2 bg-accent-purpleLight hover:bg-accent-purple text-white rounded-lg text-sm font-semibold transition-colors shadow-lg shadow-accent-purple/20 flex items-center gap-2">
+                    <button onClick={() => messageFriend(f.user.id)} className="px-4 py-2 bg-accent-purpleLight hover:bg-accent-purple text-white rounded-lg text-sm font-semibold transition-colors shadow-lg shadow-accent-purple/20 flex items-center gap-2">
                       <i className="fa-solid fa-paper-plane"></i> Message
                     </button>
                   </div>

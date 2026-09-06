@@ -14,6 +14,7 @@ import { getAvatarForUser } from '../../utils/avatarHelper';
 interface Room {
   id: string;
   name: string;
+  isDirectMessage?: boolean;
 }
 
 interface AppSidebarProps {
@@ -42,10 +43,23 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const menuItems = [
     { id: 'home', label: 'Home', icon: Home, path: '/dashboard' },
     { id: 'threads', label: 'Threads', icon: MessageSquare, path: '/threads', badge: 0 },
-    { id: 'dms', label: 'Direct Messages', icon: MessageSquare, path: '/messages', badge: 3 },
     { id: 'mentions', label: 'Notifications', icon: AtSign, path: '/notifications', badge: unreadCount },
     { id: 'saved', label: 'Saved Messages', icon: Bookmark, path: '/saved', badge: 0 },
   ];
+
+  const publicRooms = rooms.filter(r => !r.isDirectMessage);
+  const directMessages = rooms.filter(r => r.isDirectMessage);
+
+  const formatDMName = (name: string) => {
+    if (name.startsWith('DM-')) {
+      const parts = name.split('-');
+      if (parts.length >= 3) {
+        const otherId = parts[1] === user?.id ? parts[2] : parts[1];
+        return `DM with ${otherId.substring(0, 6)}...`;
+      }
+    }
+    return name;
+  };
 
   const handleLogout = () => {
     logout();
@@ -129,7 +143,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           </div>
 
           <div className="space-y-1">
-            {rooms.map((room) => {
+            {publicRooms.map((room) => {
               const isActive = activeRoomId === room.id;
               return (
                 <div key={room.id} className="space-y-0.5">
@@ -172,8 +186,53 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               );
             })}
 
-            {!isCollapsed && rooms.length === 0 && (
+            {!isCollapsed && publicRooms.length === 0 && (
               <span className="block px-3 py-2 text-[10px] text-[#64748B] italic">No active rooms</span>
+            )}
+          </div>
+        </div>
+
+        {/* Direct Messages Listing */}
+        <div className="space-y-2 mt-6">
+          <div className="flex items-center justify-between px-3 text-[10px] font-extrabold uppercase tracking-wider text-[#94A3B8]">
+            {!isCollapsed && <span>Direct Messages</span>}
+            <button 
+              onClick={() => navigate('/friends')}
+              className="p-1 hover:bg-[#151923] text-[#CBD5E1] hover:text-[#F8FAFC] rounded transition-colors"
+              title="Add Friend"
+            >
+              <Plus className="w-3.5 h-3.5 mx-auto" />
+            </button>
+          </div>
+
+          <div className="space-y-1">
+            {directMessages.map((room) => {
+              const isActive = activeRoomId === room.id;
+              const displayName = formatDMName(room.name);
+              return (
+                <div key={room.id} className="space-y-0.5">
+                  <button
+                    onClick={() => navigate(`/rooms/${room.id}`)}
+                    className={`w-full flex items-center rounded-lg px-3 py-2 text-xs font-medium transition-all ${
+                      isActive 
+                        ? 'bg-[#7C3AED]/15 border-l-2 border-[#7C3AED] text-white' 
+                        : 'text-[#CBD5E1] hover:bg-[#111318] hover:text-[#F8FAFC]'
+                    }`}
+                    title={isCollapsed ? displayName : undefined}
+                  >
+                    <div className={`w-5 h-5 rounded-full bg-[#7C3AED]/20 flex items-center justify-center shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-2.5'}`}>
+                      <span className="text-[10px] text-white font-bold">{displayName.substring(0, 1).toUpperCase()}</span>
+                    </div>
+                    {!isCollapsed && (
+                      <span className="truncate flex-1 text-left">{displayName}</span>
+                    )}
+                  </button>
+                </div>
+              );
+            })}
+
+            {!isCollapsed && directMessages.length === 0 && (
+              <span className="block px-3 py-2 text-[10px] text-[#64748B] italic">No active DMs</span>
             )}
           </div>
         </div>
