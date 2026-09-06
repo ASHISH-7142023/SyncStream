@@ -553,6 +553,11 @@ const RegisterPage: React.FC = () => {
 
       </main>
 
+      <OAuthConnectModal 
+        isOpen={oauthModal.isOpen} 
+        onClose={() => setOauthModal(prev => ({ ...prev, isOpen: false }))} 
+        provider={oauthModal.provider} 
+      />
     </div>
   );
 };

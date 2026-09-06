@@ -109,13 +109,13 @@ const RoomChatPage: React.FC = () => {
     return () => {
       leaveRoom(roomId);
     };
-  }, [roomId]);
+  }, [roomId, joinRoom, loadMessages, leaveRoom]);
 
   // Scroll to bottom
   const roomMessages = (roomId && messages[roomId]) || [];
   useEffect(() => {
     feedEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [roomMessages]);
+  }, [roomMessages.length]);
 
   const handleSendMessage = async (e?: React.FormEvent | React.KeyboardEvent) => {
     if (e) e.preventDefault();
@@ -1069,6 +1069,21 @@ const RoomChatPage: React.FC = () => {
         </button>
       </footer>
 
+      {showRoomDetails && (
+        <RoomDetailsModal
+          isOpen={showRoomDetails}
+          onClose={() => setShowRoomDetails(false)}
+          room={room || { id: 'unknown', name: 'Unknown Room' }}
+          memberCount={memberList.length}
+        />
+      )}
+
+      {showUpgradePro && (
+        <UpgradeProModal
+          isOpen={showUpgradePro}
+          onClose={() => setShowUpgradePro(false)}
+        />
+      )}
     </div>
   );
 };

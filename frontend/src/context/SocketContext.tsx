@@ -69,7 +69,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [hasMoreMessages, setHasMoreMessages] = useState<Record<string, boolean>>({});
 
   const clientRef = useRef<Client | null>(null);
-  const activeRoomsRef = useRef<Set<String>>(new Set());
+  const activeRoomsRef = useRef<Set<string>>(new Set());
   const subscriptionsRef = useRef<Record<string, any>>({}); // topic -> subscription object
   const messagesRef = useRef<Record<string, ChatMessage[]>>({}); // keep mutable ref of messages to avoid closures
 
@@ -77,19 +77,6 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
-
-  // Connect / Disconnect WebSocket based on Auth state
-  useEffect(() => {
-    if (user && token) {
-      connectSocket();
-    } else {
-      disconnectSocket();
-    }
-
-    return () => {
-      disconnectSocket();
-    };
-  }, [user, token]);
 
   const connectSocket = () => {
     if (clientRef.current && clientRef.current.active) return;
@@ -169,6 +156,20 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
     setConnectionStatus('DISCONNECTED');
   };
+
+  // Connect / Disconnect WebSocket based on Auth state
+  useEffect(() => {
+    if (user && token) {
+      connectSocket();
+    } else {
+      disconnectSocket();
+    }
+
+    return () => {
+      disconnectSocket();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, token]);
 
   const subscribeToRoom = (client: Client, roomId: string) => {
     const chatTopic = `/topic/rooms/${roomId}`;

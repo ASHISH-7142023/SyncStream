@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { useSocket } from './SocketContext';
@@ -40,15 +40,14 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
   }, []);
 
-  const fetchNotifications = async () => {
-    if (!user || !token) return;
+  const fetchNotifications = useCallback(async () => {
     try {
       const response = await api.get('/api/notifications');
       setNotifications(response.data);
     } catch (error) {
       console.error('Failed to fetch notifications', error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (user && token) {
@@ -56,7 +55,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     } else {
       setNotifications([]);
     }
-  }, [user, token]);
+  }, [user, token, fetchNotifications]);
 
   useEffect(() => {
     const client = getStompClient();
