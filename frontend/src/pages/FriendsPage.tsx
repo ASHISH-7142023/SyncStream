@@ -350,7 +350,10 @@ const FriendsPage: React.FC = () => {
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-full bg-accent-purple/20 flex items-center justify-center text-2xl select-none relative">
                         {getAvatarForUser(u.username)}
-                        <span className="absolute bottom-0 right-0 w-3 h-3 bg-accent-green border-2 border-bg-card rounded-full"></span>
+                        <div className="absolute bottom-0 right-0 flex h-3 w-3">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-accent-green border-2 border-bg-card"></span>
+                        </div>
                       </div>
                       <div>
                         <h4 className="font-semibold text-lg text-white">{u.username}</h4>

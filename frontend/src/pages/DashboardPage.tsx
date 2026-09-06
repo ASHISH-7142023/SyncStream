@@ -65,7 +65,12 @@ const DashboardPage: React.FC = () => {
       title: 'Online Now', 
       value: (rooms.length * 3 + 5).toString(), 
       subtext: `+${Math.max(1, Math.floor(rooms.length / 2))} from yesterday`, 
-      icon: <div className="w-4 h-4 bg-accent-green rounded-full shadow-[0_0_10px_rgba(72,187,120,0.5)]"></div>, 
+      icon: (
+        <div className="relative flex h-4 w-4">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-4 w-4 bg-accent-green shadow-[0_0_10px_rgba(72,187,120,0.5)]"></span>
+        </div>
+      ),
       color: 'bg-accent-green/10' 
     },
     { 
@@ -349,7 +354,10 @@ const DashboardPage: React.FC = () => {
                 <div className="w-8 h-8 rounded-full bg-[#6B46C1] flex items-center justify-center font-bold text-xs text-white shadow-md">
                   {user ? user.username.slice(0, 2).toUpperCase() : 'AJ'}
                 </div>
-                <span className="absolute bottom-0 right-0 w-2 h-2 bg-accent-green border border-bg-main rounded-full"></span>
+                <div className="absolute bottom-0 right-0 flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-green border border-bg-main"></span>
+                </div>
               </div>
               <div className="text-left hidden md:block">
                 <div className="text-xs font-semibold text-white leading-none mb-0.5">{user ? user.username : 'Alex Johnson'}</div>
@@ -481,7 +489,10 @@ const DashboardPage: React.FC = () => {
                             <span className="text-xs text-text-muted flex items-center gap-1">
                               <i className="fa-regular fa-user text-[10px]"></i> {Math.floor(room.name.length * 1.5 + 4)}
                             </span>
-                            <span className="w-1.5 h-1.5 rounded-full bg-accent-green shadow-[0_0_8px_rgba(72,187,120,0.4)]"></span>
+                            <div className="relative flex h-1.5 w-1.5 shrink-0">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent-green shadow-[0_0_8px_rgba(72,187,120,0.4)]"></span>
+                              </div>
                           </div>
                         </div>
                       );
@@ -507,7 +518,10 @@ const DashboardPage: React.FC = () => {
                     {['Sarah Wilson', 'David Brown', 'Emily Davis', 'Michael Chen', 'Lisa Anderson'].map((name, i) => (
                       <div key={i} className="w-10 h-10 rounded-full border-2 border-bg-card bg-[#252d41] flex items-center justify-center text-xl relative group cursor-pointer hover:scale-110 hover:z-30 transition-transform select-none" title={name}>
                         {getAvatarForUser(name)}
-                        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-accent-green border-2 border-bg-card rounded-full"></span>
+                        <div className="absolute bottom-0 right-0 flex h-2.5 w-2.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent-green border-2 border-bg-card"></span>
+                        </div>
                       </div>
                     ))}
                     <div className="w-10 h-10 rounded-full border-2 border-bg-card bg-bg-sidebar flex items-center justify-center text-xs font-medium text-text-muted relative z-10 ml-2">
