@@ -59,4 +59,8 @@ public class Message {
     private boolean pinned;
 
     private java.util.Map<String, java.util.List<String>> reactions = new java.util.HashMap<>();
+
+    private Instant editedAt;
+
+    private boolean deleted;
 }

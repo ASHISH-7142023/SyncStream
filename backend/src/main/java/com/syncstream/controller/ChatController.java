@@ -100,6 +100,57 @@ public class ChatController {
         redisMessagePublisher.publish("syncstream:room:" + roomId, updatedMessage);
     }
 
+    @MessageMapping("/rooms/{roomId}/message/edit")
+    public void handleMessageEdit(
+            @DestinationVariable String roomId,
+            @Payload Map<String, String> payload,
+            Principal principal) {
+        
+        User user = getUserFromPrincipal(principal);
+        if (user == null || !roomService.isMember(roomId, user.getId())) {
+            return;
+        }
+
+        String messageId = payload.get("messageId");
+        String content = payload.get("content");
+
+        if (messageId == null || content == null) {
+            return;
+        }
+
+        try {
+            Message updatedMessage = messageService.editMessage(messageId, content, user.getId());
+            redisMessagePublisher.publish("syncstream:room:" + roomId, updatedMessage);
+        } catch (Exception e) {
+            log.error("Failed to edit message", e);
+        }
+    }
+
+    @MessageMapping("/rooms/{roomId}/message/delete")
+    public void handleMessageDelete(
+            @DestinationVariable String roomId,
+            @Payload Map<String, String> payload,
+            Principal principal) {
+        
+        User user = getUserFromPrincipal(principal);
+        if (user == null || !roomService.isMember(roomId, user.getId())) {
+            return;
+        }
+
+        String messageId = payload.get("messageId");
+
+        if (messageId == null) {
+            return;
+        }
+
+        try {
+            Message updatedMessage = messageService.deleteMessage(messageId, user.getId());
+            redisMessagePublisher.publish("syncstream:room:" + roomId, updatedMessage);
+        } catch (Exception e) {
+            log.error("Failed to delete message", e);
+        }
+    }
+
     @MessageMapping("/rooms/{roomId}/typing")
     public void handleTypingEvent(
             @DestinationVariable String roomId,

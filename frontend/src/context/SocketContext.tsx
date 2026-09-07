@@ -26,6 +26,8 @@ export interface ChatMessage {
   fileSize?: number;
   fileType?: string;
   pinned?: boolean;
+  editedAt?: string;
+  deleted?: boolean;
 }
 
 export interface WebRtcSignal {
@@ -65,6 +67,8 @@ interface SocketContextType {
   readReceipts: Record<string, Record<string, { messageId: string; username: string }>>; // roomId -> userId -> { messageId, username }
   sendReadReceipt: (roomId: string, messageId: string) => void;
   sendWebRtcSignal: (signal: WebRtcSignal) => void;
+  editMessage: (roomId: string, messageId: string, content: string) => void;
+  deleteMessage: (roomId: string, messageId: string) => void;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -471,6 +475,24 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     });
   };
 
+  const editMessage = (roomId: string, messageId: string, content: string) => {
+    if (!clientRef.current || connectionStatus !== 'CONNECTED') return;
+
+    clientRef.current.publish({
+      destination: `/app/rooms/${roomId}/message/edit`,
+      body: JSON.stringify({ messageId, content }),
+    });
+  };
+
+  const deleteMessage = (roomId: string, messageId: string) => {
+    if (!clientRef.current || connectionStatus !== 'CONNECTED') return;
+
+    clientRef.current.publish({
+      destination: `/app/rooms/${roomId}/message/delete`,
+      body: JSON.stringify({ messageId }),
+    });
+  };
+
   const sendTyping = (roomId: string, isTyping: boolean) => {
     if (clientRef.current?.connected) {
       clientRef.current.publish({
@@ -601,6 +623,8 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         readReceipts,
         sendReadReceipt,
         sendWebRtcSignal,
+        editMessage,
+        deleteMessage
       }}
     >
       {children}

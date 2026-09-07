@@ -169,4 +169,32 @@ public class MessageService {
             return messageRepository.save(message);
         }).orElseThrow(() -> new IllegalArgumentException("Message not found"));
     }
+
+    public Message editMessage(String messageId, String newContent, String userId) {
+        return messageRepository.findById(messageId).map(message -> {
+            if (!message.getSenderId().equals(userId)) {
+                throw new SecurityException("Not authorized to edit this message");
+            }
+            if (message.isDeleted()) {
+                throw new IllegalStateException("Cannot edit a deleted message");
+            }
+            message.setContent(newContent);
+            message.setEditedAt(Instant.now());
+            return messageRepository.save(message);
+        }).orElseThrow(() -> new IllegalArgumentException("Message not found"));
+    }
+
+    public Message deleteMessage(String messageId, String userId) {
+        return messageRepository.findById(messageId).map(message -> {
+            if (!message.getSenderId().equals(userId)) {
+                throw new SecurityException("Not authorized to delete this message");
+            }
+            message.setDeleted(true);
+            message.setContent(""); // Clear content
+            message.setAttachmentId(null); // Clear attachments
+            message.setFileName(null);
+            message.setReactions(new java.util.HashMap<>()); // Clear reactions
+            return messageRepository.save(message);
+        }).orElseThrow(() -> new IllegalArgumentException("Message not found"));
+    }
 }

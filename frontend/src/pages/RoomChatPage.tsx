@@ -38,7 +38,7 @@ const RoomChatPage: React.FC = () => {
   const { user, logout } = useAuth();
   const { 
     connectionStatus, messages, typingUsers, presenceUsers, readReceipts,
-    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, updateMessage, sendReadReceipt, getStompClient, sendWebRtcSignal
+    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, updateMessage, sendReadReceipt, getStompClient, sendWebRtcSignal, editMessage, deleteMessage
   } = useSocket();
 
   const {
@@ -76,6 +76,9 @@ const RoomChatPage: React.FC = () => {
   const [showRoomDetails, setShowRoomDetails] = useState(false);
   const [showUpgradePro, setShowUpgradePro] = useState(false);
   
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [editInputText, setEditInputText] = useState('');
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -724,9 +727,45 @@ const RoomChatPage: React.FC = () => {
                         </div>
                       );
                     })()}
-                    <div className={`text-[15px] leading-relaxed text-gray-200 prose prose-invert max-w-none prose-p:my-1 prose-a:text-[#a78bfa] prose-code:text-[#a78bfa] prose-code:bg-[#8b5cf6]/10 prose-code:px-1 prose-code:rounded prose-pre:bg-[#1f2233] prose-pre:border prose-pre:border-white/10 ${isMention ? 'bg-[#7c3aed]/15 border border-[#7c3aed]/20 rounded px-2.5 py-1.5 w-fit my-1' : ''}`}>
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-                    </div>
+                    {msg.deleted ? (
+                      <div className="text-[13px] leading-relaxed text-gray-400 italic my-1 flex items-center gap-1.5 opacity-60">
+                        <i className="fa-solid fa-ban text-[10px]"></i>
+                        This message was deleted
+                      </div>
+                    ) : editingMessageId === msg.id ? (
+                      <div className="my-2">
+                        <input
+                          type="text"
+                          value={editInputText}
+                          onChange={(e) => setEditInputText(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              if (editInputText.trim() && editInputText !== msg.content && roomId) {
+                                editMessage(roomId, msg.id, editInputText.trim());
+                              }
+                              setEditingMessageId(null);
+                            } else if (e.key === 'Escape') {
+                              setEditingMessageId(null);
+                            }
+                          }}
+                          className="w-full bg-black/20 border border-brand-500/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:shadow-[0_0_0_1px_rgba(139,92,246,0.3)]"
+                          autoFocus
+                        />
+                        <div className="text-[10px] text-text-muted mt-1 ml-1">
+                          escape to <button onClick={() => setEditingMessageId(null)} className="text-[#a78bfa] hover:underline">cancel</button> • enter to <button onClick={() => {
+                            if (editInputText.trim() && editInputText !== msg.content && roomId) {
+                              editMessage(roomId, msg.id, editInputText.trim());
+                            }
+                            setEditingMessageId(null);
+                          }} className="text-[#a78bfa] hover:underline">save</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={`text-[15px] leading-relaxed text-gray-200 prose prose-invert max-w-none prose-p:my-1 prose-a:text-[#a78bfa] prose-code:text-[#a78bfa] prose-code:bg-[#8b5cf6]/10 prose-code:px-1 prose-code:rounded prose-pre:bg-[#1f2233] prose-pre:border prose-pre:border-white/10 ${isMention ? 'bg-[#7c3aed]/15 border border-[#7c3aed]/20 rounded px-2.5 py-1.5 w-fit my-1' : ''}`}>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                        {msg.editedAt && <span className="text-[10px] text-gray-500 ml-2 italic select-none">(edited)</span>}
+                      </div>
+                    )}
                     
                     {msg.attachmentId && (
                       <div className="mt-2 max-w-sm rounded-lg overflow-hidden border border-white/10 bg-[#1f2233]">
@@ -874,6 +913,31 @@ const RoomChatPage: React.FC = () => {
                     <button onClick={() => handleReplyClick(msg)} className="p-1.5 text-text-muted hover:text-white hover:bg-white/5 transition-colors cursor-pointer" title="Reply in thread">
                       <i className="fa-solid fa-reply text-xs"></i>
                     </button>
+                    {!msg.deleted && msg.senderId === user?.id && (
+                      <>
+                        <button 
+                          onClick={() => {
+                            setEditingMessageId(msg.id);
+                            setEditInputText(msg.content);
+                          }}
+                          className="p-1.5 text-text-muted hover:text-white hover:bg-white/5 transition-colors cursor-pointer" 
+                          title="Edit message"
+                        >
+                          <i className="fa-solid fa-pen text-xs"></i>
+                        </button>
+                        <button 
+                          onClick={() => {
+                            if (window.confirm('Are you sure you want to delete this message?') && roomId) {
+                              deleteMessage(roomId, msg.id);
+                            }
+                          }}
+                          className="p-1.5 text-red-500/70 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer" 
+                          title="Delete message"
+                        >
+                          <i className="fa-solid fa-trash text-xs"></i>
+                        </button>
+                      </>
+                    )}
                     <button className="p-1.5 text-text-muted hover:text-white hover:bg-white/5 transition-colors cursor-pointer" title="More actions">
                       <i className="fa-solid fa-ellipsis-vertical text-xs"></i>
                     </button>
