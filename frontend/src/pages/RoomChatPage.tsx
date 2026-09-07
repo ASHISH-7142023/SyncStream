@@ -19,6 +19,8 @@ interface Member {
   status?: 'ONLINE' | 'AWAY' | 'OFFLINE' | 'DO_NOT_DISTURB';
 }
 
+import UserProfilePopover from '../components/profile/UserProfilePopover';
+
 interface RoomDetails {
   id: string;
   name: string;
@@ -63,6 +65,21 @@ const RoomChatPage: React.FC = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [pinnedMessages, setPinnedMessages] = useState<any[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [selectedProfileUsername, setSelectedProfileUsername] = useState<string | null>(null);
+  const [profilePopoverPos, setProfilePopoverPos] = useState({ x: 0, y: 0 });
+
+  const handleAvatarClick = (username: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    // For avatars in the main chat area (left side), popover should open to the right
+    // For avatars in the member list (right side), popover should open to the left
+    const isRightSide = rect.left > window.innerWidth / 2;
+    setProfilePopoverPos({ 
+      x: isRightSide ? rect.left - 300 : rect.right + 10, 
+      y: rect.top + rect.height / 2 
+    });
+    setSelectedProfileUsername(username);
+  };
 
   const feedEndRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<any>(null);
@@ -606,7 +623,10 @@ const RoomChatPage: React.FC = () => {
                   </div>
                 )}
                 <div className="flex gap-4 group text-left relative">
-                  <div className="w-10 h-10 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-xl shrink-0 select-none mt-1">
+                  <div 
+                    className="w-10 h-10 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-xl shrink-0 select-none mt-1 cursor-pointer"
+                    onClick={(e) => handleAvatarClick(msg.sender || 'US', e)}
+                  >
                     {getAvatarForUser(msg.sender || 'US', presenceUsers)}
                   </div>
                   <div className="flex-grow min-w-0">
@@ -1008,7 +1028,7 @@ const RoomChatPage: React.FC = () => {
                     {awayMembers.map(m => (
                       <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-70">
                         <div className="flex items-center gap-3">
-                          <div className="relative">
+                          <div className="relative cursor-pointer" onClick={(e) => handleAvatarClick(m.username, e)}>
                             <div className="w-8 h-8 rounded-full bg-[#3b4155]/20 flex items-center justify-center text-lg select-none">
                               {getAvatarForUser(m.username, presenceUsers)}
                             </div>
@@ -1038,7 +1058,7 @@ const RoomChatPage: React.FC = () => {
                     {dndMembers.map(m => (
                       <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-90">
                         <div className="flex items-center gap-3">
-                          <div className="relative">
+                          <div className="relative cursor-pointer" onClick={(e) => handleAvatarClick(m.username, e)}>
                             <div className="w-8 h-8 rounded-full bg-[#ef4444]/20 flex items-center justify-center text-lg select-none">
                               {getAvatarForUser(m.username, presenceUsers)}
                             </div>
@@ -1068,7 +1088,7 @@ const RoomChatPage: React.FC = () => {
                     {offlineMembers.map(m => (
                       <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-50 grayscale">
                         <div className="flex items-center gap-3">
-                          <div className="relative">
+                          <div className="relative cursor-pointer" onClick={(e) => handleAvatarClick(m.username, e)}>
                             <div className="w-8 h-8 rounded-full bg-[#1a1d2d]/20 flex items-center justify-center text-lg select-none">
                               {getAvatarForUser(m.username, presenceUsers)}
                             </div>
@@ -1132,6 +1152,15 @@ const RoomChatPage: React.FC = () => {
         <UpgradeProModal
           isOpen={showUpgradePro}
           onClose={() => setShowUpgradePro(false)}
+        />
+      )}
+
+      {/* Modals & Overlays */}
+      {selectedProfileUsername && (
+        <UserProfilePopover 
+          username={selectedProfileUsername} 
+          position={profilePopoverPos} 
+          onClose={() => setSelectedProfileUsername(null)} 
         />
       )}
     </div>

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -14,4 +16,7 @@ public class UserDto {
     private String username;
     private String gender;
     private String avatar;
+    private Instant createdAt;
+    private String themeColor;
+    private String customStatusText;
 }

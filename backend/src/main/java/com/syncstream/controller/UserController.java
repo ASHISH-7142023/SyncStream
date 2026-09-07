@@ -24,13 +24,27 @@ public class UserController {
         }
         
         List<User> users = userRepository.findByUsernameContainingIgnoreCase(query);
-        List<UserDto> userDtos = users.stream().map(u -> UserDto.builder()
-                .id(u.getId())
-                .username(u.getUsername())
-                .avatar(u.getAvatar())
-                .gender(u.getGender())
-                .build()).collect(Collectors.toList());
+        List<UserDto> userDtos = users.stream().map(this::mapToDto).collect(Collectors.toList());
                 
         return ResponseEntity.ok(userDtos);
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<UserDto> getUser(@PathVariable String username) {
+        return userRepository.findByUsername(username)
+                .map(user -> ResponseEntity.ok(mapToDto(user)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    private UserDto mapToDto(User user) {
+        return UserDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .avatar(user.getAvatar())
+                .gender(user.getGender())
+                .createdAt(user.getCreatedAt())
+                .themeColor(user.getThemeColor())
+                .customStatusText(user.getCustomStatusText())
+                .build();
     }
 }
