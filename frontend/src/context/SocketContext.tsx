@@ -28,6 +28,7 @@ export interface ChatMessage {
   pinned?: boolean;
   editedAt?: string;
   deleted?: boolean;
+  linkPreviews?: any[];
 }
 
 export interface WebRtcSignal {

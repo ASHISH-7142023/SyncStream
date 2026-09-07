@@ -63,4 +63,6 @@ public class Message {
     private Instant editedAt;
 
     private boolean deleted;
+
+    private java.util.List<LinkPreview> linkPreviews = new java.util.ArrayList<>();
 }

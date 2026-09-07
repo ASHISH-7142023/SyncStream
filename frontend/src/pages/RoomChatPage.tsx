@@ -13,6 +13,7 @@ import remarkGfm from 'remark-gfm';
 import RoomDetailsModal from '../components/modals/RoomDetailsModal';
 import UpgradeProModal from '../components/modals/UpgradeProModal';
 import { useToast } from '../context/ToastContext';
+import { LinkPreviewCard } from '../components/chat/LinkPreviewCard';
 
 interface Member {
   id: string;
@@ -764,6 +765,15 @@ const RoomChatPage: React.FC = () => {
                       <div className={`text-[15px] leading-relaxed text-gray-200 prose prose-invert max-w-none prose-p:my-1 prose-a:text-[#a78bfa] prose-code:text-[#a78bfa] prose-code:bg-[#8b5cf6]/10 prose-code:px-1 prose-code:rounded prose-pre:bg-[#1f2233] prose-pre:border prose-pre:border-white/10 ${isMention ? 'bg-[#7c3aed]/15 border border-[#7c3aed]/20 rounded px-2.5 py-1.5 w-fit my-1' : ''}`}>
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
                         {msg.editedAt && <span className="text-[10px] text-gray-500 ml-2 italic select-none">(edited)</span>}
+                      </div>
+                    )}
+
+                    {/* Link Previews */}
+                    {msg.linkPreviews && msg.linkPreviews.length > 0 && !msg.deleted && (
+                      <div className="flex flex-col gap-2 mt-2">
+                        {msg.linkPreviews.map((preview: any, idx: number) => (
+                          <LinkPreviewCard key={idx} preview={preview} />
+                        ))}
                       </div>
                     )}
                     

@@ -31,6 +31,9 @@ public class MessageService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private LinkPreviewService linkPreviewService;
+
     public Message saveMessage(String roomId, String senderId, ChatMessageRequest request) {
         String senderName = userRepository.findById(senderId)
                 .map(User::getUsername)
@@ -83,6 +86,9 @@ public class MessageService {
                 });
             }
         }
+
+        // Trigger async link preview generation
+        linkPreviewService.generatePreviewsAsync(savedMessage);
 
         return savedMessage;
     }
