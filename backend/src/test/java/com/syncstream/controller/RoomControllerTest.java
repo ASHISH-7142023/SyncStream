@@ -58,6 +58,9 @@ public class RoomControllerTest {
     private PresenceService presenceService;
 
     @MockBean
+    private com.syncstream.service.ReadReceiptService readReceiptService;
+
+    @MockBean
     private JwtTokenProvider tokenProvider;
 
     @MockBean

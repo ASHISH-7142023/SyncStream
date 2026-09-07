@@ -37,6 +37,9 @@ public class MessageServiceTest {
     private NotificationService notificationService;
 
     @Mock
+    private LinkPreviewService linkPreviewService;
+
+    @Mock
     private ValueOperations<String, Object> valueOperations;
 
     @InjectMocks
