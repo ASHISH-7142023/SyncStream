@@ -2,11 +2,13 @@ package com.syncstream.controller;
 
 import com.syncstream.dto.ChatMessageRequest;
 import com.syncstream.dto.WebRtcSignalDto;
+import com.syncstream.dto.ReadReceiptDto;
 import com.syncstream.model.Message;
 import com.syncstream.model.MessageType;
 import com.syncstream.model.User;
 import com.syncstream.pubsub.RedisMessagePublisher;
 import com.syncstream.service.MessageService;
+import com.syncstream.service.ReadReceiptService;
 import com.syncstream.service.RoomService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class ChatController {
 
     @Autowired
     private RoomService roomService;
+
+    @Autowired
+    private ReadReceiptService readReceiptService;
 
     @Autowired
     private RedisMessagePublisher redisMessagePublisher;
@@ -142,6 +147,28 @@ public class ChatController {
         
         // Broadcast the WebRTC signal via Redis PubSub
         redisMessagePublisher.publish("syncstream:webrtc:" + roomId, signal);
+    }
+
+    @MessageMapping("/rooms/{roomId}/read")
+    public void handleReadReceipt(
+            @DestinationVariable String roomId,
+            @Payload Map<String, String> payload,
+            Principal principal) {
+        
+        User user = getUserFromPrincipal(principal);
+        if (user == null || !roomService.isMember(roomId, user.getId())) {
+            return;
+        }
+
+        String messageId = payload.get("messageId");
+        if (messageId == null) {
+            return;
+        }
+
+        ReadReceiptDto receipt = readReceiptService.updateReadReceipt(
+                roomId, user.getId(), user.getUsername(), messageId);
+        
+        redisMessagePublisher.publish("syncstream:read_receipts:" + roomId, receipt);
     }
 
     private User getUserFromPrincipal(Principal principal) {

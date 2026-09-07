@@ -4,6 +4,7 @@ import com.syncstream.model.Message;
 import com.syncstream.model.Room;
 import com.syncstream.model.User;
 import com.syncstream.service.MessageService;
+import com.syncstream.service.ReadReceiptService;
 import com.syncstream.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,9 @@ public class RoomController {
 
     @Autowired
     private com.syncstream.service.PresenceService presenceService;
+
+    @Autowired
+    private ReadReceiptService readReceiptService;
 
     @GetMapping("/{roomId}/presence")
     public ResponseEntity<?> getRoomPresence(
@@ -183,6 +187,19 @@ public class RoomController {
         }
 
         return ResponseEntity.ok(messageService.getReplies(messageId));
+    }
+
+    @GetMapping("/{roomId}/reads")
+    public ResponseEntity<?> getRoomReadReceipts(
+            @PathVariable String roomId,
+            @AuthenticationPrincipal User user) {
+        
+        if (!roomService.isMember(roomId, user.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "You must be a member of the room to view read receipts"));
+        }
+
+        return ResponseEntity.ok(readReceiptService.getRoomReadReceipts(roomId));
     }
 
     @GetMapping("/{roomId}/messages/search")

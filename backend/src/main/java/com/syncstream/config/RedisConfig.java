@@ -33,7 +33,8 @@ public class RedisConfig {
             MessageListenerAdapter typingListenerAdapter,
             MessageListenerAdapter presenceListenerAdapter,
             MessageListenerAdapter webrtcListenerAdapter,
-            MessageListenerAdapter notificationListenerAdapter) {
+            MessageListenerAdapter notificationListenerAdapter,
+            MessageListenerAdapter readReceiptListenerAdapter) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         
@@ -51,6 +52,9 @@ public class RedisConfig {
         
         // Listen to notifications: syncstream:user:*:notifications
         container.addMessageListener(notificationListenerAdapter, new PatternTopic("syncstream:user:*:notifications"));
+        
+        // Listen to read receipts: syncstream:read_receipts:*
+        container.addMessageListener(readReceiptListenerAdapter, new PatternTopic("syncstream:read_receipts:*"));
         
         return container;
     }
@@ -78,5 +82,10 @@ public class RedisConfig {
     @Bean
     public MessageListenerAdapter notificationListenerAdapter(RedisMessageSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "handleNotificationMessage");
+    }
+
+    @Bean
+    public MessageListenerAdapter readReceiptListenerAdapter(RedisMessageSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "handleReadReceiptMessage");
     }
 }

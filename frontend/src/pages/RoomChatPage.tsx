@@ -35,8 +35,8 @@ const RoomChatPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { 
-    connectionStatus, messages, typingUsers, presenceUsers,
-    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, updateMessage
+    connectionStatus, messages, typingUsers, presenceUsers, readReceipts,
+    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, updateMessage, sendReadReceipt
   } = useSocket();
 
   const { addToast } = useToast();
@@ -136,6 +136,31 @@ const RoomChatPage: React.FC = () => {
   useEffect(() => {
     feedEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [roomMessages.length]);
+
+  // Read Receipts: Detect when the feed end is visible
+  useEffect(() => {
+    const el = feedEndRef.current;
+    if (!el || !roomId || roomMessages.length === 0 || !user) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          const lastMsg = roomMessages[roomMessages.length - 1];
+          // Check if we already sent a read receipt for this message
+          const myLastRead = readReceipts[roomId]?.[user.id]?.messageId;
+          if (lastMsg.id && lastMsg.id !== myLastRead) {
+            sendReadReceipt(roomId, lastMsg.id);
+          }
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+    };
+  }, [roomId, roomMessages, readReceipts, user, sendReadReceipt]);
 
   const handleSendMessage = async (e?: React.FormEvent | React.KeyboardEvent) => {
     if (e) e.preventDefault();
@@ -752,6 +777,31 @@ const RoomChatPage: React.FC = () => {
                         Reply
                       </button>
                     </div>
+                    
+                    {/* Read Receipts */}
+                    {(() => {
+                      if (!roomId) return null;
+                      const readers = Object.entries(readReceipts[roomId] || {})
+                        .filter(([uId, data]) => data.messageId === msg.id && uId !== user?.id)
+                        .map(([uId, data]) => ({ uId, username: data.username }));
+                      
+                      if (readers.length === 0) return null;
+                      
+                      return (
+                        <div className="flex items-center justify-end mt-1 gap-0.5 pr-2">
+                          {readers.map((r, i) => (
+                            <div 
+                              key={r.uId} 
+                              className="w-4 h-4 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center overflow-hidden border border-[#0f111a] -ml-1.5 first:ml-0 z-[1]" 
+                              style={{ zIndex: readers.length - i }}
+                              title={`Read by ${r.username}`}
+                            >
+                              <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(r.username)}&background=8b5cf6&color=fff&size=16`} alt={r.username} className="w-full h-full object-cover" />
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
                   </div>
                   
                   {/* Message Action Menu */}

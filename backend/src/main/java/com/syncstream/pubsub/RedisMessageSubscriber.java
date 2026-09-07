@@ -3,6 +3,7 @@ package com.syncstream.pubsub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syncstream.dto.UserPresenceDto;
 import com.syncstream.dto.WebRtcSignalDto;
+import com.syncstream.dto.ReadReceiptDto;
 import com.syncstream.model.Message;
 import com.syncstream.model.Notification;
 import lombok.extern.slf4j.Slf4j;
@@ -76,6 +77,18 @@ public class RedisMessageSubscriber {
             messagingTemplate.convertAndSend("/topic/user/" + notification.getUserId() + "/notifications", notification);
         } catch (IOException e) {
             log.error("Failed to deserialize notification message", e);
+        }
+    }
+
+    public void handleReadReceiptMessage(String message) {
+        log.info("Received read receipt from Redis Pub/Sub: {}", message);
+        try {
+            ReadReceiptDto receiptDto = objectMapper.readValue(message, ReadReceiptDto.class);
+            if (receiptDto.getRoomId() != null) {
+                messagingTemplate.convertAndSend("/topic/rooms/" + receiptDto.getRoomId() + "/reads", receiptDto);
+            }
+        } catch (IOException e) {
+            log.error("Failed to deserialize read receipt message", e);
         }
     }
 }

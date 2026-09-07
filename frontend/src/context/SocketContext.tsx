@@ -52,6 +52,8 @@ interface SocketContextType {
   hasMoreMessages: Record<string, boolean>;
   loadMoreMessages: (roomId: string) => Promise<void>;
   getStompClient: () => Client | null;
+  readReceipts: Record<string, Record<string, { messageId: string; username: string }>>; // roomId -> userId -> { messageId, username }
+  sendReadReceipt: (roomId: string, messageId: string) => void;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -68,6 +70,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   // Track pagination metadata
   const [messagePages, setMessagePages] = useState<Record<string, number>>({});
   const [hasMoreMessages, setHasMoreMessages] = useState<Record<string, boolean>>({});
+  const [readReceipts, setReadReceipts] = useState<Record<string, Record<string, { messageId: string; username: string }>>>({});
 
   const clientRef = useRef<Client | null>(null);
   const activeRoomsRef = useRef<Set<string>>(new Set());
@@ -121,6 +124,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         subscribeToRoom(client, roomId as string);
         await syncMissedMessages(roomId as string);
         fetchRoomPresence(roomId as string);
+        fetchReadReceipts(roomId as string);
       });
     };
 
@@ -175,6 +179,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const subscribeToRoom = (client: Client, roomId: string) => {
     const chatTopic = `/topic/rooms/${roomId}`;
     const typingTopic = `/topic/rooms/${roomId}/typing`;
+    const readsTopic = `/topic/rooms/${roomId}/reads`;
 
     // Subscribe to chat messages
     if (!subscriptionsRef.current[chatTopic]) {
@@ -241,6 +246,28 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       });
       subscriptionsRef.current[typingTopic] = typingSub;
     }
+
+    // Subscribe to read receipts
+    if (!subscriptionsRef.current[readsTopic]) {
+      const readsSub = client.subscribe(readsTopic, (message: IMessage) => {
+        try {
+          const receipt = JSON.parse(message.body);
+          setReadReceipts((prev) => {
+            const roomReads = prev[roomId] || {};
+            return {
+              ...prev,
+              [roomId]: {
+                ...roomReads,
+                [receipt.userId]: { messageId: receipt.messageId, username: receipt.username },
+              },
+            };
+          });
+        } catch (e) {
+          console.error('Error parsing read receipt event', e);
+        }
+      });
+      subscriptionsRef.current[readsTopic] = readsSub;
+    }
   };
 
   const syncMissedMessages = async (roomId: string) => {
@@ -301,11 +328,31 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
+  const fetchReadReceipts = async (roomId: string) => {
+    try {
+      const response = await api.get(`/api/rooms/${roomId}/reads`);
+      const receipts = response.data; // List<ReadReceiptDto>
+      setReadReceipts((prev) => {
+        const roomReads = { ...(prev[roomId] || {}) };
+        receipts.forEach((r: any) => {
+          roomReads[r.userId] = { messageId: r.messageId, username: r.username };
+        });
+        return {
+          ...prev,
+          [roomId]: roomReads,
+        };
+      });
+    } catch (e) {
+      console.error('Failed to fetch read receipts', e);
+    }
+  };
+
   const joinRoom = (roomId: string) => {
     activeRoomsRef.current.add(roomId);
-    fetchRoomPresence(roomId);
-    if (clientRef.current && connectionStatus === 'CONNECTED') {
+    if (clientRef.current && clientRef.current.active) {
       subscribeToRoom(clientRef.current, roomId);
+      fetchRoomPresence(roomId);
+      fetchReadReceipts(roomId);
     }
   };
 
@@ -315,6 +362,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     // Unsubscribe from STOMP topics
     const chatTopic = `/topic/rooms/${roomId}`;
     const typingTopic = `/topic/rooms/${roomId}/typing`;
+    const readsTopic = `/topic/rooms/${roomId}/reads`;
 
     if (subscriptionsRef.current[chatTopic]) {
       subscriptionsRef.current[chatTopic].unsubscribe();
@@ -323,6 +371,10 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     if (subscriptionsRef.current[typingTopic]) {
       subscriptionsRef.current[typingTopic].unsubscribe();
       delete subscriptionsRef.current[typingTopic];
+    }
+    if (subscriptionsRef.current[readsTopic]) {
+      subscriptionsRef.current[readsTopic].unsubscribe();
+      delete subscriptionsRef.current[readsTopic];
     }
   };
 
@@ -417,6 +469,27 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
+  const sendReadReceipt = (roomId: string, messageId: string) => {
+    if (clientRef.current && clientRef.current.active && user) {
+      // Local optimistic update
+      setReadReceipts((prev) => {
+        const roomReads = prev[roomId] || {};
+        return {
+          ...prev,
+          [roomId]: {
+            ...roomReads,
+            [user.id]: { messageId, username: user.username },
+          },
+        };
+      });
+
+      clientRef.current.publish({
+        destination: `/app/rooms/${roomId}/read`,
+        body: JSON.stringify({ messageId }),
+      });
+    }
+  };
+
   const updateMessage = (roomId: string, messageId: string, updates: Partial<ChatMessage>) => {
     setMessages(prev => {
       const roomMsgs = prev[roomId] || [];
@@ -503,6 +576,8 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         hasMoreMessages,
         loadMoreMessages,
         getStompClient: () => clientRef.current,
+        readReceipts,
+        sendReadReceipt,
       }}
     >
       {children}
