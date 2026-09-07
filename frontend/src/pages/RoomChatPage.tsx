@@ -5,6 +5,8 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { getAvatarForUser } from '../utils/avatarHelper';
 import { ThreadPanel } from '../components/chat/ThreadPanel';
+import { VideoGrid } from '../components/chat/VideoGrid';
+import { useWebRTC } from '../hooks/useWebRTC';
 import { fileService } from '../services/fileService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -36,8 +38,26 @@ const RoomChatPage: React.FC = () => {
   const { user, logout } = useAuth();
   const { 
     connectionStatus, messages, typingUsers, presenceUsers, readReceipts,
-    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, updateMessage, sendReadReceipt
+    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, updateMessage, sendReadReceipt, getStompClient, sendWebRtcSignal
   } = useSocket();
+
+  const {
+    inCall,
+    localStream,
+    remoteStreams,
+    isMicOn,
+    isVideoOn,
+    startCall,
+    leaveCall,
+    toggleMic,
+    toggleVideo,
+  } = useWebRTC({
+    roomId: roomId || '',
+    userId: user?.id || '',
+    username: user?.username || '',
+    getStompClient,
+    sendWebRtcSignal,
+  });
 
   const { addToast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -541,6 +561,18 @@ const RoomChatPage: React.FC = () => {
               >
                 <i className="fa-solid fa-users text-xs"></i>
               </button>
+              
+              {/* WebRTC Video Call Button */}
+              {!inCall && (
+                <button 
+                  onClick={startCall}
+                  className="px-3 py-1.5 bg-[#8b5cf6]/20 hover:bg-[#8b5cf6]/30 text-[#a78bfa] hover:text-white rounded-lg transition-all hover:scale-105 active:scale-95 cursor-pointer text-xs font-semibold flex items-center gap-1.5 border border-[#8b5cf6]/30"
+                >
+                  <i className="fa-solid fa-video"></i>
+                  Join Call
+                </button>
+              )}
+
               <button 
                 onClick={() => setShowRoomDetails(true)}
                 className="p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer" 
@@ -552,6 +584,21 @@ const RoomChatPage: React.FC = () => {
           </div>
         </header>
  
+        {/* WebRTC Video Grid */}
+        {inCall && (
+          <VideoGrid
+            localStream={localStream}
+            remoteStreams={remoteStreams}
+            isMicOn={isMicOn}
+            isVideoOn={isVideoOn}
+            toggleMic={toggleMic}
+            toggleVideo={toggleVideo}
+            leaveCall={leaveCall}
+            presenceUsers={presenceUsers}
+            currentUsername={user?.username || 'You'}
+          />
+        )}
+
         {/* Pinned Message */}
         {!pinnedClosed && pinnedMessages.length > 0 && (
           <div className="px-6 py-2 shrink-0 animate-scale-in">

@@ -28,6 +28,16 @@ export interface ChatMessage {
   pinned?: boolean;
 }
 
+export interface WebRtcSignal {
+  type: 'offer' | 'answer' | 'candidate' | 'join' | 'leave';
+  roomId: string;
+  senderId: string;
+  senderUsername: string;
+  targetId: string | null;
+  sdp?: any;
+  candidate?: any;
+}
+
 export interface UserPresence {
   userId: string;
   username: string;
@@ -54,6 +64,7 @@ interface SocketContextType {
   getStompClient: () => Client | null;
   readReceipts: Record<string, Record<string, { messageId: string; username: string }>>; // roomId -> userId -> { messageId, username }
   sendReadReceipt: (roomId: string, messageId: string) => void;
+  sendWebRtcSignal: (signal: WebRtcSignal) => void;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -500,6 +511,17 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     });
   };
 
+  const sendWebRtcSignal = (signal: WebRtcSignal) => {
+    if (clientRef.current && clientRef.current.connected) {
+      clientRef.current.publish({
+        destination: `/app/rooms/${signal.roomId}/webrtc`,
+        body: JSON.stringify(signal),
+      });
+    } else {
+      console.warn('Cannot send WebRTC signal, STOMP client disconnected');
+    }
+  };
+
   const loadMessages = async (roomId: string) => {
     if (messages[roomId] && messages[roomId].length > 0) return; // already loaded
 
@@ -578,6 +600,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         getStompClient: () => clientRef.current,
         readReceipts,
         sendReadReceipt,
+        sendWebRtcSignal,
       }}
     >
       {children}
