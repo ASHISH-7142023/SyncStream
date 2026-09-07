@@ -81,6 +81,11 @@ const RoomChatPage: React.FC = () => {
     setSelectedProfileUsername(username);
   };
 
+  const handleReplyClick = (msg: any) => {
+    setSelectedThreadMsg(msg);
+    setTimeout(() => textareaRef.current?.focus(), 0);
+  };
+
   const feedEndRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<any>(null);
   const isTypingRef = useRef(false);
@@ -160,8 +165,9 @@ const RoomChatPage: React.FC = () => {
       setSelectedFile(null);
     }
 
-    sendMessage(roomId, inputText.trim(), Math.random().toString(36).substring(2, 15), undefined, attachmentData);
+    sendMessage(roomId, inputText.trim(), Math.random().toString(36).substring(2, 15), selectedThreadMsg?.id, attachmentData);
     setInputText('');
+    setSelectedThreadMsg(null);
 
     isTypingRef.current = false;
     sendTyping(roomId, false);
@@ -634,6 +640,18 @@ const RoomChatPage: React.FC = () => {
                       <span className="font-semibold text-white text-sm">{msg.sender}</span>
                       <span className="text-[10px] text-text-muted">{formatTime(msg.timestamp)}</span>
                     </div>
+                    {msg.parentId && (() => {
+                      const parentMsg = roomMessages.find((m: any) => m.id === msg.parentId);
+                      return (
+                        <div className="flex items-center gap-2 mb-1.5 opacity-70 hover:opacity-100 transition-opacity cursor-pointer text-xs">
+                          <div className="w-4 h-4 border-l-2 border-t-2 border-white/20 rounded-tl mt-1 shrink-0"></div>
+                          <div className="bg-white/5 border border-white/10 rounded px-2.5 py-1.5 truncate max-w-md flex-1">
+                            <span className="font-semibold text-[#a78bfa] mr-2">@{parentMsg ? parentMsg.senderName : 'Unknown'}</span>
+                            <span className="text-gray-300">{parentMsg ? parentMsg.content || 'Attachment' : 'Message unavailable'}</span>
+                          </div>
+                        </div>
+                      );
+                    })()}
                     <div className={`text-[15px] leading-relaxed text-gray-200 prose prose-invert max-w-none prose-p:my-1 prose-a:text-[#a78bfa] prose-code:text-[#a78bfa] prose-code:bg-[#8b5cf6]/10 prose-code:px-1 prose-code:rounded prose-pre:bg-[#1f2233] prose-pre:border prose-pre:border-white/10 ${isMention ? 'bg-[#7c3aed]/15 border border-[#7c3aed]/20 rounded px-2.5 py-1.5 w-fit my-1' : ''}`}>
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
                     </div>
@@ -727,10 +745,7 @@ const RoomChatPage: React.FC = () => {
                         </button>
                       </div>
                       <button 
-                        onClick={() => {
-                          setSelectedThreadMsg(msg);
-                          setShowMembersSidebar(true);
-                        }}
+                        onClick={() => handleReplyClick(msg)}
                         className="flex items-center gap-1.5 px-2 py-1 bg-transparent border border-transparent rounded-lg hover:bg-[#1f2233] hover:border-white/10 transition-colors text-text-muted opacity-0 group-hover:opacity-100 text-xs font-medium"
                       >
                         <svg fill="none" height="14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><polyline points="9 17 4 12 9 7"></polyline><path d="M20 18v-2a4 4 0 0 0-4-4H4"></path></svg>
@@ -759,7 +774,7 @@ const RoomChatPage: React.FC = () => {
                     >
                       <i className={`fa-solid fa-thumbtack text-xs ${msg.pinned ? 'text-brand-400' : ''}`}></i>
                     </button>
-                    <button onClick={() => setSelectedThreadMsg(msg)} className="p-1.5 text-text-muted hover:text-white hover:bg-white/5 transition-colors cursor-pointer" title="Reply in thread">
+                    <button onClick={() => handleReplyClick(msg)} className="p-1.5 text-text-muted hover:text-white hover:bg-white/5 transition-colors cursor-pointer" title="Reply in thread">
                       <i className="fa-solid fa-reply text-xs"></i>
                     </button>
                     <button className="p-1.5 text-text-muted hover:text-white hover:bg-white/5 transition-colors cursor-pointer" title="More actions">
@@ -797,7 +812,23 @@ const RoomChatPage: React.FC = () => {
             )}
           </div>
 
-          <form onSubmit={handleSendMessage} className="bg-[#1f2233] border border-white/10 rounded-2xl flex flex-col focus-within:border-brand-500/50 focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.3)] transition-all">
+          <form onSubmit={handleSendMessage} className="bg-[#1f2233] border border-white/10 rounded-2xl flex flex-col focus-within:border-brand-500/50 focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.3)] transition-all overflow-hidden">
+            {selectedThreadMsg && (
+              <div className="flex items-center justify-between px-4 py-2 bg-black/20 border-b border-white/5">
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[11px] font-semibold text-[#a78bfa] mb-0.5">Replying to {selectedThreadMsg.senderName}</span>
+                  <span className="text-xs text-gray-400 truncate">{selectedThreadMsg.content || 'Attachment'}</span>
+                </div>
+                <button 
+                  type="button"
+                  onClick={() => setSelectedThreadMsg(null)}
+                  className="w-6 h-6 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  <i className="fa-solid fa-xmark text-sm"></i>
+                </button>
+              </div>
+            )}
+            
             {selectedFile && (
               <div className="px-4 pt-3 flex items-center gap-3">
                 <div className="w-12 h-12 rounded bg-black/20 flex items-center justify-center relative group">
