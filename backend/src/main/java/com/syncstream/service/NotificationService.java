@@ -7,7 +7,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class NotificationService {
@@ -17,6 +19,12 @@ public class NotificationService {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private WebPushService webPushService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public Notification createNotification(String userId, String title, String message, String type, String referenceId) {
         Notification notification = Notification.builder()
@@ -31,6 +39,18 @@ public class NotificationService {
         
         // Publish to user's personal STOMP queue via Redis
         redisTemplate.convertAndSend("syncstream:user:" + userId + ":notifications", saved);
+        
+        // Trigger Web Push Notification
+        try {
+            String payload = objectMapper.writeValueAsString(Map.of(
+                    "title", title,
+                    "body", message,
+                    "url", "/rooms/" + referenceId
+            ));
+            webPushService.sendPushNotification(userId, payload);
+        } catch (Exception e) {
+            // Log error but don't fail standard notification
+        }
         
         return saved;
     }

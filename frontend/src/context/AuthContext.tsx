@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import api from '../services/api';
+import { registerAndSubscribePush } from '../services/webPushService';
 
 interface User {
   id: string;
@@ -48,6 +49,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           if (response.data.avatar) localStorage.setItem('user-avatar', response.data.avatar);
           if (response.data.themeColor) document.documentElement.setAttribute('data-theme', response.data.themeColor);
           setToken(storedToken);
+          
+          if (response.data.notificationsEnabled !== false) {
+             registerAndSubscribePush().catch(console.error);
+          }
         } catch (err: any) {
           console.error("Token validation failed. Logging out.", err);
           localStorage.removeItem('token');
@@ -76,6 +81,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setToken(receivedToken);
       setUser({ id: userId, username: resUsername, gender, avatar, themeColor, notificationsEnabled });
       if (themeColor) document.documentElement.setAttribute('data-theme', themeColor);
+      
+      if (notificationsEnabled !== false) {
+        registerAndSubscribePush().catch(console.error);
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
       throw err;
@@ -98,6 +107,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setToken(receivedToken);
       setUser({ id: userId, username: resUsername, gender, avatar, themeColor, notificationsEnabled });
       if (themeColor) document.documentElement.setAttribute('data-theme', themeColor);
+      
+      if (notificationsEnabled !== false) {
+        registerAndSubscribePush().catch(console.error);
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed. Username might be taken.');
       throw err;
@@ -112,6 +125,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setToken(null);
     setUser(null);
     setError(null);
+    // Unsubscribe from web push logic could be called here via API if desired
   };
 
   const clearError = () => setError(null);
@@ -126,6 +140,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(response.data);
       if (response.data.themeColor) {
         document.documentElement.setAttribute('data-theme', response.data.themeColor);
+      }
+      if (notificationsEnabled === true) {
+        registerAndSubscribePush().catch(console.error);
       }
     } catch (err) {
       console.error("Failed to update settings", err);
