@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSocket } from '../context/SocketContext';
 import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 import { getAvatarForUser } from '../utils/avatarHelper';
 import { useToast } from '../context/ToastContext';
+import { useNotification } from '../context/NotificationContext';
 
 interface Room {
   id: string;
@@ -14,6 +16,8 @@ interface Room {
 
 const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
+  const { unreadRoomCounts } = useSocket();
+  const { notifications } = useNotification();
   const navigate = useNavigate();
   const { rooms, onOpenCreateModal } = useOutletContext<{ 
     rooms: Room[]; 
@@ -28,13 +32,9 @@ const DashboardPage: React.FC = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { addToast } = useToast();
 
-  // Keydown listener for hotkeys (Ctrl+K or Cmd+K focuses search, Esc blurs/clears)
+  // Keydown listener for hotkeys (Esc blurs/clears local search)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        searchInputRef.current?.focus();
-      }
       if (e.key === 'Escape') {
         searchInputRef.current?.blur();
         setSearchQuery('');
@@ -172,7 +172,10 @@ const DashboardPage: React.FC = () => {
               </button>
             </div>
             <div className="space-y-0.5">
-              {filteredRooms.map((r) => (
+              {filteredRooms.map((r) => {
+                const unreadCount = unreadRoomCounts[r.id] || 0;
+                const hasMention = notifications.some(n => !n.read && n.referenceId === r.id && n.type === 'MENTION');
+                return (
                 <button 
                   key={r.id} 
                   onClick={() => navigate(`/rooms/${r.id}`)}
@@ -180,11 +183,19 @@ const DashboardPage: React.FC = () => {
                 >
                   <div className="flex items-center gap-3 truncate">
                     <span className="text-accent-purpleLight font-bold w-4 text-center">#</span>
-                    <span className="text-sm truncate">{r.name}</span>
+                    <span className={`text-sm truncate ${unreadCount > 0 ? 'text-white font-semibold' : ''}`}>{r.name}</span>
                   </div>
-                  {r.name === 'general' && <div className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></div>}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {hasMention && <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div>}
+                    {unreadCount > 0 && (
+                      <span className="bg-accent-purple text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </span>
+                    )}
+                  </div>
                 </button>
-              ))}
+                );
+              })}
               {filteredRooms.length === 0 && (
                 <div className="px-3 py-2 text-xs text-text-muted italic">No matching rooms</div>
               )}
@@ -196,7 +207,9 @@ const DashboardPage: React.FC = () => {
               <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider">Direct Messages</h3>
             </div>
             <div className="space-y-0.5">
-              {filteredDMs.map((r) => (
+              {filteredDMs.map((r) => {
+                const unreadCount = unreadRoomCounts[r.id] || 0;
+                return (
                 <button 
                   key={r.id} 
                   onClick={() => navigate(`/rooms/${r.id}`)}
@@ -206,10 +219,16 @@ const DashboardPage: React.FC = () => {
                     <div className="w-5 h-5 rounded-full bg-accent-purple/20 flex items-center justify-center text-[10px] text-accent-purpleLight shrink-0 font-bold">
                       {r.name.replace('DM-', '').slice(0,2).toUpperCase()}
                     </div>
-                    <span className="text-sm truncate">Chat</span>
+                    <span className={`text-sm truncate ${unreadCount > 0 ? 'text-white font-semibold' : ''}`}>Chat</span>
                   </div>
+                  {unreadCount > 0 && (
+                    <span className="bg-accent-purple text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
                 </button>
-              ))}
+                );
+              })}
               {filteredDMs.length === 0 && (
                 <div className="px-3 py-2 text-xs text-text-muted italic">No DMs yet</div>
               )}
@@ -256,16 +275,31 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
           </div>
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              logout();
-            }}
-            className="text-slate-500 hover:text-red-400 p-1 transition-colors"
-            title="Log Out"
-          >
-            <i className="fa-solid fa-right-from-bracket"></i>
-          </button>
+          <div className="flex items-center">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                // trigger Settings Modal via an event since it's now in AppLayout or we can just import SettingsModal here.
+                // Wait, SettingsModal is in AppSidebar, but we can just render it here or trigger an event.
+                // Let's dispatch a custom event that AppLayout can listen to.
+                window.dispatchEvent(new CustomEvent('open-settings'));
+              }}
+              className="text-slate-500 hover:text-white p-1 transition-colors mr-2"
+              title="Settings"
+            >
+              <i className="fa-solid fa-gear"></i>
+            </button>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                logout();
+              }}
+              className="text-slate-500 hover:text-red-400 p-1 transition-colors"
+              title="Log Out"
+            >
+              <i className="fa-solid fa-right-from-bracket"></i>
+            </button>
+          </div>
         </div>
       </aside>
 

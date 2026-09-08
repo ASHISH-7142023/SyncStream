@@ -44,6 +44,10 @@ public class User implements UserDetails {
 
     private String customStatusText;
 
+    private String bio;
+
+    private String statusEmoji;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));

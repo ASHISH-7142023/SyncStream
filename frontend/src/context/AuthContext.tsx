@@ -10,6 +10,9 @@ interface User {
   avatar?: string;
   themeColor?: string;
   notificationsEnabled?: boolean;
+  customStatusText?: string;
+  bio?: string;
+  statusEmoji?: string;
 }
 
 interface AuthContextType {
@@ -22,7 +25,7 @@ interface AuthContextType {
   logout: () => void;
   clearError: () => void;
   updateSettings: (themeColor?: string, notificationsEnabled?: boolean) => Promise<void>;
-  updateProfile: (gender?: string, avatar?: string) => Promise<void>;
+  updateProfile: (data: { gender?: string; avatar?: string; bio?: string; statusEmoji?: string; customStatusText?: string }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -130,14 +133,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const updateProfile = async (gender?: string, avatar?: string) => {
+  const updateProfile = async (data: { gender?: string; avatar?: string; bio?: string; statusEmoji?: string; customStatusText?: string }) => {
     try {
-      const payload: any = {};
-      if (gender !== undefined) payload.gender = gender;
-      if (avatar !== undefined) payload.avatar = avatar;
-      
-      const response = await api.put('/api/auth/profile', payload);
-      setUser(prev => prev ? { ...prev, gender: response.data.gender, avatar: response.data.avatar } : response.data);
+      const response = await api.put('/api/users/profile', data);
+      setUser(prev => prev ? { 
+        ...prev, 
+        gender: response.data.gender, 
+        avatar: response.data.avatar,
+        bio: response.data.bio,
+        statusEmoji: response.data.statusEmoji,
+        customStatusText: response.data.customStatusText
+      } : response.data);
       if (response.data.gender) localStorage.setItem('user-gender', response.data.gender);
       if (response.data.avatar) localStorage.setItem('user-avatar', response.data.avatar);
     } catch (err) {

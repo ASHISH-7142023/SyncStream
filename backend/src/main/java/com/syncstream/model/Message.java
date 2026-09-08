@@ -46,6 +46,10 @@ public class Message {
 
     private String parentId;
 
+    private Integer replyCount;
+
+    private Instant lastReplyAt;
+
     private String clientMessageId;
 
     private String attachmentId;
@@ -58,11 +62,13 @@ public class Message {
 
     private boolean pinned;
 
+    @Builder.Default
     private java.util.Map<String, java.util.List<String>> reactions = new java.util.HashMap<>();
 
     private Instant editedAt;
 
     private boolean deleted;
 
+    @Builder.Default
     private java.util.List<LinkPreview> linkPreviews = new java.util.ArrayList<>();
 }

@@ -12,8 +12,8 @@ interface ThreadPanelProps {
 
 export const ThreadPanel: React.FC<ThreadPanelProps> = ({ roomId, parentMessage, onClose }) => {
   const { user } = useAuth();
-  const { sendMessage, presenceUsers } = useSocket();
-  const [replies, setReplies] = useState<any[]>([]);
+  const { sendMessage, presenceUsers, messages } = useSocket();
+  const [fetchedReplies, setFetchedReplies] = useState<any[]>([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(true);
   const endRef = useRef<HTMLDivElement>(null);
@@ -23,7 +23,7 @@ export const ThreadPanel: React.FC<ThreadPanelProps> = ({ roomId, parentMessage,
       try {
         setLoading(true);
         const res = await api.get(`/api/rooms/${roomId}/messages/${parentMessage.id || parentMessage.sequenceNumber}/replies`);
-        setReplies(res.data);
+        setFetchedReplies(res.data);
       } catch (err) {
         console.error('Failed to fetch replies', err);
       } finally {
@@ -35,9 +35,18 @@ export const ThreadPanel: React.FC<ThreadPanelProps> = ({ roomId, parentMessage,
     }
   }, [roomId, parentMessage]);
 
+  const liveReplies = (messages[roomId] || []).filter(m => m.parentId === parentMessage.id);
+  
+  const allReplies = React.useMemo(() => {
+    const map = new Map();
+    fetchedReplies.forEach(r => map.set(r.id || r.clientMessageId, r));
+    liveReplies.forEach(r => map.set(r.id || r.clientMessageId, r));
+    return Array.from(map.values()).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  }, [fetchedReplies, liveReplies]);
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [replies]);
+  }, [allReplies]);
 
   const handleSendReply = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +65,7 @@ export const ThreadPanel: React.FC<ThreadPanelProps> = ({ roomId, parentMessage,
       createdAt: new Date().toISOString(),
       parentId: parentMessage.id || parentMessage.sequenceNumber,
     };
-    setReplies((prev) => [...prev, optimisticReply]);
+    setFetchedReplies((prev) => [...prev, optimisticReply]);
 
     // Send through WebSocket
     sendMessage(roomId, content, Math.random().toString(36).substring(2, 15), parentMessage.id || parentMessage.sequenceNumber);
@@ -103,14 +112,14 @@ export const ThreadPanel: React.FC<ThreadPanelProps> = ({ roomId, parentMessage,
         {/* Replies */}
         <div className="space-y-4">
           <div className="text-xs font-medium text-text-muted mb-2">
-            {replies.length} {replies.length === 1 ? 'reply' : 'replies'}
+            {allReplies.length} {allReplies.length === 1 ? 'reply' : 'replies'}
           </div>
           {loading ? (
             <div className="flex justify-center py-4">
               <div className="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
           ) : (
-            replies.map((reply, idx) => (
+            allReplies.map((reply, idx) => (
               <div key={idx} className="flex gap-3">
                 <div className="w-8 h-8 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-sm shrink-0 select-none">
                   {getAvatarForUser(reply.senderName || 'US', presenceUsers)}

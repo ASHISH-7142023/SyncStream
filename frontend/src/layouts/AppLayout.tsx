@@ -3,6 +3,8 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import CreateRoomModal from '../components/modals/CreateRoomModal';
 import { VideoCall } from '../components/VideoCall';
+import { GlobalSearchModal } from '../components/modals/GlobalSearchModal';
+import { SettingsModal } from '../components/modals/SettingsModal';
 
 interface Room {
   id: string;
@@ -15,6 +17,29 @@ const AppLayout: React.FC = () => {
   const navigate = useNavigate();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsGlobalSearchOpen(prev => !prev);
+      }
+    };
+    
+    const handleOpenSettings = () => {
+      setIsSettingsOpen(true);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('open-settings', handleOpenSettings);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('open-settings', handleOpenSettings);
+    };
+  }, []);
 
   const fetchRooms = async () => {
     try {
@@ -44,6 +69,18 @@ const AppLayout: React.FC = () => {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={handleRoomCreated}
+      />
+
+      {/* Global Search Modal (Cmd+K) */}
+      <GlobalSearchModal
+        isOpen={isGlobalSearchOpen}
+        onClose={() => setIsGlobalSearchOpen(false)}
+      />
+
+      {/* Global Settings Modal */}
+      <SettingsModal 
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
       />
 
       {/* Global Picture-in-Picture Video Call Overlay */}

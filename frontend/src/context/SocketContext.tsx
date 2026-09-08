@@ -55,6 +55,7 @@ interface SocketContextType {
   messages: Record<string, ChatMessage[]>;
   typingUsers: Record<string, Record<string, boolean>>; // roomId -> { username: isTyping }
   presenceUsers: Record<string, UserPresence>; // userId -> presence
+  unreadRoomCounts: Record<string, number>;
   joinRoom: (roomId: string) => void;
   leaveRoom: (roomId: string) => void;
   sendMessage: (roomId: string, content: string, clientMessageId: string, parentId?: string, attachmentData?: any) => void;
@@ -82,6 +83,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({});
   const [typingUsers, setTypingUsers] = useState<Record<string, Record<string, boolean>>>({});
   const [presenceUsers, setPresenceUsers] = useState<Record<string, UserPresence>>({});
+  const [unreadRoomCounts, setUnreadRoomCounts] = useState<Record<string, number>>({});
   
   // Track pagination metadata
   const [messagePages, setMessagePages] = useState<Record<string, number>>({});
@@ -142,6 +144,11 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         fetchRoomPresence(roomId as string);
         fetchReadReceipts(roomId as string);
       });
+      
+      // Fetch initial unread counts
+      api.get('/api/rooms/unread').then(res => {
+        setUnreadRoomCounts(res.data);
+      }).catch(err => console.error('Failed to fetch unread counts', err));
     };
 
     client.onDisconnect = () => {
@@ -232,6 +239,16 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
               ),
             };
           });
+
+          // Update unread count if it's not our own message and we're not currently looking at this room
+          // (assuming if we are at the bottom of the room, read receipts will naturally clear it)
+          if (chatMsg.senderId !== user?.id) {
+            setUnreadRoomCounts(prev => ({
+              ...prev,
+              [roomId]: (prev[roomId] || 0) + 1
+            }));
+          }
+
         } catch (e) {
           console.error('Error parsing room message', e);
         }
@@ -625,7 +642,8 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         sendReadReceipt,
         sendWebRtcSignal,
         editMessage,
-        deleteMessage
+        deleteMessage,
+        unreadRoomCounts
       }}
     >
       {children}

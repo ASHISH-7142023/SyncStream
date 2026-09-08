@@ -82,6 +82,15 @@ public class RoomController {
         return ResponseEntity.ok(filtered);
     }
 
+    @GetMapping("/unread")
+    public ResponseEntity<Map<String, Long>> getUnreadCounts(@AuthenticationPrincipal User user) {
+        List<String> roomIds = roomService.getAllRooms().stream()
+                .filter(room -> room.getMembers().contains(user.getId()))
+                .map(Room::getId)
+                .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(readReceiptService.getUnreadCounts(user.getId(), roomIds));
+    }
+
     @GetMapping("/{roomId}")
     public ResponseEntity<?> getRoomById(
             @PathVariable String roomId,

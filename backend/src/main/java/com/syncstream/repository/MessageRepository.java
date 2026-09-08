@@ -12,12 +12,17 @@ import java.util.List;
 public interface MessageRepository extends MongoRepository<Message, String> {
     Page<Message> findByRoomId(String roomId, Pageable pageable);
     List<Message> findByRoomIdAndSequenceNumberGreaterThanOrderBySequenceNumberAsc(String roomId, Long sequenceNumber);
+    long countByRoomIdAndSequenceNumberGreaterThan(String roomId, Long sequenceNumber);
+    long countByRoomId(String roomId);
     List<Message> findByParentIdOrderByCreatedAtAsc(String parentId);
     
     Page<Message> findAllBy(TextCriteria criteria, Pageable pageable);
     
     @Query("{ 'roomId': ?0, '$text': { '$search': ?1 } }")
     Page<Message> searchMessagesInRoom(String roomId, String keyword, Pageable pageable);
+    
+    @Query("{ 'roomId': { $in: ?0 }, '$text': { '$search': ?1 } }")
+    Page<Message> searchMessagesInRooms(List<String> roomIds, String keyword, Pageable pageable);
     
     List<Message> findByRoomIdAndPinnedTrueOrderByCreatedAtDesc(String roomId);
 }

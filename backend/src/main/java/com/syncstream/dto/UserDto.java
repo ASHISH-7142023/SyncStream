@@ -19,4 +19,6 @@ public class UserDto {
     private Instant createdAt;
     private String themeColor;
     private String customStatusText;
+    private String bio;
+    private String statusEmoji;
 }

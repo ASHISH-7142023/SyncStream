@@ -5,6 +5,7 @@ import com.syncstream.model.Message;
 import com.syncstream.model.MessageType;
 import com.syncstream.model.User;
 import com.syncstream.repository.MessageRepository;
+import com.syncstream.repository.RoomRepository;
 import com.syncstream.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,9 @@ public class MessageService {
     private MessageRepository messageRepository;
 
     @Autowired
+    private RoomRepository roomRepository;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -30,6 +34,9 @@ public class MessageService {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     @Autowired
     private LinkPreviewService linkPreviewService;
@@ -67,6 +74,24 @@ public class MessageService {
                 .build();
 
         Message savedMessage = messageRepository.save(message);
+
+        // Update thread metadata if this is a reply
+        if (request.getParentId() != null) {
+            messageRepository.findById(request.getParentId()).ifPresent(parentMsg -> {
+                int count = parentMsg.getReplyCount() == null ? 0 : parentMsg.getReplyCount();
+                parentMsg.setReplyCount(count + 1);
+                parentMsg.setLastReplyAt(savedMessage.getCreatedAt());
+                Message savedParent = messageRepository.save(parentMsg);
+                
+                // Broadcast updated parent message
+                try {
+                    String jsonMessage = objectMapper.writeValueAsString(savedParent);
+                    redisTemplate.convertAndSend("syncstream:room:" + roomId, jsonMessage);
+                } catch (Exception e) {
+                    // Ignore parsing error
+                }
+            });
+        }
 
         // Parse mentions
         if (request.getContent() != null && !request.getContent().trim().isEmpty()) {
@@ -163,6 +188,19 @@ public class MessageService {
     public Page<Message> searchMessages(String roomId, String keyword, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return messageRepository.searchMessagesInRoom(roomId, keyword, pageRequest);
+    }
+
+    public Page<Message> searchGlobalMessages(String keyword, String userId, PageRequest pageRequest) {
+        List<String> roomIds = roomRepository.findByMembersContaining(userId).stream()
+                .map(com.syncstream.model.Room::getId)
+                .collect(java.util.stream.Collectors.toList());
+        
+        if (roomIds.isEmpty()) {
+            return Page.empty(pageRequest);
+        }
+        
+        // Use text search query across all authorized rooms, sorted by score/createdAt
+        return messageRepository.searchMessagesInRooms(roomIds, keyword, pageRequest);
     }
 
     public List<Message> getPinnedMessages(String roomId) {

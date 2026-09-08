@@ -14,6 +14,7 @@ import RoomDetailsModal from '../components/modals/RoomDetailsModal';
 import UpgradeProModal from '../components/modals/UpgradeProModal';
 import { useToast } from '../context/ToastContext';
 import { LinkPreviewCard } from '../components/chat/LinkPreviewCard';
+import { useNotification } from '../context/NotificationContext';
 
 interface Member {
   id: string;
@@ -38,9 +39,10 @@ const RoomChatPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { 
-    connectionStatus, messages, typingUsers, presenceUsers, readReceipts,
+    connectionStatus, messages, typingUsers, presenceUsers, readReceipts, unreadRoomCounts,
     joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, updateMessage, sendReadReceipt, getStompClient, sendWebRtcSignal, editMessage, deleteMessage
   } = useSocket();
+  const { notifications, markAsRead } = useNotification();
 
   const {
     inCall,
@@ -73,7 +75,8 @@ const RoomChatPage: React.FC = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedEmojiCategory, setSelectedEmojiCategory] = useState(0);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
-  const [selectedThreadMsg, setSelectedThreadMsg] = useState<any | null>(null);
+  const [selectedThreadMsg, setSelectedThreadMsg] = useState<any | null>(null); // For composing a reply
+  const [activeThreadMsg, setActiveThreadMsg] = useState<any | null>(null); // For viewing a thread
   const [showRoomDetails, setShowRoomDetails] = useState(false);
   const [showUpgradePro, setShowUpgradePro] = useState(false);
   
@@ -108,6 +111,10 @@ const RoomChatPage: React.FC = () => {
   const handleReplyClick = (msg: any) => {
     setSelectedThreadMsg(msg);
     setTimeout(() => textareaRef.current?.focus(), 0);
+  };
+
+  const handleViewThreadClick = (msg: any) => {
+    setActiveThreadMsg(msg);
   };
 
   const feedEndRef = useRef<HTMLDivElement | null>(null);
@@ -175,6 +182,10 @@ const RoomChatPage: React.FC = () => {
           if (lastMsg.id && lastMsg.id !== myLastRead) {
             sendReadReceipt(roomId, lastMsg.id);
           }
+
+          // Clear any unread mentions for this room
+          const roomMentions = notifications.filter(n => !n.read && n.referenceId === roomId && n.type === 'MENTION');
+          roomMentions.forEach(n => markAsRead(n.id));
         }
       },
       { threshold: 0.1 }
@@ -369,6 +380,8 @@ const RoomChatPage: React.FC = () => {
             <ul className="space-y-0.5">
               {rooms.map((r: any) => {
                 const isActive = r.id === roomId;
+                const unreadCount = unreadRoomCounts[r.id] || 0;
+                const hasMention = notifications.some(n => !n.read && n.referenceId === r.id && n.type === 'MENTION');
                 return (
                   <li key={r.id}>
                     <button 
@@ -385,7 +398,15 @@ const RoomChatPage: React.FC = () => {
                         ) : (
                           <span className="text-lg opacity-60 font-light">#</span>
                         )}
-                        <span className="truncate">{r.isDirectMessage ? 'DM Chat' : r.name}</span>
+                        <span className={`truncate ${unreadCount > 0 && !isActive ? 'text-white font-semibold' : ''}`}>{r.isDirectMessage ? 'DM Chat' : r.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {hasMention && <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div>}
+                        {!isActive && unreadCount > 0 && (
+                          <span className="bg-[#8b5cf6] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center">
+                            {unreadCount > 99 ? '99+' : unreadCount}
+                          </span>
+                        )}
                       </div>
                     </button>
                   </li>
@@ -459,16 +480,28 @@ const RoomChatPage: React.FC = () => {
               </div>
             </div>
           </div>
-          <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              logout();
-            }}
-            className="text-slate-500 hover:text-red-400 p-1 transition-colors"
-            title="Log Out"
-          >
-            <i className="fa-solid fa-right-from-bracket"></i>
-          </button>
+          <div className="flex items-center">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                window.dispatchEvent(new CustomEvent('open-settings'));
+              }}
+              className="text-slate-500 hover:text-white p-1 transition-colors mr-2"
+              title="Settings"
+            >
+              <i className="fa-solid fa-gear"></i>
+            </button>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                logout();
+              }}
+              className="text-slate-500 hover:text-red-400 p-1 transition-colors"
+              title="Log Out"
+            >
+              <i className="fa-solid fa-right-from-bracket"></i>
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -898,6 +931,24 @@ const RoomChatPage: React.FC = () => {
                         </div>
                       );
                     })()}
+
+                    {/* View Replies Button */}
+                    {msg.replyCount > 0 && (
+                      <div className="mt-2 flex">
+                        <button
+                          onClick={() => handleViewThreadClick(msg)}
+                          className="flex items-center gap-2 text-xs font-medium text-[#a78bfa] hover:text-[#8b5cf6] transition-colors py-1 px-2 rounded hover:bg-[#8b5cf6]/10"
+                        >
+                          <i className="fa-solid fa-comments"></i>
+                          {msg.replyCount} {msg.replyCount === 1 ? 'reply' : 'replies'}
+                          {msg.lastReplyAt && (
+                            <span className="text-text-muted font-normal ml-1">
+                              • Last reply {new Date(msg.lastReplyAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          )}
+                        </button>
+                      </div>
+                    )}
                   </div>
                   
                   {/* Message Action Menu */}
@@ -1319,6 +1370,17 @@ const RoomChatPage: React.FC = () => {
             </div>
           </aside>
         )
+      )}
+
+      {/* Thread Panel */}
+      {activeThreadMsg && (
+        <aside className="w-80 flex-shrink-0 bg-[#0f111a] border-l border-white/5 flex flex-col z-20 shadow-2xl relative">
+          <ThreadPanel 
+            roomId={roomId || ''}
+            parentMessage={activeThreadMsg}
+            onClose={() => setActiveThreadMsg(null)}
+          />
+        </aside>
       )}
 
       </div>

@@ -24,6 +24,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const [notifications, setNotifications] = useState(user?.notificationsEnabled !== false);
   const [avatar, setAvatar] = useState(user?.avatar || '');
   const [gender, setGender] = useState(user?.gender || '');
+  const [bio, setBio] = useState(user?.bio || '');
+  const [statusEmoji, setStatusEmoji] = useState(user?.statusEmoji || '');
+  const [customStatusText, setCustomStatusText] = useState(user?.customStatusText || '');
   
   // Voice & Video State
   const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>([]);
@@ -49,7 +52,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     try {
       if (activeTab === 'account') {
         await updateSettings(themeColor, notifications);
-        await updateProfile(gender, avatar);
+        await updateProfile({ gender, avatar, bio, statusEmoji, customStatusText });
       } else {
         localStorage.setItem('syncstream_micId', selectedMic);
         localStorage.setItem('syncstream_camId', selectedCam);
@@ -106,6 +109,40 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                     className="w-full bg-[#151724] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#7c3aed]"
                   />
                   <p className="text-xs text-gray-500 mt-1">Leave empty to use automatically generated avatar.</p>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-semibold text-[#a78bfa] mb-2">Bio</h4>
+                  <textarea 
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    placeholder="Tell everyone a bit about yourself..."
+                    className="w-full bg-[#151724] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#7c3aed] resize-none h-20"
+                  />
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <h4 className="text-sm font-semibold text-[#a78bfa] mb-2">Custom Status</h4>
+                    <input 
+                      type="text" 
+                      value={customStatusText}
+                      onChange={(e) => setCustomStatusText(e.target.value)}
+                      placeholder="What's on your mind?"
+                      className="w-full bg-[#151724] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#7c3aed]"
+                    />
+                  </div>
+                  <div className="w-24">
+                    <h4 className="text-sm font-semibold text-[#a78bfa] mb-2">Emoji</h4>
+                    <input 
+                      type="text" 
+                      value={statusEmoji}
+                      onChange={(e) => setStatusEmoji(e.target.value)}
+                      placeholder="👋"
+                      maxLength={2}
+                      className="w-full bg-[#151724] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#7c3aed] text-center text-xl"
+                    />
+                  </div>
                 </div>
 
                 <div>
