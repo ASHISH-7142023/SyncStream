@@ -17,4 +17,8 @@ public class RegisterRequest {
     private String gender;
 
     private String avatar;
+    
+    private String publicKey;
+    
+    private String encryptedPrivateKey;
 }

@@ -64,6 +64,8 @@ public class AuthController {
                 .avatar(registerRequest.getAvatar())
                 .themeColor("purple")
                 .notificationsEnabled(true)
+                .publicKey(registerRequest.getPublicKey())
+                .encryptedPrivateKey(registerRequest.getEncryptedPrivateKey())
                 .build();
 
         userRepository.save(user);
@@ -79,7 +81,7 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.generateToken(authentication);
 
-        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getGender(), user.getAvatar(), user.getThemeColor(), user.getNotificationsEnabled()));
+        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getGender(), user.getAvatar(), user.getThemeColor(), user.getNotificationsEnabled(), user.getPublicKey(), user.getEncryptedPrivateKey()));
     }
 
     @PostMapping("/login")
@@ -95,7 +97,7 @@ public class AuthController {
         String jwt = tokenProvider.generateToken(authentication);
         User user = (User) authentication.getPrincipal();
 
-        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getGender(), user.getAvatar(), user.getThemeColor(), user.getNotificationsEnabled()));
+        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getGender(), user.getAvatar(), user.getThemeColor(), user.getNotificationsEnabled(), user.getPublicKey(), user.getEncryptedPrivateKey()));
     }
 
     @GetMapping("/me")
@@ -111,6 +113,8 @@ public class AuthController {
         response.put("avatar", user.getAvatar());
         response.put("themeColor", user.getThemeColor());
         response.put("notificationsEnabled", user.getNotificationsEnabled());
+        response.put("publicKey", user.getPublicKey());
+        response.put("encryptedPrivateKey", user.getEncryptedPrivateKey());
         return ResponseEntity.ok(response);
     }
 

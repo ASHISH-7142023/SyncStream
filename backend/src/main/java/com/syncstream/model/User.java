@@ -48,6 +48,10 @@ public class User implements UserDetails {
 
     private String statusEmoji;
 
+    private String publicKey;
+    
+    private String encryptedPrivateKey;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));

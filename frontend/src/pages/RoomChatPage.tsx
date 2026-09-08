@@ -37,7 +37,7 @@ interface RoomDetails {
 const RoomChatPage: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, privateKey } = useAuth();
   const { 
     connectionStatus, messages, typingUsers, presenceUsers, readReceipts, unreadRoomCounts,
     joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, updateMessage, sendReadReceipt, getStompClient, sendWebRtcSignal, editMessage, deleteMessage
@@ -94,6 +94,10 @@ const RoomChatPage: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedProfileUsername, setSelectedProfileUsername] = useState<string | null>(null);
   const [profilePopoverPos, setProfilePopoverPos] = useState({ x: 0, y: 0 });
+
+  const [decryptedMessages, setDecryptedMessages] = useState<Record<string, string>>({});
+  const [otherUserPubKey, setOtherUserPubKey] = useState<CryptoKey | null>(null);
+  const [sharedSecret, setSharedSecret] = useState<CryptoKey | null>(null);
 
   const handleAvatarClick = (username: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -164,6 +168,56 @@ const RoomChatPage: React.FC = () => {
 
   // Scroll to bottom
   const roomMessages = (roomId && messages[roomId]) || [];
+
+  useEffect(() => {
+    if (room?.isDirectMessage && privateKey) {
+       const otherUserId = room.members?.find(m => m !== user?.id);
+       if (otherUserId) {
+         api.get(`/api/crypto/users/${otherUserId}/public-key`).then(async (res) => {
+           if (res.status === 200 && res.data.publicKey) {
+             const { cryptoService } = await import('../services/cryptoService');
+             const key = await cryptoService.importPublicKey(res.data.publicKey);
+             setOtherUserPubKey(key);
+           }
+         }).catch(console.error);
+       }
+    }
+  }, [room, privateKey, user]);
+
+  useEffect(() => {
+     if (privateKey && otherUserPubKey) {
+        import('../services/cryptoService').then(({cryptoService}) => {
+           cryptoService.deriveSharedSecret(privateKey, otherUserPubKey).then(setSharedSecret).catch(console.error);
+        });
+     }
+  }, [privateKey, otherUserPubKey]);
+
+  useEffect(() => {
+    if (!sharedSecret) return;
+    const newDecrypted = { ...decryptedMessages };
+    let hasChanges = false;
+    
+    const decryptAll = async () => {
+      const { cryptoService } = await import('../services/cryptoService');
+      for (const msg of roomMessages) {
+        if (msg.content?.startsWith('E2EE:') && !newDecrypted[msg.id || msg.sequenceNumber]) {
+           try {
+             const decrypted = await cryptoService.decryptMessage(msg.content, sharedSecret);
+             newDecrypted[msg.id || msg.sequenceNumber] = decrypted;
+             hasChanges = true;
+           } catch (e) {
+             newDecrypted[msg.id || msg.sequenceNumber] = '🔒 (Decryption failed)';
+             hasChanges = true;
+           }
+        }
+      }
+      if (hasChanges) {
+        setDecryptedMessages(newDecrypted);
+      }
+    };
+    decryptAll();
+  }, [roomMessages, sharedSecret]);
+
   useEffect(() => {
     feedEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [roomMessages.length]);
@@ -225,7 +279,13 @@ const RoomChatPage: React.FC = () => {
       setSelectedFile(null);
     }
 
-    sendMessage(roomId, inputText.trim(), Math.random().toString(36).substring(2, 15), selectedThreadMsg?.id, attachmentData);
+    let finalContent = inputText.trim();
+    if (room?.isDirectMessage && sharedSecret) {
+       const { cryptoService } = await import('../services/cryptoService');
+       finalContent = await cryptoService.encryptMessage(finalContent, sharedSecret);
+    }
+
+    sendMessage(roomId, finalContent, Math.random().toString(36).substring(2, 15), selectedThreadMsg?.id, attachmentData);
     setInputText('');
     setSelectedThreadMsg(null);
 
@@ -796,7 +856,14 @@ const RoomChatPage: React.FC = () => {
                       </div>
                     ) : (
                       <div className={`text-[15px] leading-relaxed text-gray-200 prose prose-invert max-w-none prose-p:my-1 prose-a:text-[#a78bfa] prose-code:text-[#a78bfa] prose-code:bg-[#8b5cf6]/10 prose-code:px-1 prose-code:rounded prose-pre:bg-[#1f2233] prose-pre:border prose-pre:border-white/10 ${isMention ? 'bg-[#7c3aed]/15 border border-[#7c3aed]/20 rounded px-2.5 py-1.5 w-fit my-1' : ''}`}>
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                        {msg.content?.startsWith('E2EE:') ? (
+                          <>
+                            <span className="text-[#8b5cf6] mr-2" title="End-to-End Encrypted">🔒</span>
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{decryptedMessages[msg.id || msg.sequenceNumber] || 'Decrypting...'}</ReactMarkdown>
+                          </>
+                        ) : (
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                        )}
                         {msg.editedAt && <span className="text-[10px] text-gray-500 ml-2 italic select-none">(edited)</span>}
                       </div>
                     )}

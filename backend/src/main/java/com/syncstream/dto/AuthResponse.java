@@ -13,4 +13,6 @@ public class AuthResponse {
     private String avatar;
     private String themeColor;
     private Boolean notificationsEnabled;
+    private String publicKey;
+    private String encryptedPrivateKey;
 }
