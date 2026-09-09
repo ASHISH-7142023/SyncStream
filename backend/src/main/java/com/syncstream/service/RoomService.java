@@ -25,10 +25,14 @@ public class RoomService {
                 .description(description)
                 .ownerId(ownerId)
                 .members(new HashSet<>())
+                .admins(new HashSet<>())
+                .moderators(new HashSet<>())
+                .bannedUsers(new HashSet<>())
                 .createdAt(Instant.now())
                 .build();
         
         room.getMembers().add(ownerId);
+        room.getAdmins().add(ownerId);
         return roomRepository.save(room);
     }
 
@@ -54,6 +58,10 @@ public class RoomService {
     public Room joinRoom(String roomId, String userId) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+        
+        if (room.getBannedUsers().contains(userId)) {
+            throw new SecurityException("You are banned from this room");
+        }
         
         room.getMembers().add(userId);
         return roomRepository.save(room);
@@ -91,5 +99,119 @@ public class RoomService {
 
     public List<Room> getUserRooms(String userId) {
         return roomRepository.findByMembersContaining(userId);
+    }
+
+    public boolean isOwner(Room room, String userId) {
+        return room.getOwnerId().equals(userId);
+    }
+
+    public boolean isAdmin(Room room, String userId) {
+        return isOwner(room, userId) || room.getAdmins().contains(userId);
+    }
+
+    public boolean isModerator(Room room, String userId) {
+        return isAdmin(room, userId) || room.getModerators().contains(userId);
+    }
+
+    public Room updateRole(String roomId, String targetUserId, String role, String requesterId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+                
+        if (!room.getMembers().contains(targetUserId)) {
+            throw new IllegalArgumentException("User is not a member of this room");
+        }
+        
+        if (room.getOwnerId().equals(targetUserId)) {
+            throw new SecurityException("Cannot change the role of the room owner");
+        }
+        
+        boolean requesterIsOwner = isOwner(room, requesterId);
+        boolean requesterIsAdmin = isAdmin(room, requesterId);
+        
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            if (!requesterIsOwner) throw new SecurityException("Only the owner can promote to Admin");
+            room.getAdmins().add(targetUserId);
+            room.getModerators().remove(targetUserId);
+        } else if ("MODERATOR".equalsIgnoreCase(role)) {
+            if (!requesterIsAdmin) throw new SecurityException("Only Admins can promote to Moderator");
+            room.getModerators().add(targetUserId);
+            room.getAdmins().remove(targetUserId);
+        } else if ("MEMBER".equalsIgnoreCase(role)) {
+            if (room.getAdmins().contains(targetUserId) && !requesterIsOwner) {
+                throw new SecurityException("Only the owner can demote an Admin");
+            }
+            if (!requesterIsAdmin) throw new SecurityException("Only Admins can demote a Moderator");
+            room.getAdmins().remove(targetUserId);
+            room.getModerators().remove(targetUserId);
+        } else {
+            throw new IllegalArgumentException("Invalid role");
+        }
+        
+        return roomRepository.save(room);
+    }
+
+    public Room kickUser(String roomId, String targetUserId, String requesterId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+                
+        if (room.getOwnerId().equals(targetUserId)) {
+            throw new SecurityException("Cannot kick the room owner");
+        }
+        
+        if (isAdmin(room, targetUserId) && !isOwner(room, requesterId)) {
+            throw new SecurityException("Only the owner can kick an Admin");
+        }
+        
+        if (isModerator(room, targetUserId) && !isAdmin(room, requesterId)) {
+            throw new SecurityException("Only an Admin can kick a Moderator");
+        }
+        
+        if (!isModerator(room, requesterId)) {
+            throw new SecurityException("You do not have permission to kick users");
+        }
+        
+        room.getMembers().remove(targetUserId);
+        room.getAdmins().remove(targetUserId);
+        room.getModerators().remove(targetUserId);
+        return roomRepository.save(room);
+    }
+
+    public Room banUser(String roomId, String targetUserId, String requesterId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+                
+        if (room.getOwnerId().equals(targetUserId)) {
+            throw new SecurityException("Cannot ban the room owner");
+        }
+        
+        if (isAdmin(room, targetUserId) && !isOwner(room, requesterId)) {
+            throw new SecurityException("Only the owner can ban an Admin");
+        }
+        
+        if (isModerator(room, targetUserId) && !isAdmin(room, requesterId)) {
+            throw new SecurityException("Only an Admin can ban a Moderator");
+        }
+        
+        if (!isModerator(room, requesterId)) {
+            throw new SecurityException("You do not have permission to ban users");
+        }
+        
+        room.getMembers().remove(targetUserId);
+        room.getAdmins().remove(targetUserId);
+        room.getModerators().remove(targetUserId);
+        room.getBannedUsers().add(targetUserId);
+        return roomRepository.save(room);
+    }
+
+    public Room unbanUser(String roomId, String targetUserId, String requesterId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+                
+        if (!isModerator(room, requesterId)) {
+            throw new SecurityException("You do not have permission to unban users");
+        }
+        
+        room.getBannedUsers().remove(targetUserId);
+        return roomRepository.save(room);
     }
 }

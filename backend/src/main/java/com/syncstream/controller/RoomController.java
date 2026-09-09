@@ -280,4 +280,66 @@ public class RoomController {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
+
+    @PostMapping("/{roomId}/roles/{targetUserId}")
+    public ResponseEntity<?> updateRole(
+            @PathVariable String roomId,
+            @PathVariable String targetUserId,
+            @RequestBody Map<String, String> request,
+            @AuthenticationPrincipal User user) {
+        try {
+            String role = request.get("role");
+            Room room = roomService.updateRole(roomId, targetUserId, role, user.getId());
+            return ResponseEntity.ok(room);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{roomId}/kick/{targetUserId}")
+    public ResponseEntity<?> kickUser(
+            @PathVariable String roomId,
+            @PathVariable String targetUserId,
+            @AuthenticationPrincipal User user) {
+        try {
+            Room room = roomService.kickUser(roomId, targetUserId, user.getId());
+            return ResponseEntity.ok(room);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{roomId}/ban/{targetUserId}")
+    public ResponseEntity<?> banUser(
+            @PathVariable String roomId,
+            @PathVariable String targetUserId,
+            @AuthenticationPrincipal User user) {
+        try {
+            Room room = roomService.banUser(roomId, targetUserId, user.getId());
+            return ResponseEntity.ok(room);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{roomId}/unban/{targetUserId}")
+    public ResponseEntity<?> unbanUser(
+            @PathVariable String roomId,
+            @PathVariable String targetUserId,
+            @AuthenticationPrincipal User user) {
+        try {
+            Room room = roomService.unbanUser(roomId, targetUserId, user.getId());
+            return ResponseEntity.ok(room);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", e.getMessage()));
+        }
+    }
 }

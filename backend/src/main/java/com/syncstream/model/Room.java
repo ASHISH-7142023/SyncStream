@@ -35,5 +35,14 @@ public class Room {
     @Builder.Default
     private Set<String> members = new HashSet<>();
 
+    @Builder.Default
+    private Set<String> admins = new HashSet<>();
+
+    @Builder.Default
+    private Set<String> moderators = new HashSet<>();
+
+    @Builder.Default
+    private Set<String> bannedUsers = new HashSet<>();
+
     private Instant createdAt;
 }

@@ -32,7 +32,11 @@ interface RoomDetails {
   description?: string;
   isPrivate?: boolean;
   isDirectMessage?: boolean;
+  ownerId?: string;
   members?: string[];
+  admins?: string[];
+  moderators?: string[];
+  bannedUsers?: string[];
 }
 
 const RoomChatPage: React.FC = () => {
@@ -95,6 +99,7 @@ const RoomChatPage: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedProfileUsername, setSelectedProfileUsername] = useState<string | null>(null);
   const [profilePopoverPos, setProfilePopoverPos] = useState({ x: 0, y: 0 });
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
   const [decryptedMessages, setDecryptedMessages] = useState<Record<string, string>>({});
   const [otherUserPubKey, setOtherUserPubKey] = useState<CryptoKey | null>(null);
@@ -361,6 +366,46 @@ const RoomChatPage: React.FC = () => {
   const typingUsernames = Object.keys(currentRoomTypingMap).filter(
     (username) => currentRoomTypingMap[username] && username !== user?.username
   );
+
+  const markAsRead = async (messageId: string) => {
+    if (!roomId || !user?.id) return;
+    try {
+      await api.post(`/api/rooms/${roomId}/messages/${messageId}/read`);
+      sendReadReceipt(roomId, messageId);
+      updateMessage(roomId, messageId, {
+        readBy: [{
+          userId: user.id,
+          username: user.username,
+          readAt: new Date().toISOString()
+        }]
+      });
+    } catch (error) {
+      console.error('Failed to mark message as read:', error);
+    }
+  };
+
+  const handleMemberAction = async (targetUserId: string, action: 'promote_admin' | 'promote_mod' | 'demote' | 'kick' | 'ban') => {
+    if (!roomId) return;
+    try {
+      if (action === 'promote_admin') {
+        await api.post(`/api/rooms/${roomId}/roles/${targetUserId}`, { role: 'ADMIN' });
+      } else if (action === 'promote_mod') {
+        await api.post(`/api/rooms/${roomId}/roles/${targetUserId}`, { role: 'MODERATOR' });
+      } else if (action === 'demote') {
+        await api.post(`/api/rooms/${roomId}/roles/${targetUserId}`, { role: 'MEMBER' });
+      } else if (action === 'kick') {
+        await api.post(`/api/rooms/${roomId}/kick/${targetUserId}`);
+      } else if (action === 'ban') {
+        await api.post(`/api/rooms/${roomId}/ban/${targetUserId}`);
+      }
+      
+      const res = await api.get(`/api/rooms/${roomId}`);
+      setRoom(res.data);
+      addToast(`Action ${action} successful`, 'success');
+    } catch (err: any) {
+      addToast(err.response?.data?.message || 'Failed to apply action', 'error');
+    }
+  };
 
   const formatTime = (ts?: string) => {
     if (!ts) return '10:30 AM';
@@ -1330,11 +1375,17 @@ const RoomChatPage: React.FC = () => {
                           <div>
                             <div className="text-sm font-medium flex items-center gap-1.5">
                               <span className="text-white">{m.username}</span>
+                              {m.id === room?.ownerId && (
+                                <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
+                              )}
+                              {room?.admins?.includes(m.id) && m.id !== room?.ownerId && (
+                                <span className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Admin</span>
+                              )}
+                              {room?.moderators?.includes(m.id) && (
+                                <span className="text-[9px] bg-emerald-900/60 text-emerald-200 border border-emerald-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Mod</span>
+                              )}
                               {m.username === user?.username && (
-                                <>
-                                  <span className="text-text-muted text-xs font-normal">(You)</span>
-                                  <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
-                                </>
+                                <span className="text-text-muted text-xs font-normal">(You)</span>
                               )}
                             </div>
                             <div className="text-xs text-text-muted truncate w-40">
@@ -1372,7 +1423,33 @@ const RoomChatPage: React.FC = () => {
                             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-away border-2 border-[#151723] rounded-full"></span>
                           </div>
                           <div>
-                            <div className="text-sm font-medium text-white">{m.username}</div>
+                            <div className="flex flex-col">
+                            <div className="text-sm font-medium flex items-center gap-1.5">
+                              <span className="text-white">{m.username}</span>
+                              {m.id === room?.ownerId && (
+                                <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
+                              )}
+                              {room?.admins?.includes(m.id) && m.id !== room?.ownerId && (
+                                <span className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Admin</span>
+                              )}
+                              {room?.moderators?.includes(m.id) && (
+                                <span className="text-[9px] bg-emerald-900/60 text-emerald-200 border border-emerald-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Mod</span>
+                              )}
+                            </div>
+                            {user?.id && (room?.ownerId === user.id || room?.admins?.includes(user.id) || room?.moderators?.includes(user.id)) && user.id !== m.id && (
+                              <div className="hidden group-hover:flex gap-1 mt-1">
+                                {(room?.ownerId === user.id || room?.admins?.includes(user.id)) && (
+                                  <>
+                                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'kick'); }} className="text-[9px] bg-yellow-900/60 text-yellow-200 border border-yellow-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-yellow-800 transition">Kick</button>
+                                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'ban'); }} className="text-[9px] bg-red-900/60 text-red-200 border border-red-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-red-800 transition">Ban</button>
+                                  </>
+                                )}
+                                {room?.ownerId === user.id && !room?.admins?.includes(m.id) && (
+                                  <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'promote_admin'); }} className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-blue-800 transition">Admin</button>
+                                )}
+                              </div>
+                            )}
+                            </div>
                             <div className="text-xs text-text-muted truncate w-40">
                               {presenceUsers[m.id]?.customStatusText 
                                 ? presenceUsers[m.id].customStatusText 
@@ -1402,7 +1479,33 @@ const RoomChatPage: React.FC = () => {
                             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-red-500 border-2 border-[#151723] rounded-full"></span>
                           </div>
                           <div>
-                            <div className="text-sm font-medium text-white">{m.username}</div>
+                            <div className="flex flex-col">
+                            <div className="text-sm font-medium flex items-center gap-1.5">
+                              <span className="text-white">{m.username}</span>
+                              {m.id === room?.ownerId && (
+                                <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
+                              )}
+                              {room?.admins?.includes(m.id) && m.id !== room?.ownerId && (
+                                <span className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Admin</span>
+                              )}
+                              {room?.moderators?.includes(m.id) && (
+                                <span className="text-[9px] bg-emerald-900/60 text-emerald-200 border border-emerald-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Mod</span>
+                              )}
+                            </div>
+                            {user?.id && (room?.ownerId === user.id || room?.admins?.includes(user.id) || room?.moderators?.includes(user.id)) && user.id !== m.id && (
+                              <div className="hidden group-hover:flex gap-1 mt-1">
+                                {(room?.ownerId === user.id || room?.admins?.includes(user.id)) && (
+                                  <>
+                                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'kick'); }} className="text-[9px] bg-yellow-900/60 text-yellow-200 border border-yellow-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-yellow-800 transition">Kick</button>
+                                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'ban'); }} className="text-[9px] bg-red-900/60 text-red-200 border border-red-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-red-800 transition">Ban</button>
+                                  </>
+                                )}
+                                {room?.ownerId === user.id && !room?.admins?.includes(m.id) && (
+                                  <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'promote_admin'); }} className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-blue-800 transition">Admin</button>
+                                )}
+                              </div>
+                            )}
+                            </div>
                             <div className="text-xs text-text-muted truncate w-40">
                               {presenceUsers[m.id]?.customStatusText 
                                 ? presenceUsers[m.id].customStatusText 
@@ -1432,7 +1535,33 @@ const RoomChatPage: React.FC = () => {
                             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-offline border-2 border-[#151723] rounded-full"></span>
                           </div>
                           <div>
-                            <div className="text-sm font-medium text-white">{m.username}</div>
+                            <div className="flex flex-col">
+                            <div className="text-sm font-medium flex items-center gap-1.5">
+                              <span className="text-white">{m.username}</span>
+                              {m.id === room?.ownerId && (
+                                <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
+                              )}
+                              {room?.admins?.includes(m.id) && m.id !== room?.ownerId && (
+                                <span className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Admin</span>
+                              )}
+                              {room?.moderators?.includes(m.id) && (
+                                <span className="text-[9px] bg-emerald-900/60 text-emerald-200 border border-emerald-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Mod</span>
+                              )}
+                            </div>
+                            {user?.id && (room?.ownerId === user.id || room?.admins?.includes(user.id) || room?.moderators?.includes(user.id)) && user.id !== m.id && (
+                              <div className="hidden group-hover:flex gap-1 mt-1">
+                                {(room?.ownerId === user.id || room?.admins?.includes(user.id)) && (
+                                  <>
+                                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'kick'); }} className="text-[9px] bg-yellow-900/60 text-yellow-200 border border-yellow-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-yellow-800 transition">Kick</button>
+                                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'ban'); }} className="text-[9px] bg-red-900/60 text-red-200 border border-red-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-red-800 transition">Ban</button>
+                                  </>
+                                )}
+                                {room?.ownerId === user.id && !room?.admins?.includes(m.id) && (
+                                  <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'promote_admin'); }} className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-blue-800 transition">Admin</button>
+                                )}
+                              </div>
+                            )}
+                            </div>
                             <div className="text-xs text-text-muted truncate w-40">
                               {presenceUsers[m.id]?.customStatusText 
                                 ? presenceUsers[m.id].customStatusText 
