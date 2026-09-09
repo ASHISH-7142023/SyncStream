@@ -48,7 +48,7 @@ const RoomChatPage: React.FC = () => {
     connectionStatus, messages, typingUsers, presenceUsers, readReceipts, unreadRoomCounts,
     joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, updateMessage, sendReadReceipt, getStompClient, sendWebRtcSignal, editMessage, deleteMessage
   } = useSocket();
-  const { notifications, markAsRead } = useNotification();
+  const { notifications, markAsRead: markNotificationAsRead } = useNotification();
 
   const {
     inCall,
@@ -100,7 +100,6 @@ const RoomChatPage: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedProfileUsername, setSelectedProfileUsername] = useState<string | null>(null);
   const [profilePopoverPos, setProfilePopoverPos] = useState({ x: 0, y: 0 });
-  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
   const [decryptedMessages, setDecryptedMessages] = useState<Record<string, string>>({});
   const [otherUserPubKey, setOtherUserPubKey] = useState<CryptoKey | null>(null);
@@ -246,7 +245,7 @@ const RoomChatPage: React.FC = () => {
 
           // Clear any unread mentions for this room
           const roomMentions = notifications.filter(n => !n.read && n.referenceId === roomId && n.type === 'MENTION');
-          roomMentions.forEach(n => markAsRead(n.id));
+          roomMentions.forEach(n => markNotificationAsRead(n.id));
         }
       },
       { threshold: 0.1 }
@@ -368,22 +367,7 @@ const RoomChatPage: React.FC = () => {
     (username) => currentRoomTypingMap[username] && username !== user?.username
   );
 
-  const markAsRead = async (messageId: string) => {
-    if (!roomId || !user?.id) return;
-    try {
-      await api.post(`/api/rooms/${roomId}/messages/${messageId}/read`);
-      sendReadReceipt(roomId, messageId);
-      updateMessage(roomId, messageId, {
-        readBy: [{
-          userId: user.id,
-          username: user.username,
-          readAt: new Date().toISOString()
-        }]
-      });
-    } catch (error) {
-      console.error('Failed to mark message as read:', error);
-    }
-  };
+
 
   const handleMemberAction = async (targetUserId: string, action: 'promote_admin' | 'promote_mod' | 'demote' | 'kick' | 'ban') => {
     if (!roomId) return;

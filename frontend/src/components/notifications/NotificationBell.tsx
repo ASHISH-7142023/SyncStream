@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNotification, Notification } from '../../context/NotificationContext';
+import { useNotification } from '../../context/NotificationContext';
+import type { Notification } from '../../context/NotificationContext';
 import { useNavigate } from 'react-router-dom';
-import { formatTime } from '../../utils/dateUtils'; // assuming this exists, if not we inline it
 
 export const NotificationBell: React.FC = () => {
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotification();
