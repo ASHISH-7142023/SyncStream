@@ -70,6 +70,8 @@ public class AuthControllerTest {
     public void testRegisterUser_Success() throws Exception {
         RegisterRequest request = new RegisterRequest();
         request.setUsername("testuser");
+        request.setEmail("testuser@example.com");
+        request.setDisplayName("Test User");
         request.setPassword("password123");
 
         when(userRepository.existsByUsername("testuser")).thenReturn(false);
@@ -94,6 +96,8 @@ public class AuthControllerTest {
     public void testRegisterUser_DuplicateUsername() throws Exception {
         RegisterRequest request = new RegisterRequest();
         request.setUsername("duplicateUser");
+        request.setEmail("duplicate@example.com");
+        request.setDisplayName("Duplicate User");
         request.setPassword("password123");
 
         when(userRepository.existsByUsername("duplicateUser")).thenReturn(true);
@@ -112,6 +116,8 @@ public class AuthControllerTest {
     public void testRegisterUser_ValidationFailure() throws Exception {
         RegisterRequest request = new RegisterRequest();
         request.setUsername("us"); // too short (min 3)
+        request.setEmail("invalidemail");
+        request.setDisplayName("");
         request.setPassword("123"); // too short (min 6)
 
         mockMvc.perform(post("/api/auth/register")
