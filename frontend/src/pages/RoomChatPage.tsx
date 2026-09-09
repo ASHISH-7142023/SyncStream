@@ -25,6 +25,7 @@ interface Member {
 }
 
 import UserProfilePopover from '../components/profile/UserProfilePopover';
+import MentionAutocomplete from '../components/chat/MentionAutocomplete';
 
 interface RoomDetails {
   id: string;
@@ -912,10 +913,34 @@ const RoomChatPage: React.FC = () => {
                         {msg.content?.startsWith('E2EE:') ? (
                           <>
                             <span className="text-[#8b5cf6] mr-2" title="End-to-End Encrypted">🔒</span>
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{decryptedMessages[msg.id || msg.sequenceNumber] || 'Decrypting...'}</ReactMarkdown>
+                            <ReactMarkdown 
+                              remarkPlugins={[remarkGfm]}
+                              components={{
+                                a: ({node, ...props}) => {
+                                  if (props.href?.startsWith('#mention-')) {
+                                    return <span className="font-semibold text-brand-400 bg-brand-500/20 px-1 rounded">{props.children}</span>;
+                                  }
+                                  return <a {...props} className="text-[#a78bfa] hover:underline" />;
+                                }
+                              }}
+                            >
+                              {(decryptedMessages[msg.id || msg.sequenceNumber] || 'Decrypting...').replace(/@([a-zA-Z0-9_]+)/g, '[@$1](#mention-$1)')}
+                            </ReactMarkdown>
                           </>
                         ) : (
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                          <ReactMarkdown 
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              a: ({node, ...props}) => {
+                                if (props.href?.startsWith('#mention-')) {
+                                  return <span className="font-semibold text-brand-400 bg-brand-500/20 px-1.5 py-0.5 rounded-md text-sm">{props.children}</span>;
+                                }
+                                return <a {...props} className="text-[#a78bfa] hover:underline" />;
+                              }
+                            }}
+                          >
+                            {(msg.content || '').replace(/@([a-zA-Z0-9_]+)/g, '[@$1](#mention-$1)')}
+                          </ReactMarkdown>
                         )}
                         {msg.editedAt && <span className="text-[10px] text-gray-500 ml-2 italic select-none">(edited)</span>}
                       </div>
@@ -1201,7 +1226,17 @@ const RoomChatPage: React.FC = () => {
                 </div>
               </div>
             )}
-            <div className="flex items-center min-h-[44px]">
+            <div className="relative flex items-center min-h-[44px]">
+              <MentionAutocomplete 
+                input={inputText}
+                members={memberList}
+                onSelect={(username) => {
+                  const words = inputText.split(/\s+/);
+                  words[words.length - 1] = `@${username} `;
+                  setInputText(words.join(' '));
+                  setTimeout(() => textareaRef.current?.focus(), 0);
+                }}
+              />
               <textarea 
                 ref={textareaRef}
                 value={inputText}

@@ -5,6 +5,7 @@ import api from '../services/api';
 import { getAvatarForUser } from '../utils/avatarHelper';
 import { useToast } from '../context/ToastContext';
 import UpgradeProModal from '../components/modals/UpgradeProModal';
+import { NotificationBell } from '../components/notifications/NotificationBell';
 
 interface Room {
   id: string;
@@ -250,14 +251,7 @@ const RoomsPage: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-4 ml-4 shrink-0">
-            <button 
-              onClick={() => addToast("You have no new notifications.", "info")}
-              aria-label="Notifications" 
-              className="relative p-2 rounded-xl text-dim hover:text-bright hover:bg-surface-100 transition-colors cursor-pointer"
-            >
-              <svg fill="none" height="20" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-surface"></span>
-            </button>
+            <NotificationBell />
             <button 
               onClick={() => addToast("SyncStream Help Center: Search for rooms or use the 'Create Room' button to create custom spaces.", "info")}
               aria-label="Help" 
