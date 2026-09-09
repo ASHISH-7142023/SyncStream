@@ -15,6 +15,7 @@ import UpgradeProModal from '../components/modals/UpgradeProModal';
 import { useToast } from '../context/ToastContext';
 import { LinkPreviewCard } from '../components/chat/LinkPreviewCard';
 import { useNotification } from '../context/NotificationContext';
+import { E2EEAttachment } from '../components/chat/E2EEAttachment';
 
 interface Member {
   id: string;
@@ -261,7 +262,14 @@ const RoomChatPage: React.FC = () => {
     if (selectedFile) {
       setUploading(true);
       try {
-        const uploadRes = await fileService.uploadFile(selectedFile);
+        let fileToUpload = selectedFile;
+        // If E2EE is enabled, encrypt the file first
+        if (room?.isDirectMessage && sharedSecret) {
+           const { cryptoService } = await import('../services/cryptoService');
+           fileToUpload = await cryptoService.encryptFile(selectedFile, sharedSecret);
+        }
+
+        const uploadRes = await fileService.uploadFile(fileToUpload);
         attachmentData = {
           messageType: selectedFile.type.startsWith('image/') ? 'IMAGE' : 'FILE',
           attachmentId: uploadRes.fileId,
@@ -879,7 +887,16 @@ const RoomChatPage: React.FC = () => {
                     
                     {msg.attachmentId && (
                       <div className="mt-2 max-w-sm rounded-lg overflow-hidden border border-white/10 bg-[#1f2233]">
-                        {msg.messageType === 'IMAGE' ? (
+                        {msg.content?.startsWith('E2EE:') && sharedSecret ? (
+                          <E2EEAttachment 
+                            attachmentId={msg.attachmentId}
+                            fileName={msg.fileName}
+                            fileSize={msg.fileSize}
+                            fileType={msg.fileType}
+                            messageType={msg.messageType}
+                            sharedSecret={sharedSecret}
+                          />
+                        ) : msg.messageType === 'IMAGE' ? (
                           <img 
                             src={fileService.getFileUrl(msg.attachmentId)} 
                             alt={msg.fileName} 

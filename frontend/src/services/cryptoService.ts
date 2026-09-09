@@ -179,5 +179,41 @@ export const cryptoService = {
     );
     const dec = new TextDecoder();
     return dec.decode(decrypted);
+  },
+
+  // 10. Encrypt File
+  async encryptFile(file: File, sharedSecret: CryptoKey): Promise<File> {
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+    const arrayBuffer = await file.arrayBuffer();
+    
+    const ciphertext = await window.crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv },
+      sharedSecret,
+      arrayBuffer
+    );
+    
+    const ciphertextArray = new Uint8Array(ciphertext);
+    const combined = new Uint8Array(iv.length + ciphertextArray.length);
+    combined.set(iv);
+    combined.set(ciphertextArray, iv.length);
+    
+    return new File([combined], file.name, { type: file.type });
+  },
+
+  // 11. Decrypt File
+  async decryptFile(encryptedBlob: Blob, sharedSecret: CryptoKey, fileType: string): Promise<Blob> {
+    const arrayBuffer = await encryptedBlob.arrayBuffer();
+    const combined = new Uint8Array(arrayBuffer);
+    
+    const iv = combined.slice(0, 12);
+    const ciphertext = combined.slice(12);
+    
+    const decrypted = await window.crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      sharedSecret,
+      ciphertext
+    );
+    
+    return new Blob([decrypted], { type: fileType });
   }
 };
