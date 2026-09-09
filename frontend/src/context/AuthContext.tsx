@@ -21,8 +21,8 @@ interface AuthContextType {
   token: string | null;
   loading: boolean;
   error: string | null;
-  login: (username: string, password: string) => Promise<void>;
-  register: (username: string, password: string, gender: string, avatar: string) => Promise<void>;
+  login: (emailOrUsername: string, password: string) => Promise<void>;
+  register: (username: string, email: string, displayName: string, password: string, gender: string, avatar: string) => Promise<void>;
   logout: () => void;
   clearError: () => void;
   updateSettings: (themeColor?: string, notificationsEnabled?: boolean) => Promise<void>;
@@ -78,11 +78,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     initializeAuth();
   }, []);
 
-  const login = async (username: string, password: string) => {
+  const login = async (emailOrUsername: string, password: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.post('/api/auth/login', { username, password });
+      const response = await api.post('/api/auth/login', { username: emailOrUsername, password });
       const { token: receivedToken, userId, username: resUsername, gender, avatar, themeColor, notificationsEnabled, publicKey, encryptedPrivateKey } = response.data;
       
       localStorage.setItem('token', receivedToken);
@@ -123,7 +123,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const register = async (username: string, password: string, gender: string, avatar: string) => {
+  const register = async (username: string, email: string, displayName: string, password: string, gender: string, avatar: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -134,7 +134,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const encryptedPrivKeyBase64 = await cryptoService.wrapPrivateKey(keyPair.privateKey, wrappingKey);
 
       const response = await api.post('/api/auth/register', { 
-        username, password, gender, avatar,
+        username, email, displayName, password, gender, avatar,
         publicKey: pubKeyBase64,
         encryptedPrivateKey: encryptedPrivKeyBase64
       });

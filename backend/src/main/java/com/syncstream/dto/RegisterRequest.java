@@ -10,6 +10,13 @@ public class RegisterRequest {
     @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
     private String username;
 
+    @NotBlank(message = "Email cannot be blank")
+    @jakarta.validation.constraints.Email(message = "Email should be valid")
+    private String email;
+
+    @NotBlank(message = "Display name cannot be blank")
+    private String displayName;
+
     @NotBlank(message = "Password cannot be blank")
     @Size(min = 6, max = 100, message = "Password must be at least 6 characters")
     private String password;

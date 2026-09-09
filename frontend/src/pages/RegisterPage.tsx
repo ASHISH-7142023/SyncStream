@@ -63,7 +63,7 @@ const RegisterPage: React.FC = () => {
       const avatars = getAvatarsForGender(gender);
       const defaultAvatar = avatars[Math.floor(Math.random() * avatars.length)].emoji;
       
-      await register(username, password, gender, defaultAvatar);
+      await register(username, email, displayName, password, gender, defaultAvatar);
       // Automatically redirect to login or dashboard
       navigate('/dashboard');
     } catch (error: any) {

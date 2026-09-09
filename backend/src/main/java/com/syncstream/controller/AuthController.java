@@ -55,9 +55,16 @@ public class AuthController {
             response.put("message", "Username is already taken!");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Email is already registered!");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
 
         User user = User.builder()
                 .username(registerRequest.getUsername())
+                .email(registerRequest.getEmail())
+                .displayName(registerRequest.getDisplayName())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .createdAt(Instant.now())
                 .gender(registerRequest.getGender())
@@ -108,6 +115,8 @@ public class AuthController {
         Map<String, Object> response = new HashMap<>();
         response.put("id", user.getId());
         response.put("username", user.getUsername());
+        response.put("email", user.getEmail());
+        response.put("displayName", user.getDisplayName());
         response.put("createdAt", user.getCreatedAt());
         response.put("gender", user.getGender());
         response.put("avatar", user.getAvatar());
