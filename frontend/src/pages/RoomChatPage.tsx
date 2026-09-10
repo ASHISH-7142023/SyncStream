@@ -105,6 +105,10 @@ const RoomChatPage: React.FC = () => {
   const [selectedProfileUsername, setSelectedProfileUsername] = useState<string | null>(null);
   const [profilePopoverPos, setProfilePopoverPos] = useState({ x: 0, y: 0 });
 
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<BlobPart[]>([]);
+
   const [decryptedMessages, setDecryptedMessages] = useState<Record<string, string>>({});
   const [otherUserPubKey, setOtherUserPubKey] = useState<CryptoKey | null>(null);
   const [sharedSecret, setSharedSecret] = useState<CryptoKey | null>(null);
@@ -275,9 +279,10 @@ const RoomChatPage: React.FC = () => {
   }, [roomId, hasMoreMessages, loadMoreMessages]);
 
   const handleSendMessage = async (e?: React.FormEvent | React.KeyboardEvent) => {
-    if (e) e.preventDefault();
-    if (!roomId) return;
-    if (!inputText.trim() && !selectedFile) return;
+    if (e) {
+      e.preventDefault();
+    }
+    if ((!inputText.trim() && !selectedFile) || !roomId) return;
 
     let attachmentData = null;
     
@@ -293,7 +298,7 @@ const RoomChatPage: React.FC = () => {
 
         const uploadRes = await fileService.uploadFile(fileToUpload);
         attachmentData = {
-          messageType: selectedFile.type.startsWith('image/') ? 'IMAGE' : 'FILE',
+          messageType: selectedFile.type.startsWith('image/') ? 'IMAGE' : selectedFile.type.startsWith('audio/') ? 'AUDIO' : 'FILE',
           attachmentId: uploadRes.fileId,
           fileName: uploadRes.fileName,
           fileSize: uploadRes.fileSize,
@@ -363,6 +368,49 @@ const RoomChatPage: React.FC = () => {
     const existingUsers = msg.reactions?.[emoji] || [];
     const isActive = existingUsers.includes(user.username);
     sendReaction(roomId, msg.id || msg.sequenceNumber.toString(), emoji, !isActive);
+  };
+
+  const handleStartRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          audioChunksRef.current.push(e.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const audioFile = new File([audioBlob], `voice-message-${Date.now()}.webm`, { type: 'audio/webm' });
+        setSelectedFile(audioFile);
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (err) {
+      console.error('Microphone access denied or error:', err);
+      addToast('Microphone access denied', 'error');
+    }
+  };
+
+  const handleStopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      setIsRecording(false);
+    }
+  };
+
+  const handleMicClick = () => {
+    if (isRecording) {
+      handleStopRecording();
+    } else {
+      handleStartRecording();
+    }
   };
 
   const memberList: Member[] = (room?.members || []).map((userId) => {
@@ -977,6 +1025,17 @@ const RoomChatPage: React.FC = () => {
                             alt={msg.fileName} 
                             className="w-full h-auto max-h-60 object-contain bg-black/20"
                           />
+                        ) : msg.messageType === 'AUDIO' ? (
+                          <div className="p-3 bg-white/5 rounded-lg flex flex-col gap-2 min-w-[250px]">
+                            <div className="flex items-center gap-2 text-xs text-brand-400 font-semibold mb-1">
+                              <i className="fa-solid fa-microphone"></i> Voice Message
+                            </div>
+                            <audio 
+                              controls 
+                              src={fileService.getFileUrl(msg.attachmentId)}
+                              className="w-full h-8 outline-none [&::-webkit-media-controls-panel]:bg-white/10 [&::-webkit-media-controls-current-time-display]:text-white [&::-webkit-media-controls-time-remaining-display]:text-white"
+                            />
+                          </div>
                         ) : (
                           <a 
                             href={fileService.getFileUrl(msg.attachmentId)} 
@@ -1338,6 +1397,14 @@ const RoomChatPage: React.FC = () => {
                 >
                   <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
                 </button>
+                <button 
+                  type="button" 
+                  onClick={handleMicClick}
+                  className={`p-2 rounded-lg transition-colors cursor-pointer ${isRecording ? 'text-red-500 bg-red-500/10 animate-pulse' : 'hover:bg-white/5 text-text-muted'}`}
+                  title={isRecording ? 'Stop Recording' : 'Record Voice Message'}
+                >
+                  <i className="fa-solid fa-microphone text-lg"></i>
+                </button>
                 <button type="submit" disabled={(!inputText.trim() && !selectedFile) || uploading} className="bg-brand-600 hover:bg-brand-500 text-white p-2 rounded-xl transition-colors shadow-lg shadow-brand-500/20 disabled:opacity-40">
                   {uploading ? (
                     <i className="fa-solid fa-spinner fa-spin"></i>
@@ -1355,13 +1422,15 @@ const RoomChatPage: React.FC = () => {
       {/* Right Sidebar */}
       {showMembersSidebar && (
         selectedThreadMsg ? (
-          <ThreadPanel 
-            roomId={roomId || ''} 
-            parentMessage={selectedThreadMsg} 
-            onClose={() => setSelectedThreadMsg(null)} 
-          />
+          <div className="fixed inset-y-0 right-0 z-40 w-80 md:relative md:z-0 shadow-2xl md:shadow-none bg-[#0f111a] border-l border-white/5 flex flex-col transition-transform duration-300">
+            <ThreadPanel 
+              roomId={roomId || ''} 
+              parentMessage={selectedThreadMsg} 
+              onClose={() => setSelectedThreadMsg(null)} 
+            />
+          </div>
         ) : (
-          <aside className="w-72 bg-[#151723] flex flex-col border-l border-white/5 flex-shrink-0 text-left font-sans">
+          <aside className="fixed inset-y-0 right-0 z-40 w-72 md:relative md:z-0 bg-[#151723] flex flex-col border-l border-white/5 flex-shrink-0 text-left font-sans shadow-2xl md:shadow-none transition-transform duration-300">
             <div className="h-16 flex items-center justify-between px-4 border-b border-white/5 shrink-0">
               <h2 className="font-medium text-white flex items-center gap-1.5">
                 Members <span className="text-text-muted text-sm font-normal">({memberList.length})</span>
@@ -1627,7 +1696,7 @@ const RoomChatPage: React.FC = () => {
 
       {/* Thread Panel */}
       {activeThreadMsg && (
-        <aside className="w-80 flex-shrink-0 bg-[#0f111a] border-l border-white/5 flex flex-col z-20 shadow-2xl relative">
+        <aside className="fixed inset-y-0 right-0 z-40 w-80 md:relative md:z-0 md:flex-shrink-0 bg-[#0f111a] border-l border-white/5 flex flex-col shadow-2xl transition-transform duration-300">
           <ThreadPanel 
             roomId={roomId || ''}
             parentMessage={activeThreadMsg}

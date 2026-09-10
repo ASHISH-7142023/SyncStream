@@ -6,5 +6,6 @@ public enum MessageType {
     LEAVE,
     SYSTEM,
     FILE,
-    IMAGE
+    IMAGE,
+    AUDIO
 }

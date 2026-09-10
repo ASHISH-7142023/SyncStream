@@ -28,3 +28,12 @@ vapid:
   public.key: ${VAPID_PUBLIC_KEY:BOoU0qG7Mw0InkvODGuuRSOthEZ6G1TVL0gCDKElH4_8abP9pBORf5xqkrU-gI7ZWr7QRtByWWECr0YPeHIZP_Q}
   private.key: ${VAPID_PRIVATE_KEY:cAiV-rW4DFqb-roO4UWUEU5d80wJKvkQ8JxWdjcVU5Y}
   subject: mailto:admin@syncstream.com
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+  endpoint:
+    health:
+      show-details: always
