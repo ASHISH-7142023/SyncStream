@@ -6,6 +6,8 @@ import { registerAndSubscribePush } from '../services/webPushService';
 interface User {
   id: string;
   username: string;
+  email?: string;
+  displayName?: string;
   createdAt?: string;
   gender?: string;
   avatar?: string;

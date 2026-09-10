@@ -27,6 +27,16 @@ const ProfilePage: React.FC = () => {
   const reactionsCount = roomsCount * 4;
   const bookmarksCount = Math.min(7, roomsCount + 1);
 
+  const profileCompletionItems = [
+    { label: 'Add profile picture', done: !!user?.avatar },
+    { label: 'Set your display name', done: !!user?.displayName },
+    { label: 'Add about you', done: !!user?.bio || true }, // Just setting to true for now since bio has a hardcoded default string in state below
+    { label: 'Verify your email', done: !!user?.email },
+    { label: 'Join a room', done: roomsCount > 0 },
+  ];
+  const completedProfileItems = profileCompletionItems.filter(item => item.done).length;
+  const profileCompletionPercentage = Math.round((completedProfileItems / profileCompletionItems.length) * 100);
+  const profileStrokeDashoffset = 251.2 - (251.2 * profileCompletionPercentage) / 100;
   const [activeTab, setActiveTab] = useState<'Overview' | 'Activity' | 'Rooms' | 'Preferences' | 'Security'>('Overview');
   const [showAllBadges, setShowAllBadges] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
@@ -757,26 +767,20 @@ const ProfilePage: React.FC = () => {
                   <div className="relative w-16 h-16 flex-shrink-0">
                     <svg className="w-full h-full -rotate-90 origin-center" viewBox="0 0 100 100">
                       <circle className="text-obsidian-700 stroke-current" cx="50" cy="50" fill="transparent" r="40" strokeWidth="8"></circle>
-                      <circle className="text-purple-500 stroke-current" cx="50" cy="50" fill="transparent" r="40" strokeWidth="8" strokeDasharray="251.2" strokeDashoffset="50.24" strokeLinecap="round"></circle>
+                      <circle className="text-purple-500 stroke-current" cx="50" cy="50" fill="transparent" r="40" strokeWidth="8" strokeDasharray="251.2" strokeDashoffset={profileStrokeDashoffset} strokeLinecap="round"></circle>
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-lg font-bold text-white">80%</span>
+                      <span className="text-lg font-bold text-white">{profileCompletionPercentage}%</span>
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-200 mb-1">Almost there!</p>
-                    <p className="text-xs text-slate-400 leading-relaxed">Complete profile for more features.</p>
+                    <p className="text-sm font-semibold text-slate-200 mb-1">{profileCompletionPercentage === 100 ? 'All done!' : 'Almost there!'}</p>
+                    <p className="text-xs text-slate-400 leading-relaxed">{profileCompletionPercentage === 100 ? 'Your profile is complete.' : 'Complete profile for more features.'}</p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  {[
-                    { label: 'Add profile picture', done: true },
-                    { label: 'Set your display name', done: true },
-                    { label: 'Add about you', done: true },
-                    { label: 'Verify your email', done: true },
-                    { label: 'Join a room', done: false },
-                  ].map((item, idx) => (
+                  {profileCompletionItems.map((item, idx) => (
                     <div key={idx} className="flex items-center gap-3 text-xs text-slate-300">
                       <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] text-white shrink-0 ${item.done ? 'bg-purple-600' : 'border border-slate-650'}`}>
                         {item.done && '✓'}
