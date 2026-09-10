@@ -195,12 +195,16 @@ public class MessageService {
                 .map(com.syncstream.model.Room::getId)
                 .collect(java.util.stream.Collectors.toList());
         
+        System.out.println("Searching global messages. Keyword: " + keyword + ", UserId: " + userId + ", RoomIds: " + roomIds);
+        
         if (roomIds.isEmpty()) {
             return Page.empty(pageRequest);
         }
         
         // Use text search query across all authorized rooms, sorted by score/createdAt
-        return messageRepository.searchMessagesInRooms(roomIds, keyword, pageRequest);
+        Page<Message> results = messageRepository.searchMessagesInRooms(roomIds, keyword, pageRequest);
+        System.out.println("Search results count: " + results.getTotalElements());
+        return results;
     }
 
     public List<Message> getPinnedMessages(String roomId) {

@@ -28,7 +28,7 @@ public class User implements UserDetails {
     @Indexed(unique = true)
     private String username;
 
-    @Indexed(unique = true)
+    @Indexed(unique = true, sparse = true)
     private String email;
 
     private String displayName;

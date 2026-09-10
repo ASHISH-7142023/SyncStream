@@ -90,7 +90,7 @@ public class RoomService {
                     Room room = Room.builder()
                             .name("DM-" + userId1 + "-" + userId2)
                             .isDirectMessage(true)
-                            .members(new HashSet<>(List.of(userId1, userId2)))
+                            .members(new HashSet<>(java.util.Arrays.asList(userId1, userId2)))
                             .createdAt(Instant.now())
                             .build();
                     return roomRepository.save(room);
