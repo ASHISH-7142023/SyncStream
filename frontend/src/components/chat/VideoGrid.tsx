@@ -6,8 +6,10 @@ interface VideoGridProps {
   remoteStreams: Record<string, MediaStream>;
   isMicOn: boolean;
   isVideoOn: boolean;
+  isScreenSharing: boolean;
   toggleMic: () => void;
   toggleVideo: () => void;
+  toggleScreenShare: () => void;
   leaveCall: () => void;
   presenceUsers: Record<string, any>;
   currentUsername: string;
@@ -60,8 +62,10 @@ export const VideoGrid: React.FC<VideoGridProps> = ({
   remoteStreams,
   isMicOn,
   isVideoOn,
+  isScreenSharing,
   toggleMic,
   toggleVideo,
+  toggleScreenShare,
   leaveCall,
   presenceUsers,
   currentUsername
@@ -101,6 +105,16 @@ export const VideoGrid: React.FC<VideoGridProps> = ({
             title={isVideoOn ? 'Turn off camera' : 'Turn on camera'}
           >
             <i className={`fa-solid ${isVideoOn ? 'fa-video' : 'fa-video-slash'}`}></i>
+          </button>
+          
+          <button
+            onClick={toggleScreenShare}
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+              isScreenSharing ? 'bg-[#8b5cf6] text-white hover:bg-[#7c3aed]' : 'bg-white/10 hover:bg-white/20 text-white'
+            }`}
+            title={isScreenSharing ? 'Stop screen sharing' : 'Share screen'}
+          >
+            <i className="fa-solid fa-desktop"></i>
           </button>
           
           <button

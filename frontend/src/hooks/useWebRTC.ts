@@ -22,6 +22,7 @@ export const useWebRTC = ({ roomId, userId, username, getStompClient, sendWebRtc
   const [remoteStreams, setRemoteStreams] = useState<Record<string, MediaStream>>({});
   const [isMicOn, setIsMicOn] = useState(true);
   const [isVideoOn, setIsVideoOn] = useState(true);
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [inCall, setInCall] = useState(false);
 
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -107,6 +108,73 @@ export const useWebRTC = ({ roomId, userId, username, getStompClient, sendWebRtc
         videoTrack.enabled = !videoTrack.enabled;
         setIsVideoOn(videoTrack.enabled);
       }
+    }
+  };
+
+  const toggleScreenShare = async () => {
+    try {
+      if (!isScreenSharing) {
+        // Start screen sharing
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        const screenTrack = screenStream.getVideoTracks()[0];
+        
+        // Listen for user stopping sharing via browser UI
+        screenTrack.onended = () => {
+          stopScreenShare();
+        };
+
+        if (localStreamRef.current) {
+          // Replace track in peer connections
+          const oldVideoTrack = localStreamRef.current.getVideoTracks()[0];
+          Object.values(peersRef.current).forEach(peer => {
+            const sender = peer.getSenders().find(s => s.track?.kind === 'video');
+            if (sender) sender.replaceTrack(screenTrack);
+          });
+
+          // Replace track in local stream
+          localStreamRef.current.removeTrack(oldVideoTrack);
+          localStreamRef.current.addTrack(screenTrack);
+          oldVideoTrack.stop();
+          
+          setLocalStream(new MediaStream(localStreamRef.current.getTracks()));
+        }
+        setIsScreenSharing(true);
+      } else {
+        stopScreenShare();
+      }
+    } catch (err) {
+      console.error('Failed to toggle screen share', err);
+    }
+  };
+
+  const stopScreenShare = async () => {
+    try {
+      // Revert to camera
+      const cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const cameraTrack = cameraStream.getVideoTracks()[0];
+
+      if (localStreamRef.current) {
+        const oldScreenTrack = localStreamRef.current.getVideoTracks()[0];
+        
+        // Replace track in peer connections
+        Object.values(peersRef.current).forEach(peer => {
+          const sender = peer.getSenders().find(s => s.track?.kind === 'video');
+          if (sender) sender.replaceTrack(cameraTrack);
+        });
+
+        // Replace track in local stream
+        localStreamRef.current.removeTrack(oldScreenTrack);
+        localStreamRef.current.addTrack(cameraTrack);
+        oldScreenTrack.stop();
+
+        setLocalStream(new MediaStream(localStreamRef.current.getTracks()));
+        
+        // Update state based on our toggles
+        cameraTrack.enabled = isVideoOn;
+      }
+      setIsScreenSharing(false);
+    } catch (err) {
+      console.error('Failed to revert to camera', err);
     }
   };
 
@@ -241,9 +309,11 @@ export const useWebRTC = ({ roomId, userId, username, getStompClient, sendWebRtc
     remoteStreams,
     isMicOn,
     isVideoOn,
+    isScreenSharing,
     startCall,
     leaveCall,
     toggleMic,
     toggleVideo,
+    toggleScreenShare,
   };
 };

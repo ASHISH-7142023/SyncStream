@@ -46,7 +46,7 @@ const RoomChatPage: React.FC = () => {
   const { user, logout, privateKey } = useAuth();
   const { 
     connectionStatus, messages, typingUsers, presenceUsers, readReceipts, unreadRoomCounts,
-    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, updateMessage, sendReadReceipt, getStompClient, sendWebRtcSignal, editMessage, deleteMessage
+    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, hasMoreMessages, loadMoreMessages, updateMessage, sendReadReceipt, getStompClient, sendWebRtcSignal, editMessage, deleteMessage
   } = useSocket();
   const { notifications, markAsRead: markNotificationAsRead } = useNotification();
 
@@ -60,6 +60,8 @@ const RoomChatPage: React.FC = () => {
     leaveCall,
     toggleMic,
     toggleVideo,
+    toggleScreenShare,
+    isScreenSharing,
   } = useWebRTC({
     roomId: roomId || '',
     userId: user?.id || '',
@@ -70,6 +72,8 @@ const RoomChatPage: React.FC = () => {
 
   const { addToast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const feedEndRef = useRef<HTMLDivElement | null>(null);
+  const feedStartRef = useRef<HTMLDivElement | null>(null);
 
   const [room, setRoom] = useState<RoomDetails | null>(null);
   const [inputText, setInputText] = useState('');
@@ -127,7 +131,6 @@ const RoomChatPage: React.FC = () => {
     setActiveThreadMsg(msg);
   };
 
-  const feedEndRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<any>(null);
   const isTypingRef = useRef(false);
 
@@ -248,14 +251,28 @@ const RoomChatPage: React.FC = () => {
           roomMentions.forEach(n => markNotificationAsRead(n.id));
         }
       },
+      { threshold: 1.0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [roomId, roomMessages.length, user, readReceipts, notifications]);
+
+  // Infinite Scroll: Detect when the feed start is visible to load older messages
+  useEffect(() => {
+    const el = feedStartRef.current;
+    if (!el || !roomId || !hasMoreMessages[roomId]) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          loadMoreMessages(roomId);
+        }
+      },
       { threshold: 0.1 }
     );
-
     observer.observe(el);
-    return () => {
-      observer.disconnect();
-    };
-  }, [roomId, roomMessages, readReceipts, user, sendReadReceipt]);
+    return () => observer.disconnect();
+  }, [roomId, hasMoreMessages, loadMoreMessages]);
 
   const handleSendMessage = async (e?: React.FormEvent | React.KeyboardEvent) => {
     if (e) e.preventDefault();
@@ -726,8 +743,10 @@ const RoomChatPage: React.FC = () => {
             remoteStreams={remoteStreams}
             isMicOn={isMicOn}
             isVideoOn={isVideoOn}
+            isScreenSharing={isScreenSharing}
             toggleMic={toggleMic}
             toggleVideo={toggleVideo}
+            toggleScreenShare={toggleScreenShare}
             leaveCall={leaveCall}
             presenceUsers={presenceUsers}
             currentUsername={user?.username || 'You'}
@@ -824,6 +843,8 @@ const RoomChatPage: React.FC = () => {
             </div>
           ) : null}
 
+          <div ref={feedStartRef} className="w-full h-1 shrink-0" />
+          
           {roomMessages.map((msg: any, idx: number) => {
             const isMention = msg.content?.includes(`@${user?.username}`);
             return (
