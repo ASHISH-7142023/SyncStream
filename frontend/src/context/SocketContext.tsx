@@ -13,7 +13,7 @@ export interface ChatMessage {
   senderId: string;
   senderName: string;
   content: string;
-  messageType: 'TEXT' | 'JOIN' | 'LEAVE' | 'SYSTEM' | 'FILE' | 'IMAGE';
+  messageType: 'TEXT' | 'JOIN' | 'LEAVE' | 'SYSTEM' | 'FILE' | 'IMAGE' | 'AUDIO' | 'POLL';
   createdAt: string;
   sequenceNumber: number;
   parentId?: string;
@@ -29,6 +29,12 @@ export interface ChatMessage {
   editedAt?: string;
   deleted?: boolean;
   linkPreviews?: any[];
+  pollData?: {
+    question: string;
+    options: string[];
+    votes: Record<string, string[]>; // mapping index as string to array of usernames/userIds
+    multipleChoice: boolean;
+  };
 }
 
 export interface WebRtcSignal {
@@ -71,6 +77,7 @@ interface SocketContextType {
   sendWebRtcSignal: (signal: WebRtcSignal) => void;
   editMessage: (roomId: string, messageId: string, content: string) => void;
   deleteMessage: (roomId: string, messageId: string) => void;
+  sendPollVote: (roomId: string, messageId: string, optionIndex: number) => void;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -493,6 +500,15 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     });
   };
 
+  const sendPollVote = (roomId: string, messageId: string, optionIndex: number) => {
+    if (!clientRef.current || connectionStatus !== 'CONNECTED') return;
+
+    clientRef.current.publish({
+      destination: `/app/rooms/${roomId}/polls/vote`,
+      body: JSON.stringify({ messageId, optionIndex }),
+    });
+  };
+
   const editMessage = (roomId: string, messageId: string, content: string) => {
     if (!clientRef.current || connectionStatus !== 'CONNECTED') return;
 
@@ -643,7 +659,8 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         sendWebRtcSignal,
         editMessage,
         deleteMessage,
-        unreadRoomCounts
+        unreadRoomCounts,
+        sendPollVote
       }}
     >
       {children}

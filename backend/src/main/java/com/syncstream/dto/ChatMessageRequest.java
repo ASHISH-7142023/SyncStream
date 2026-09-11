@@ -13,4 +13,6 @@ public class ChatMessageRequest {
     private String fileName;
     private Long fileSize;
     private String fileType;
+    
+    private com.syncstream.model.PollData pollData;
 }

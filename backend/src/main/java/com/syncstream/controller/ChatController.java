@@ -222,6 +222,32 @@ public class ChatController {
         redisMessagePublisher.publish("syncstream:read_receipts:" + roomId, receipt);
     }
 
+    @MessageMapping("/rooms/{roomId}/polls/vote")
+    public void handlePollVote(
+            @DestinationVariable String roomId,
+            @Payload Map<String, Object> payload,
+            Principal principal) {
+        
+        User user = getUserFromPrincipal(principal);
+        if (user == null || !roomService.isMember(roomId, user.getId())) {
+            return;
+        }
+
+        String messageId = (String) payload.get("messageId");
+        Integer optionIndex = (Integer) payload.get("optionIndex");
+
+        if (messageId == null || optionIndex == null) {
+            return;
+        }
+
+        try {
+            Message updatedMessage = messageService.votePoll(messageId, optionIndex, user.getId());
+            redisMessagePublisher.publish("syncstream:room:" + roomId, updatedMessage);
+        } catch (Exception e) {
+            log.error("Failed to vote on poll", e);
+        }
+    }
+
     private User getUserFromPrincipal(Principal principal) {
         if (principal instanceof UsernamePasswordAuthenticationToken) {
             return (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();

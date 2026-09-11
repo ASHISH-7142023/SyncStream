@@ -71,6 +71,7 @@ public class MessageService {
                 .fileType(request.getFileType())
                 .pinned(false)
                 .reactions(new java.util.HashMap<>())
+                .pollData(request.getPollData())
                 .build();
 
         Message savedMessage = messageRepository.save(message);
@@ -242,6 +243,45 @@ public class MessageService {
             message.setAttachmentId(null); // Clear attachments
             message.setFileName(null);
             message.setReactions(new java.util.HashMap<>()); // Clear reactions
+            return messageRepository.save(message);
+        }).orElseThrow(() -> new IllegalArgumentException("Message not found"));
+    }
+
+    public Message votePoll(String messageId, int optionIndex, String userId) {
+        return messageRepository.findById(messageId).map(message -> {
+            if (message.getMessageType() != MessageType.POLL || message.getPollData() == null) {
+                throw new IllegalArgumentException("Message is not a poll");
+            }
+            
+            com.syncstream.model.PollData pollData = message.getPollData();
+            if (optionIndex < 0 || optionIndex >= pollData.getOptions().size()) {
+                throw new IllegalArgumentException("Invalid option index");
+            }
+
+            java.util.Map<Integer, List<String>> votes = pollData.getVotes();
+            if (votes == null) {
+                votes = new java.util.HashMap<>();
+                pollData.setVotes(votes);
+            }
+
+            // If not multiple choice, remove the user's vote from any other option first
+            if (!pollData.isMultipleChoice()) {
+                for (java.util.Map.Entry<Integer, List<String>> entry : votes.entrySet()) {
+                    if (entry.getKey() != optionIndex) {
+                        entry.getValue().remove(userId);
+                    }
+                }
+            }
+
+            // Toggle the vote for this option
+            List<String> optionVotes = votes.getOrDefault(optionIndex, new java.util.ArrayList<>());
+            if (optionVotes.contains(userId)) {
+                optionVotes.remove(userId);
+            } else {
+                optionVotes.add(userId);
+            }
+            votes.put(optionIndex, optionVotes);
+
             return messageRepository.save(message);
         }).orElseThrow(() -> new IllegalArgumentException("Message not found"));
     }

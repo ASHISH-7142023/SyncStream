@@ -16,6 +16,8 @@ import { useToast } from '../context/ToastContext';
 import { LinkPreviewCard } from '../components/chat/LinkPreviewCard';
 import { useNotification } from '../context/NotificationContext';
 import { E2EEAttachment } from '../components/chat/E2EEAttachment';
+import CreatePollModal from '../components/modals/CreatePollModal';
+import { useLocation } from 'react-router-dom';
 
 interface Member {
   id: string;
@@ -46,7 +48,7 @@ const RoomChatPage: React.FC = () => {
   const { user, logout, privateKey } = useAuth();
   const { 
     connectionStatus, messages, typingUsers, presenceUsers, readReceipts, unreadRoomCounts,
-    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, hasMoreMessages, loadMoreMessages, updateMessage, sendReadReceipt, getStompClient, sendWebRtcSignal, editMessage, deleteMessage
+    joinRoom, leaveRoom, sendMessage, sendReaction, sendTyping, loadMessages, hasMoreMessages, loadMoreMessages, updateMessage, sendReadReceipt, getStompClient, sendWebRtcSignal, editMessage, deleteMessage, sendPollVote
   } = useSocket();
   const { notifications, markAsRead: markNotificationAsRead } = useNotification();
 
@@ -79,6 +81,10 @@ const RoomChatPage: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [loadingRoom, setLoadingRoom] = useState(true);
   const [pinnedClosed, setPinnedClosed] = useState(false);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [isPollModalOpen, setIsPollModalOpen] = useState(false);
   const [showMembersSidebar, setShowMembersSidebar] = useState(true);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -961,6 +967,52 @@ const RoomChatPage: React.FC = () => {
                           }} className="text-[#a78bfa] hover:underline">save</button>
                         </div>
                       </div>
+                    ) : msg.messageType === 'POLL' && msg.pollData ? (
+                      <div className="bg-[#1f2233] border border-white/10 rounded-2xl p-5 mt-1 min-w-[320px] max-w-md w-full text-left relative overflow-hidden">
+                        {/* Poll Header */}
+                        <div className="flex items-center gap-2 mb-4 text-[#a78bfa] text-xs font-semibold uppercase tracking-wider">
+                          <i className="fa-solid fa-chart-simple"></i>
+                          Poll {msg.pollData.multipleChoice ? '(Multiple Choice)' : ''}
+                        </div>
+                        <h4 className="text-white text-base font-medium mb-5">{msg.pollData.question}</h4>
+                        
+                        {/* Options */}
+                        <div className="space-y-3">
+                          {msg.pollData.options.map((option: string, index: number) => {
+                            const optionVotes = msg.pollData?.votes?.[index.toString()] || msg.pollData?.votes?.[index] || [];
+                            const totalVotes = Object.values(msg.pollData?.votes || {}).reduce((acc: number, arr: any) => acc + (arr?.length || 0), 0) as number;
+                            const percentage = totalVotes === 0 ? 0 : Math.round((optionVotes.length / totalVotes) * 100);
+                            const hasVoted = optionVotes.includes(user?.id || user?.username || '');
+
+                            return (
+                              <div key={index} className="relative group cursor-pointer" onClick={() => roomId && sendPollVote(roomId, msg.id, index)}>
+                                <div className={`relative z-10 flex items-center justify-between p-3 rounded-xl border transition-all ${hasVoted ? 'border-[#8b5cf6] bg-[#8b5cf6]/10' : 'border-white/10 hover:border-white/20 bg-black/20'}`}>
+                                  <div className="flex items-center gap-3">
+                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${hasVoted ? 'border-[#8b5cf6] bg-[#8b5cf6]' : 'border-white/20'}`}>
+                                      {hasVoted && <i className="fa-solid fa-check text-white text-[10px]"></i>}
+                                    </div>
+                                    <span className={`text-sm font-medium ${hasVoted ? 'text-white' : 'text-gray-300'}`}>{option}</span>
+                                  </div>
+                                  {totalVotes > 0 && (
+                                    <span className="text-xs font-bold text-white/70">{percentage}%</span>
+                                  )}
+                                </div>
+                                
+                                {/* Progress Bar */}
+                                {totalVotes > 0 && (
+                                  <div 
+                                    className={`absolute left-0 top-0 bottom-0 rounded-xl transition-all duration-500 ease-out opacity-20 ${hasVoted ? 'bg-[#8b5cf6]' : 'bg-white/30'}`}
+                                    style={{ width: `${percentage}%` }}
+                                  />
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <div className="mt-4 text-xs text-text-muted flex justify-between items-center">
+                          <span>{Object.values(msg.pollData?.votes || {}).reduce((acc: number, arr: any) => acc + (arr?.length || 0), 0) as number} total votes</span>
+                        </div>
+                      </div>
                     ) : (
                       <div className={`text-[15px] leading-relaxed text-gray-200 prose prose-invert max-w-none prose-p:my-1 prose-a:text-[#a78bfa] prose-code:text-[#a78bfa] prose-code:bg-[#8b5cf6]/10 prose-code:px-1 prose-code:rounded prose-pre:bg-[#1f2233] prose-pre:border prose-pre:border-white/10 ${isMention ? 'bg-[#7c3aed]/15 border border-[#7c3aed]/20 rounded px-2.5 py-1.5 w-fit my-1' : ''}`}>
                         {msg.content?.startsWith('E2EE:') ? (
@@ -1394,8 +1446,17 @@ const RoomChatPage: React.FC = () => {
                   onClick={() => fileInputRef.current?.click()}
                   type="button" 
                   className="p-2 hover:bg-white/5 rounded-lg transition-colors text-text-muted cursor-pointer"
+                  title="Attach file"
                 >
                   <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                </button>
+                <button 
+                  onClick={() => setIsPollModalOpen(true)}
+                  type="button" 
+                  className="p-2 hover:bg-white/5 rounded-lg transition-colors text-text-muted cursor-pointer"
+                  title="Create Poll"
+                >
+                  <i className="fa-solid fa-chart-simple text-[16px]"></i>
                 </button>
                 <button 
                   type="button" 
@@ -1416,7 +1477,12 @@ const RoomChatPage: React.FC = () => {
             </div>
           </form>
         </div>
-
+        
+        <CreatePollModal 
+          roomId={roomId || ''} 
+          isOpen={isPollModalOpen} 
+          onClose={() => setIsPollModalOpen(false)} 
+        />
       </main>
 
       {/* Right Sidebar */}
