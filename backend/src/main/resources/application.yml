@@ -25,8 +25,8 @@ app:
     allowed-origins: ${FRONTEND_URL:http://localhost:5173}
 
 vapid:
-  public.key: ${VAPID_PUBLIC_KEY:BOoU0qG7Mw0InkvODGuuRSOthEZ6G1TVL0gCDKElH4_8abP9pBORf5xqkrU-gI7ZWr7QRtByWWECr0YPeHIZP_Q}
-  private.key: ${VAPID_PRIVATE_KEY:cAiV-rW4DFqb-roO4UWUEU5d80wJKvkQ8JxWdjcVU5Y}
+  public.key: ${VAPID_PUBLIC_KEY:}
+  private.key: ${VAPID_PRIVATE_KEY:}
   subject: mailto:admin@syncstream.com
 
 management:
