@@ -17,7 +17,6 @@ import { LinkPreviewCard } from '../components/chat/LinkPreviewCard';
 import { useNotification } from '../context/NotificationContext';
 import { E2EEAttachment } from '../components/chat/E2EEAttachment';
 import CreatePollModal from '../components/modals/CreatePollModal';
-import { useLocation } from 'react-router-dom';
 
 interface Member {
   id: string;
@@ -81,9 +80,6 @@ const RoomChatPage: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [loadingRoom, setLoadingRoom] = useState(true);
   const [pinnedClosed, setPinnedClosed] = useState(false);
-  const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [loadingHistory, setLoadingHistory] = useState(false);
   const [isPollModalOpen, setIsPollModalOpen] = useState(false);
   const [showMembersSidebar, setShowMembersSidebar] = useState(true);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);

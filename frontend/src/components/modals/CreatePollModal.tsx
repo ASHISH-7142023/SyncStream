@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useSocket } from '../../context/SocketContext';
-import { useAuth } from '../../context/AuthContext';
 
 interface CreatePollModalProps {
   roomId: string;
@@ -10,7 +9,6 @@ interface CreatePollModalProps {
 
 const CreatePollModal: React.FC<CreatePollModalProps> = ({ roomId, isOpen, onClose }) => {
   const { sendMessage } = useSocket();
-  const { user } = useAuth();
   
   const [question, setQuestion] = useState('');
   const [options, setOptions] = useState<string[]>(['', '']);
