@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import api from '../services/api';
 import CreateRoomModal from '../components/modals/CreateRoomModal';
 import { VideoCall } from '../components/VideoCall';
@@ -15,6 +16,7 @@ interface Room {
 
 const AppLayout: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
@@ -62,7 +64,18 @@ const AppLayout: React.FC = () => {
 
   return (
     <div className="h-screen w-full overflow-hidden bg-[#0a0a0b] text-[#e2e2e5]">
-      <Outlet context={{ rooms, fetchRooms, onOpenCreateModal: () => setIsCreateModalOpen(true) }} />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="h-full w-full"
+        >
+          <Outlet context={{ rooms, fetchRooms, onOpenCreateModal: () => setIsCreateModalOpen(true) }} />
+        </motion.div>
+      </AnimatePresence>
 
       {/* Interactive 4-step Room Creation Wizard Modal */}
       <CreateRoomModal
