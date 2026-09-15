@@ -18,7 +18,7 @@ interface Room {
 
 const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
-  const { unreadRoomCounts } = useSocket();
+  const { unreadRoomCounts, presenceUsers } = useSocket();
   const { notifications } = useNotification();
   const navigate = useNavigate();
   const { rooms, onOpenCreateModal } = useOutletContext<{ 
@@ -346,17 +346,40 @@ const DashboardPage: React.FC = () => {
             
             <div className="flex items-center gap-3 pl-4 border-l border-gray-800 cursor-pointer group" onClick={() => navigate('/profile')}>
               <div className="relative shrink-0">
-                <div className="w-8 h-8 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-[15px] shadow-md shrink-0 aspect-square select-none">
-                  {getAvatarForUser(user ? user.username : 'User')}
+                <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none shrink-0 aspect-square">
+                  {getAvatarForUser(user ? user.username : 'User', presenceUsers)}
                 </div>
-                <div className="absolute bottom-0 right-0 flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-green border border-bg-main"></span>
-                </div>
+                <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-obsidian-900 ${
+                  user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'bg-status-offline' :
+                  user && presenceUsers[user.id]?.status === 'AWAY' ? 'bg-status-away' :
+                  user && presenceUsers[user.id]?.status === 'DO_NOT_DISTURB' ? 'bg-red-500' :
+                  'bg-green-500'
+                }`} />
               </div>
               <div className="text-left hidden md:block">
-                <div className="text-xs font-semibold text-white leading-none mb-0.5">{user ? user.username : 'Alex Johnson'}</div>
-                <div className="text-[9px] text-[#48BB78] font-medium leading-none">Online</div>
+                <div className="text-sm font-semibold text-white truncate group-hover:text-[#A78BFA] transition-colors">
+                  {user ? user.username : 'User'}
+                </div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <div className={`w-1.5 h-1.5 rounded-full ${
+                    user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'bg-status-offline' :
+                    user && presenceUsers[user.id]?.status === 'AWAY' ? 'bg-status-away' :
+                    user && presenceUsers[user.id]?.status === 'DO_NOT_DISTURB' ? 'bg-red-500' :
+                    'bg-green-500'
+                  }`}></div>
+                  <div className={`text-xs truncate ${
+                    user && presenceUsers[user.id]?.status === 'OFFLINE' ? 'text-status-offline' :
+                    user && presenceUsers[user.id]?.status === 'AWAY' ? 'text-status-away' :
+                    user && presenceUsers[user.id]?.status === 'DO_NOT_DISTURB' ? 'text-red-400' :
+                    'text-slate-400'
+                  }`}>
+                    {user && presenceUsers[user.id]?.customStatusText 
+                      ? presenceUsers[user.id].customStatusText 
+                      : (user && presenceUsers[user.id]?.status ? 
+                          presenceUsers[user.id].status.charAt(0) + presenceUsers[user.id].status.slice(1).toLowerCase().replace(/_/g, ' ') 
+                          : 'Online')}
+                  </div>
+                </div>
               </div>
               <i className="fa-solid fa-chevron-down text-[10px] text-text-muted group-hover:text-white transition-colors"></i>
             </div>
