@@ -346,8 +346,8 @@ const DashboardPage: React.FC = () => {
             
             <div className="flex items-center gap-3 pl-4 border-l border-gray-800 cursor-pointer group" onClick={() => navigate('/profile')}>
               <div className="relative shrink-0">
-                <div className="w-8 h-8 rounded-full bg-[#6B46C1] flex items-center justify-center font-bold text-xs text-white shadow-md shrink-0 aspect-square">
-                  {user ? user.username.slice(0, 2).toUpperCase() : 'AJ'}
+                <div className="w-8 h-8 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-[15px] shadow-md shrink-0 aspect-square select-none">
+                  {getAvatarForUser(user ? user.username : 'User')}
                 </div>
                 <div className="absolute bottom-0 right-0 flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-75"></span>

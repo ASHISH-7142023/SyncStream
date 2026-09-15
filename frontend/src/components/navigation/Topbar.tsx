@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell, HelpCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { getAvatarForUser } from '../../utils/avatarHelper';
 
 interface TopbarProps {
   notificationsCount?: number;
@@ -68,8 +69,8 @@ const Topbar: React.FC<TopbarProps> = ({
           onClick={() => navigate('/profile')}
           className="flex items-center space-x-3 cursor-pointer group select-none"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#7C3AED] to-[#38BDF8] flex items-center justify-center font-bold text-white text-xs ring-1 ring-white/10 group-hover:ring-[#7C3AED]/50 transition-all shrink-0">
-            {user ? getInitials(user.username) : 'U'}
+          <div className="w-8 h-8 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center font-bold text-white text-[15px] ring-1 ring-white/10 group-hover:ring-[#7C3AED]/50 transition-all shrink-0 aspect-square select-none">
+            {getAvatarForUser(user ? user.username : 'User')}
           </div>
           <div className="hidden sm:block text-left">
             <div className="text-xs font-bold text-[#F8FAFC] group-hover:text-[#A78BFA] transition-colors">
