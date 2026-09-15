@@ -18,9 +18,6 @@ const Topbar: React.FC<TopbarProps> = ({
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const getInitials = (name: string) => {
-    return name.slice(0, 2).toUpperCase();
-  };
 
   return (
     <header className="h-16 border-b border-[#27272A] bg-[#0F1117] flex items-center justify-between px-6 shrink-0 relative z-20">
