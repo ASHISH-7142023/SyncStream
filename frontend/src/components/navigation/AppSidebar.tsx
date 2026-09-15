@@ -269,7 +269,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         {/* Upgrade Card Overlay */}
         {!isCollapsed && (
           <div className="bg-[#151923] border border-[#27272A] rounded-xl p-4 space-y-3 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-[#7C3AED]/10 rounded-full blur-xl transition-all duration-300 group-hover:scale-125" />
+            <div className="absolute top-0 right-0 w-20 h-20 bg-[#7C3AED]/10 rounded-full blur-xl transition-all duration-300 group-hover:scale-125 shrink-0 aspect-square" />
             <div className="flex items-center space-x-2">
               <div className="p-1.5 bg-[#7C3AED]/20 text-[#A78BFA] rounded-lg">
                 <Sparkles className="w-3.5 h-3.5" />
@@ -297,7 +297,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
             onClick={() => setIsStatusPopoverOpen(true)}
           >
             <div className="relative shrink-0">
-              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none">
+              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none shrink-0 aspect-square">
                 {getAvatarForUser(user ? user.username : 'User', presenceUsers)}
               </div>
               <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-obsidian-900 ${

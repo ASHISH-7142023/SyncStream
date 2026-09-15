@@ -512,7 +512,7 @@ const RoomChatPage: React.FC = () => {
     return (
       <div className="h-full flex items-center justify-center bg-[#0f111a] text-white">
         <div className="space-y-4">
-          <div className="w-10 h-10 border-4 border-[#7c3aed] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <div className="w-10 h-10 border-4 border-[#7c3aed] border-t-transparent rounded-full animate-spin mx-auto shrink-0 aspect-square"></div>
           <p className="text-sm text-[#94a3b8]">Loading workspace chat...</p>
         </div>
       </div>
@@ -644,7 +644,7 @@ const RoomChatPage: React.FC = () => {
         <div className="p-4 border-t border-obsidian-700 mt-auto flex items-center justify-between cursor-pointer hover:bg-obsidian-700 transition-colors" onClick={() => navigate('/profile')}>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none">
+              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none shrink-0 aspect-square">
                 {getAvatarForUser(user ? user.username : 'User', presenceUsers)}
               </div>
               <div className="absolute bottom-0 right-0 flex h-3 w-3">
@@ -719,7 +719,7 @@ const RoomChatPage: React.FC = () => {
         {isDragging && (
           <div className="absolute inset-0 z-50 bg-brand-500/10 backdrop-blur-sm border-2 border-dashed border-brand-500 rounded-lg flex items-center justify-center pointer-events-none">
             <div className="bg-[#1f2233] p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-200">
-              <div className="w-16 h-16 bg-brand-500/20 rounded-full flex items-center justify-center text-brand-400 text-3xl">
+              <div className="w-16 h-16 bg-brand-500/20 rounded-full flex items-center justify-center text-brand-400 text-3xl shrink-0 aspect-square">
                 <i className="fa-solid fa-cloud-arrow-up"></i>
               </div>
               <div className="text-center">
@@ -768,12 +768,12 @@ const RoomChatPage: React.FC = () => {
           <div className="flex items-center gap-4 text-[#94a3b8]">
             <div className="flex items-center -space-x-2">
               {onlineMembers.slice(0, 4).map((m) => (
-                <div key={m.id} className="w-7 h-7 rounded-full border-2 border-[#0f111a] bg-[#334155] flex items-center justify-center text-sm select-none" title={m.username}>
+                <div key={m.id} className="w-7 h-7 rounded-full border-2 border-[#0f111a] bg-[#334155] flex items-center justify-center text-sm select-none shrink-0 aspect-square" title={m.username}>
                   {getAvatarForUser(m.username, presenceUsers)}
                 </div>
               ))}
               {onlineMembers.length > 4 && (
-                <div className="w-7 h-7 rounded-full border-2 border-[#0f111a] bg-[#1a1d2d] flex items-center justify-center text-[10px] text-text-muted font-medium select-none">
+                <div className="w-7 h-7 rounded-full border-2 border-[#0f111a] bg-[#1a1d2d] flex items-center justify-center text-[10px] text-text-muted font-medium select-none shrink-0 aspect-square">
                   +{onlineMembers.length - 4}
                 </div>
               )}
@@ -915,7 +915,7 @@ const RoomChatPage: React.FC = () => {
               }}
             >
               <div className="flex flex-col items-center gap-4 text-[#8b5cf6] pointer-events-none">
-                <div className="w-20 h-20 bg-[#8b5cf6]/20 rounded-full flex items-center justify-center">
+                <div className="w-20 h-20 bg-[#8b5cf6]/20 rounded-full flex items-center justify-center shrink-0 aspect-square">
                   <i className="fa-solid fa-cloud-arrow-up text-4xl"></i>
                 </div>
                 <h3 className="text-2xl font-bold text-white">Drop file to attach</h3>
@@ -932,7 +932,7 @@ const RoomChatPage: React.FC = () => {
               ) : (
                 searchResults.map((msg: any) => (
                   <div key={msg.id} className="bg-[#1f2233] p-4 rounded-xl border border-white/5 flex gap-4 text-left">
-                    <div className="w-8 h-8 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-sm shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-sm shrink-0 aspect-square">
                       {getAvatarForUser(msg.senderName || 'US', presenceUsers)}
                     </div>
                     <div>
@@ -965,7 +965,7 @@ const RoomChatPage: React.FC = () => {
                 )}
                 <div className="flex gap-4 group text-left relative">
                   <div 
-                    className="w-10 h-10 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-xl shrink-0 select-none mt-1 cursor-pointer"
+                    className="w-10 h-10 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-xl shrink-0 select-none mt-1 cursor-pointer aspect-square"
                     onClick={(e) => handleAvatarClick(msg.sender || 'US', e)}
                   >
                     {getAvatarForUser(msg.sender || 'US', presenceUsers)}
@@ -1163,7 +1163,7 @@ const RoomChatPage: React.FC = () => {
                               <div className="text-sm font-medium text-white truncate">{msg.fileName}</div>
                               <div className="text-xs text-text-muted">{msg.fileSize ? (msg.fileSize / 1024).toFixed(1) + ' KB' : 'Unknown size'}</div>
                             </div>
-                            <div className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white">
+                            <div className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white shrink-0 aspect-square">
                               <i className="fa-solid fa-download"></i>
                             </div>
                           </a>
@@ -1626,7 +1626,7 @@ const RoomChatPage: React.FC = () => {
                       <li key={m.id} className="flex items-center justify-between group cursor-pointer">
                         <div className="flex items-center gap-3">
                           <div className="relative">
-                            <div className="w-8 h-8 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-lg select-none">
+                            <div className="w-8 h-8 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-lg select-none shrink-0 aspect-square">
                               {getAvatarForUser(m.username, presenceUsers)}
                             </div>
                             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-[#151723] rounded-full"></span>
@@ -1676,7 +1676,7 @@ const RoomChatPage: React.FC = () => {
                       <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-70">
                         <div className="flex items-center gap-3">
                           <div className="relative cursor-pointer" onClick={(e) => handleAvatarClick(m.username, e)}>
-                            <div className="w-8 h-8 rounded-full bg-[#3b4155]/20 flex items-center justify-center text-lg select-none">
+                            <div className="w-8 h-8 rounded-full bg-[#3b4155]/20 flex items-center justify-center text-lg select-none shrink-0 aspect-square">
                               {getAvatarForUser(m.username, presenceUsers)}
                             </div>
                             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-away border-2 border-[#151723] rounded-full"></span>
@@ -1732,7 +1732,7 @@ const RoomChatPage: React.FC = () => {
                       <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-90">
                         <div className="flex items-center gap-3">
                           <div className="relative cursor-pointer" onClick={(e) => handleAvatarClick(m.username, e)}>
-                            <div className="w-8 h-8 rounded-full bg-[#ef4444]/20 flex items-center justify-center text-lg select-none">
+                            <div className="w-8 h-8 rounded-full bg-[#ef4444]/20 flex items-center justify-center text-lg select-none shrink-0 aspect-square">
                               {getAvatarForUser(m.username, presenceUsers)}
                             </div>
                             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-red-500 border-2 border-[#151723] rounded-full"></span>
@@ -1788,7 +1788,7 @@ const RoomChatPage: React.FC = () => {
                       <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-50 grayscale">
                         <div className="flex items-center gap-3">
                           <div className="relative cursor-pointer" onClick={(e) => handleAvatarClick(m.username, e)}>
-                            <div className="w-8 h-8 rounded-full bg-[#1a1d2d]/20 flex items-center justify-center text-lg select-none">
+                            <div className="w-8 h-8 rounded-full bg-[#1a1d2d]/20 flex items-center justify-center text-lg select-none shrink-0 aspect-square">
                               {getAvatarForUser(m.username, presenceUsers)}
                             </div>
                             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-offline border-2 border-[#151723] rounded-full"></span>

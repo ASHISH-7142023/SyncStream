@@ -262,7 +262,7 @@ const DashboardPage: React.FC = () => {
         <div className="p-4 border-t border-obsidian-700 mt-auto flex items-center justify-between cursor-pointer hover:bg-obsidian-700 transition-colors" onClick={() => navigate('/profile')}>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none">
+              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none shrink-0 aspect-square">
                 {getAvatarForUser(user ? user.username : 'User')}
               </div>
               <div className="absolute bottom-0 right-0 flex h-3 w-3">
@@ -346,7 +346,7 @@ const DashboardPage: React.FC = () => {
             
             <div className="flex items-center gap-3 pl-4 border-l border-gray-800 cursor-pointer group" onClick={() => navigate('/profile')}>
               <div className="relative shrink-0">
-                <div className="w-8 h-8 rounded-full bg-[#6B46C1] flex items-center justify-center font-bold text-xs text-white shadow-md">
+                <div className="w-8 h-8 rounded-full bg-[#6B46C1] flex items-center justify-center font-bold text-xs text-white shadow-md shrink-0 aspect-square">
                   {user ? user.username.slice(0, 2).toUpperCase() : 'AJ'}
                 </div>
                 <div className="absolute bottom-0 right-0 flex h-2 w-2">
@@ -427,7 +427,7 @@ const DashboardPage: React.FC = () => {
                       }}
                       className="flex gap-4 p-3 hover:bg-bg-hover rounded-lg transition-colors group cursor-pointer hover:translate-x-1 transition-transform"
                     >
-                      <div className="w-10 h-10 rounded-full bg-accent-purple flex items-center justify-center font-bold text-sm text-white shrink-0 group-hover:scale-105 transition-transform">
+                      <div className="w-10 h-10 rounded-full bg-accent-purple flex items-center justify-center font-bold text-sm text-white shrink-0 group-hover:scale-105 transition-transform aspect-square">
                         {act.user.slice(0, 2).toUpperCase()}
                       </div>
                       <div className="flex-grow min-w-0">
@@ -511,7 +511,7 @@ const DashboardPage: React.FC = () => {
                   </div>
                   <div className="flex items-center -space-x-2">
                     {['Sarah Wilson', 'David Brown', 'Emily Davis', 'Michael Chen', 'Lisa Anderson'].map((name, i) => (
-                      <div key={i} className="w-10 h-10 rounded-full border-2 border-bg-card bg-[#252d41] flex items-center justify-center text-xl relative group cursor-pointer hover:scale-110 hover:z-30 transition-transform select-none" title={name}>
+                      <div key={i} className="w-10 h-10 rounded-full border-2 border-bg-card bg-[#252d41] flex items-center justify-center text-xl relative group cursor-pointer hover:scale-110 hover:z-30 transition-transform select-none shrink-0 aspect-square" title={name}>
                         {getAvatarForUser(name)}
                         <div className="absolute bottom-0 right-0 flex h-2.5 w-2.5">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-75"></span>
@@ -519,7 +519,7 @@ const DashboardPage: React.FC = () => {
                         </div>
                       </div>
                     ))}
-                    <div className="w-10 h-10 rounded-full border-2 border-bg-card bg-bg-sidebar flex items-center justify-center text-xs font-medium text-text-muted relative z-10 ml-2">
+                    <div className="w-10 h-10 rounded-full border-2 border-bg-card bg-bg-sidebar flex items-center justify-center text-xs font-medium text-text-muted relative z-10 ml-2 shrink-0 aspect-square">
                       +{rooms.length * 3}
                     </div>
                   </div>

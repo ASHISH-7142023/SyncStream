@@ -186,7 +186,7 @@ const RoomsPage: React.FC = () => {
         <div className="p-4 border-t border-obsidian-700 mt-auto flex items-center justify-between cursor-pointer hover:bg-obsidian-700 transition-colors" onClick={() => navigate('/profile')}>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none">
+              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none shrink-0 aspect-square">
                 {getAvatarForUser(user ? user.username : 'User')}
               </div>
               <div className="absolute bottom-0 right-0 flex h-3 w-3">
