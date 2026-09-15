@@ -17,6 +17,8 @@ import { LinkPreviewCard } from '../components/chat/LinkPreviewCard';
 import { useNotification } from '../context/NotificationContext';
 import { E2EEAttachment } from '../components/chat/E2EEAttachment';
 import CreatePollModal from '../components/modals/CreatePollModal';
+import { ImageGalleryModal } from '../components/modals/ImageGalleryModal';
+import type { GalleryImage } from '../components/modals/ImageGalleryModal';
 
 interface Member {
   id: string;
@@ -115,6 +117,9 @@ const RoomChatPage: React.FC = () => {
   const [otherUserPubKey, setOtherUserPubKey] = useState<CryptoKey | null>(null);
   const [sharedSecret, setSharedSecret] = useState<CryptoKey | null>(null);
 
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryInitialIndex, setGalleryInitialIndex] = useState(0);
+
   const handleAvatarClick = (username: string, e: React.MouseEvent) => {
     e.stopPropagation();
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -183,6 +188,18 @@ const RoomChatPage: React.FC = () => {
 
   // Scroll to bottom
   const roomMessages = (roomId && messages[roomId]) || [];
+
+  const galleryImages = React.useMemo<GalleryImage[]>(() => {
+    return roomMessages
+      .filter((m: any) => m.attachmentId && m.messageType === 'IMAGE')
+      .map((m: any) => ({
+        id: m.id || m.sequenceNumber,
+        url: fileService.getFileUrl(m.attachmentId),
+        fileName: m.fileName || 'Image',
+        senderName: m.senderName || 'Unknown',
+        timestamp: m.createdAt || m.timestamp
+      }));
+  }, [roomMessages]);
 
   useEffect(() => {
     if (room?.isDirectMessage && privateKey) {
@@ -279,6 +296,28 @@ const RoomChatPage: React.FC = () => {
     observer.observe(el);
     return () => observer.disconnect();
   }, [roomId, hasMoreMessages, loadMoreMessages]);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isDragging) setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      setSelectedFile(e.dataTransfer.files[0]);
+    }
+  };
 
   const handleSendMessage = async (e?: React.FormEvent | React.KeyboardEvent) => {
     if (e) {
@@ -671,7 +710,25 @@ const RoomChatPage: React.FC = () => {
       </aside>
 
       {/* Main Chat Area */}
-      <main className="flex-1 flex flex-col min-w-0 bg-[#0f111a]">
+      <main 
+        className="flex-1 flex flex-col min-w-0 bg-[#0f111a] relative"
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        {isDragging && (
+          <div className="absolute inset-0 z-50 bg-brand-500/10 backdrop-blur-sm border-2 border-dashed border-brand-500 rounded-lg flex items-center justify-center pointer-events-none">
+            <div className="bg-[#1f2233] p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-200">
+              <div className="w-16 h-16 bg-brand-500/20 rounded-full flex items-center justify-center text-brand-400 text-3xl">
+                <i className="fa-solid fa-cloud-arrow-up"></i>
+              </div>
+              <div className="text-center">
+                <h3 className="text-xl font-bold text-white mb-1">Drop to upload</h3>
+                <p className="text-text-muted text-sm">Share files with the room instantly</p>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Chat Header */}
         <header className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-[#151723]/50 backdrop-blur-sm z-10 shrink-0">
@@ -1071,7 +1128,14 @@ const RoomChatPage: React.FC = () => {
                           <img 
                             src={fileService.getFileUrl(msg.attachmentId)} 
                             alt={msg.fileName} 
-                            className="w-full h-auto max-h-60 object-contain bg-black/20"
+                            className="w-full h-auto max-h-60 object-contain bg-black/20 cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={() => {
+                              const idx = galleryImages.findIndex(img => img.id === (msg.id || msg.sequenceNumber));
+                              if (idx !== -1) {
+                                setGalleryInitialIndex(idx);
+                                setGalleryOpen(true);
+                              }
+                            }}
                           />
                         ) : msg.messageType === 'AUDIO' ? (
                           <div className="p-3 bg-white/5 rounded-lg flex flex-col gap-2 min-w-[250px]">
@@ -1172,6 +1236,24 @@ const RoomChatPage: React.FC = () => {
                         Reply
                       </button>
                     </div>
+                    
+                    {/* Thread Indicator */}
+                    {msg.replyCount > 0 && (
+                      <div 
+                        onClick={() => setSelectedThreadMsg(msg)}
+                        className="mt-2 flex items-center gap-2 group/thread cursor-pointer w-fit"
+                      >
+                        <div className="flex items-center gap-1 text-xs font-semibold text-brand-400 bg-brand-500/10 px-2.5 py-1 rounded-lg border border-brand-500/20 group-hover/thread:bg-brand-500/20 transition-colors">
+                          <i className="fa-solid fa-reply fa-flip-horizontal"></i>
+                          {msg.replyCount} {msg.replyCount === 1 ? 'reply' : 'replies'}
+                        </div>
+                        {msg.lastReplyAt && (
+                          <div className="text-[10px] text-text-muted group-hover/thread:text-gray-300 transition-colors">
+                            Last reply {new Date(msg.lastReplyAt).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        )}
+                      </div>
+                    )}
                     
                     {/* Read Receipts */}
                     {(() => {
@@ -1478,6 +1560,12 @@ const RoomChatPage: React.FC = () => {
           roomId={roomId || ''} 
           isOpen={isPollModalOpen} 
           onClose={() => setIsPollModalOpen(false)} 
+        />
+        <ImageGalleryModal
+          images={galleryImages}
+          initialIndex={galleryInitialIndex}
+          isOpen={galleryOpen}
+          onClose={() => setGalleryOpen(false)}
         />
       </main>
 
