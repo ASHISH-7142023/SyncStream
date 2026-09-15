@@ -1,47 +1,28 @@
 const fs = require('fs');
-let content = fs.readFileSync('frontend/src/pages/RoomChatPage.tsx', 'utf8');
+const path = require('path');
 
-const target = `<div className="text-sm font-medium flex items-center gap-1.5">
-                              <span className="text-white">{m.username}</span>
-                              {m.id === room?.ownerId && (
-                                <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
-                              )}
-                              {room?.admins?.includes(m.id) && m.id !== room?.ownerId && (
-                                <span className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Admin</span>
-                              )}
-                              {room?.moderators?.includes(m.id) && (
-                                <span className="text-[9px] bg-emerald-900/60 text-emerald-200 border border-emerald-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Mod</span>
-                              )}
-                            </div>`;
+function replaceInFile(filePath) {
+    let content = fs.readFileSync(filePath, 'utf8');
+    let original = content;
+    content = content.replace(/className="h-9 w-40 object-contain"/g, 'className="h-9 w-40 object-contain shrink-0"');
+    content = content.replace(/className="h-7 w-32 object-contain"/g, 'className="h-7 w-32 object-contain shrink-0"');
+    if (content !== original) {
+        fs.writeFileSync(filePath, content, 'utf8');
+        console.log(`Updated ${filePath}`);
+    }
+}
 
-const replacement = `<div className="flex flex-col">
-                            <div className="text-sm font-medium flex items-center gap-1.5">
-                              <span className="text-white">{m.username}</span>
-                              {m.id === room?.ownerId && (
-                                <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
-                              )}
-                              {room?.admins?.includes(m.id) && m.id !== room?.ownerId && (
-                                <span className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Admin</span>
-                              )}
-                              {room?.moderators?.includes(m.id) && (
-                                <span className="text-[9px] bg-emerald-900/60 text-emerald-200 border border-emerald-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Mod</span>
-                              )}
-                            </div>
-                            {user?.id && (room?.ownerId === user.id || room?.admins?.includes(user.id) || room?.moderators?.includes(user.id)) && user.id !== m.id && (
-                              <div className="hidden group-hover:flex gap-1 mt-1">
-                                {(room?.ownerId === user.id || room?.admins?.includes(user.id)) && (
-                                  <>
-                                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'kick'); }} className="text-[9px] bg-yellow-900/60 text-yellow-200 border border-yellow-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-yellow-800 transition">Kick</button>
-                                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'ban'); }} className="text-[9px] bg-red-900/60 text-red-200 border border-red-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-red-800 transition">Ban</button>
-                                  </>
-                                )}
-                                {room?.ownerId === user.id && !room?.admins?.includes(m.id) && (
-                                  <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'promote_admin'); }} className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-blue-800 transition">Admin</button>
-                                )}
-                              </div>
-                            )}
-                            </div>`;
+const files = [
+    'd:/ASHISH GITHUB/SyncStream/frontend/src/pages/LoginPage.tsx',
+    'd:/ASHISH GITHUB/SyncStream/frontend/src/pages/ProfilePage.tsx',
+    'd:/ASHISH GITHUB/SyncStream/frontend/src/pages/RoomChatPage.tsx',
+    'd:/ASHISH GITHUB/SyncStream/frontend/src/pages/RoomsPage.tsx',
+    'd:/ASHISH GITHUB/SyncStream/frontend/src/pages/RegisterPage.tsx',
+    'd:/ASHISH GITHUB/SyncStream/frontend/src/pages/LandingPage.tsx',
+    'd:/ASHISH GITHUB/SyncStream/frontend/src/pages/FriendsPage.tsx',
+    'd:/ASHISH GITHUB/SyncStream/frontend/src/pages/DashboardPage.tsx',
+    'd:/ASHISH GITHUB/SyncStream/frontend/src/components/navigation/AppSidebar.tsx'
+];
 
-content = content.split(target).join(replacement);
-fs.writeFileSync('frontend/src/pages/RoomChatPage.tsx', content);
-console.log('Replaced successfully');
+files.forEach(replaceInFile);
+console.log('Finished updating logos.');

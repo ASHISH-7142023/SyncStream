@@ -154,7 +154,7 @@ const ProfilePage: React.FC = () => {
         <div className="h-16 flex items-center justify-between px-6 border-b border-obsidian-700">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
             <img src="/person_logo.png" alt="Logo" className="w-8 h-8 object-contain" />
-            <img src="/name.png" alt="SyncStream" className="h-7 w-32 object-contain" />
+            <img src="/name.png" alt="SyncStream" className="h-7 w-32 object-contain shrink-0" />
           </div>
           <button 
             onClick={() => setShowMobileSidebar(false)}
