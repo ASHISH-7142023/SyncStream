@@ -13,6 +13,7 @@ interface Room {
   description?: string;
   isPrivate?: boolean;
   isDirectMessage?: boolean;
+  isVoiceChannel?: boolean;
 }
 
 const RoomsPage: React.FC = () => {
@@ -130,7 +131,11 @@ const RoomsPage: React.FC = () => {
                   onClick={() => navigate(`/rooms/${r.id}`)}
                   className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-dim hover:text-bright hover:bg-surface-200 transition-colors text-left"
                 >
-                  <span className="text-xl leading-none text-surface-400 font-light">#</span>
+                  {r.isVoiceChannel ? (
+                    <i className="fa-solid fa-volume-high text-surface-400"></i>
+                  ) : (
+                    <span className="text-xl leading-none text-surface-400 font-light">#</span>
+                  )}
                   <span className="font-medium truncate">{r.name}</span>
                 </button>
               ))}

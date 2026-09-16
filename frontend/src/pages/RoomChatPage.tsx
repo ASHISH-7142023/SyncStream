@@ -43,6 +43,7 @@ interface RoomDetails {
   admins?: string[];
   moderators?: string[];
   bannedUsers?: string[];
+  isVoiceChannel?: boolean;
 }
 
 const markdownComponents: any = {
@@ -193,13 +194,19 @@ const RoomChatPage: React.FC = () => {
     if (!roomId) return;
 
     const initRoom = async () => {
-      setLoadingRoom(true);
       try {
+        setLoadingRoom(true);
         const res = await api.get(`/api/rooms/${roomId}`);
         setRoom(res.data);
         
         joinRoom(roomId);
         loadMessages(roomId);
+
+        // Auto-join call if it's a voice channel and not already in call
+        if (res.data.isVoiceChannel) {
+          // We can't guarantee `inCall` state is fresh here if it changes in another effect,
+          // but we can just call startCall which should handle it.
+        }
       } catch (err) {
         console.error('Failed to initialize room page', err);
       } finally {
@@ -213,6 +220,13 @@ const RoomChatPage: React.FC = () => {
       leaveRoom(roomId);
     };
   }, [roomId, joinRoom, loadMessages, leaveRoom]);
+
+  // Handle auto-joining for voice channels when room is loaded
+  useEffect(() => {
+    if (room?.isVoiceChannel && !inCall) {
+      startCall(true); // true = start with video OFF
+    }
+  }, [room?.isVoiceChannel, inCall, startCall]);
 
   // Scroll to bottom
   const roomMessages = (roomId && messages[roomId]) || [];
@@ -852,7 +866,7 @@ const RoomChatPage: React.FC = () => {
               {/* WebRTC Video Call Button */}
               {!inCall && (
                 <button 
-                  onClick={startCall}
+                  onClick={() => startCall(false)}
                   className="px-3 py-1.5 bg-[#8b5cf6]/20 hover:bg-[#8b5cf6]/30 text-[#a78bfa] hover:text-white rounded-lg transition-all hover:scale-105 active:scale-95 cursor-pointer text-xs font-semibold flex items-center gap-1.5 border border-[#8b5cf6]/30"
                 >
                   <i className="fa-solid fa-video"></i>
@@ -871,22 +885,48 @@ const RoomChatPage: React.FC = () => {
           </div>
         </header>
  
-        {/* WebRTC Video Grid */}
-        {inCall && (
-          <VideoGrid
-            localStream={localStream}
-            remoteStreams={remoteStreams}
-            isMicOn={isMicOn}
-            isVideoOn={isVideoOn}
-            isScreenSharing={isScreenSharing}
-            toggleMic={toggleMic}
-            toggleVideo={toggleVideo}
-            toggleScreenShare={toggleScreenShare}
-            leaveCall={leaveCall}
-            presenceUsers={presenceUsers}
-            currentUsername={user?.username || 'You'}
-          />
+        {/* WebRTC Video Grid (Always rendered for voice channels, conditionally for text channels) */}
+        {(inCall || room?.isVoiceChannel) && (
+          <div className={room?.isVoiceChannel ? "flex-1 w-full h-full p-6 flex flex-col items-center justify-center relative bg-[#0f111a]" : ""}>
+            {room?.isVoiceChannel && !inCall && (
+              <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+                <div className="w-20 h-20 bg-brand-500/20 rounded-full flex items-center justify-center text-brand-400 text-3xl shrink-0 aspect-square mb-2 shadow-[0_0_20px_rgba(139,92,246,0.3)]">
+                  <i className="fa-solid fa-volume-high"></i>
+                </div>
+                <h2 className="text-2xl font-bold text-white">Voice Channel</h2>
+                <p className="text-text-muted">Click below to connect to the audio channel.</p>
+                <button 
+                  onClick={() => startCall(true)}
+                  className="mt-4 px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-xl transition-all shadow-[0_0_15px_rgba(139,92,246,0.5)] font-semibold"
+                >
+                  <i className="fa-solid fa-phone mr-2"></i> Connect
+                </button>
+              </div>
+            )}
+            
+            {inCall && (
+              <div className={room?.isVoiceChannel ? "w-full max-w-6xl h-full flex flex-col" : ""}>
+                <VideoGrid
+                  localStream={localStream}
+                  remoteStreams={remoteStreams}
+                  isMicOn={isMicOn}
+                  isVideoOn={isVideoOn}
+                  isScreenSharing={isScreenSharing}
+                  toggleMic={toggleMic}
+                  toggleVideo={toggleVideo}
+                  toggleScreenShare={toggleScreenShare}
+                  leaveCall={leaveCall}
+                  presenceUsers={presenceUsers}
+                  currentUsername={user?.username || 'You'}
+                />
+              </div>
+            )}
+          </div>
         )}
+
+        {/* Hide Text Chat elements if it's a Voice Channel */}
+        {!room?.isVoiceChannel && (
+          <>
 
         {/* Pinned Message */}
         {!pinnedClosed && pinnedMessages.length > 0 && (
@@ -1581,6 +1621,8 @@ const RoomChatPage: React.FC = () => {
           isOpen={galleryOpen}
           onClose={() => setGalleryOpen(false)}
         />
+        </>
+        )}
       </main>
 
       {/* Right Sidebar */}

@@ -30,6 +30,9 @@ public class Room {
     @Builder.Default
     private boolean isDirectMessage = false;
 
+    @Builder.Default
+    private boolean isVoiceChannel = false;
+
     private String ownerId;
 
     @Builder.Default

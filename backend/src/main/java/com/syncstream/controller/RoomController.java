@@ -56,17 +56,18 @@ public class RoomController {
 
     @PostMapping
     public ResponseEntity<?> createRoom(
-            @RequestBody Map<String, String> request,
+            @RequestBody Map<String, Object> request,
             @AuthenticationPrincipal User user) {
-        String name = request.get("name");
-        String description = request.get("description");
+        String name = (String) request.get("name");
+        String description = (String) request.get("description");
+        boolean isVoiceChannel = request.containsKey("isVoiceChannel") && (Boolean) request.get("isVoiceChannel");
 
         if (name == null || name.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("message", "Room name cannot be empty"));
         }
 
         try {
-            Room room = roomService.createRoom(name.trim(), description, user.getId());
+            Room room = roomService.createRoom(name.trim(), description, user.getId(), isVoiceChannel);
             return ResponseEntity.status(HttpStatus.CREATED).body(room);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));

@@ -16,7 +16,7 @@ public class RoomService {
     @Autowired
     private RoomRepository roomRepository;
 
-    public Room createRoom(String name, String description, String ownerId) {
+    public Room createRoom(String name, String description, String ownerId, boolean isVoiceChannel) {
         if (roomRepository.existsByName(name)) {
             throw new IllegalArgumentException("Room name already exists");
         }
@@ -24,6 +24,7 @@ public class RoomService {
                 .name(name)
                 .description(description)
                 .ownerId(ownerId)
+                .isVoiceChannel(isVoiceChannel)
                 .members(new HashSet<>())
                 .admins(new HashSet<>())
                 .moderators(new HashSet<>())

@@ -17,6 +17,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   const [roomName, setRoomName] = useState('');
   const [description, setDescription] = useState('');
   const [roomType, setRoomType] = useState<'Private' | 'Public' | 'Restricted'>('Private');
+  const [isVoiceChannel, setIsVoiceChannel] = useState(false);
   const [privacyJoin, setPrivacyJoin] = useState('Only invited members');
   const [isDefaultRoom, setIsDefaultRoom] = useState(false);
   
@@ -60,6 +61,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
         name: roomName,
         description,
         isPrivate: roomType === 'Private',
+        isVoiceChannel,
       });
       setSuccessRoom(response.data);
       setStep(5); // Success step
@@ -80,6 +82,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     setRoomName('');
     setDescription('');
     setRoomType('Private');
+    setIsVoiceChannel(false);
     setPrivacyJoin('Only invited members');
     setIsDefaultRoom(false);
     setOnlyAdminsPost(false);
@@ -241,6 +244,40 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
                       />
                       <span className="font-semibold text-white text-sm mb-1">🛡️ Restricted</span>
                       <span className="text-[10px] text-[#94a3b8] leading-relaxed">Anyone can request to join.</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-white block mb-3">Channel Style</label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Text */}
+                    <label className={`relative flex flex-col p-4 rounded-xl cursor-pointer hover:bg-[#1f2330] transition-colors border-2 ${
+                      !isVoiceChannel ? 'border-[#6b46c1] bg-[#1a1d27]' : 'border-[#2e3346] bg-[#0f111a]'
+                    }`}>
+                      <input 
+                        type="radio" 
+                        name="isVoiceChannel" 
+                        checked={!isVoiceChannel} 
+                        onChange={() => setIsVoiceChannel(false)}
+                        className="sr-only" 
+                      />
+                      <span className="font-semibold text-white text-sm mb-1">💬 Text Channel</span>
+                      <span className="text-[10px] text-[#94a3b8] leading-relaxed">Standard text-based chat with threads.</span>
+                    </label>
+                    {/* Voice */}
+                    <label className={`relative flex flex-col p-4 rounded-xl cursor-pointer hover:bg-[#1f2330] transition-colors border-2 ${
+                      isVoiceChannel ? 'border-[#6b46c1] bg-[#1a1d27]' : 'border-[#2e3346] bg-[#0f111a]'
+                    }`}>
+                      <input 
+                        type="radio" 
+                        name="isVoiceChannel" 
+                        checked={isVoiceChannel} 
+                        onChange={() => setIsVoiceChannel(true)}
+                        className="sr-only" 
+                      />
+                      <span className="font-semibold text-white text-sm mb-1">🔊 Voice Channel</span>
+                      <span className="text-[10px] text-[#94a3b8] leading-relaxed">Audio and video calls with screen sharing.</span>
                     </label>
                   </div>
                 </div>

@@ -30,9 +30,13 @@ export const useWebRTC = ({ roomId, userId, username, getStompClient, sendWebRtc
   const subRef = useRef<any>(null);
 
   // Set up local stream
-  const startCall = useCallback(async () => {
+  const startCall = useCallback(async (videoOffByDefault: boolean = false) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      if (videoOffByDefault) {
+        stream.getVideoTracks().forEach(track => track.enabled = false);
+        setIsVideoOn(false);
+      }
       setLocalStream(stream);
       localStreamRef.current = stream;
       setInCall(true);
