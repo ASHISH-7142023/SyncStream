@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSocket } from '../../context/SocketContext';
 import { useAuth } from '../../context/AuthContext';
 import { getAvatarForUser } from '../../utils/avatarHelper';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import api from '../../services/api';
 
 interface ThreadPanelProps {
@@ -9,6 +13,32 @@ interface ThreadPanelProps {
   parentMessage: any;
   onClose: () => void;
 }
+
+const markdownComponents: any = {
+  code({node, inline, className, children, ...props}: any) {
+    const match = /language-(\w+)/.exec(className || '')
+    return !inline && match ? (
+      <SyntaxHighlighter
+        style={vscDarkPlus as any}
+        language={match[1]}
+        PreTag="div"
+        {...props}
+      >
+        {String(children).replace(/\n$/, '')}
+      </SyntaxHighlighter>
+    ) : (
+      <code className={className} {...props}>
+        {children}
+      </code>
+    )
+  },
+  a: ({node, ...props}: any) => {
+    if (props.href?.startsWith('#mention-')) {
+      return <span className="font-semibold text-brand-400 bg-brand-500/20 px-1.5 py-0.5 rounded-md text-sm">{props.children}</span>;
+    }
+    return <a {...props} className="text-[#a78bfa] hover:underline" />;
+  }
+};
 
 export const ThreadPanel: React.FC<ThreadPanelProps> = ({ roomId, parentMessage, onClose }) => {
   const { user } = useAuth();
@@ -103,8 +133,10 @@ export const ThreadPanel: React.FC<ThreadPanelProps> = ({ roomId, parentMessage,
               <span className="font-semibold text-white text-sm">{parentMessage.senderName}</span>
               <span className="text-[10px] text-text-muted">{formatTime(parentMessage.createdAt || parentMessage.timestamp)}</span>
             </div>
-            <div className="text-[14px] leading-relaxed text-gray-200">
-              {parentMessage.content}
+            <div className="text-[14px] leading-relaxed text-gray-200 prose prose-invert prose-sm max-w-none prose-p:my-0 prose-a:text-[#a78bfa] prose-code:text-[#a78bfa] prose-code:bg-[#8b5cf6]/10 prose-code:px-1 prose-code:rounded">
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                {parentMessage.content || ''}
+              </ReactMarkdown>
             </div>
           </div>
         </div>
@@ -129,8 +161,10 @@ export const ThreadPanel: React.FC<ThreadPanelProps> = ({ roomId, parentMessage,
                     <span className="font-semibold text-white text-sm">{reply.senderName}</span>
                     <span className="text-[10px] text-text-muted">{formatTime(reply.createdAt)}</span>
                   </div>
-                  <div className="text-[14px] leading-relaxed text-gray-200">
-                    {reply.content}
+                  <div className="text-[14px] leading-relaxed text-gray-200 prose prose-invert prose-sm max-w-none prose-p:my-0 prose-a:text-[#a78bfa] prose-code:text-[#a78bfa] prose-code:bg-[#8b5cf6]/10 prose-code:px-1 prose-code:rounded">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                      {reply.content || ''}
+                    </ReactMarkdown>
                   </div>
                 </div>
               </div>

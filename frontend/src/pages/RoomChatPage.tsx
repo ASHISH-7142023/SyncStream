@@ -10,6 +10,8 @@ import { useWebRTC } from '../hooks/useWebRTC';
 import { fileService } from '../services/fileService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import RoomDetailsModal from '../components/modals/RoomDetailsModal';
 import UpgradeProModal from '../components/modals/UpgradeProModal';
 import { useToast } from '../context/ToastContext';
@@ -42,6 +44,32 @@ interface RoomDetails {
   moderators?: string[];
   bannedUsers?: string[];
 }
+
+const markdownComponents: any = {
+  code({node, inline, className, children, ...props}: any) {
+    const match = /language-(\w+)/.exec(className || '')
+    return !inline && match ? (
+      <SyntaxHighlighter
+        style={vscDarkPlus as any}
+        language={match[1]}
+        PreTag="div"
+        {...props}
+      >
+        {String(children).replace(/\n$/, '')}
+      </SyntaxHighlighter>
+    ) : (
+      <code className={className} {...props}>
+        {children}
+      </code>
+    )
+  },
+  a: ({node, ...props}: any) => {
+    if (props.href?.startsWith('#mention-')) {
+      return <span className="font-semibold text-brand-400 bg-brand-500/20 px-1.5 py-0.5 rounded-md text-sm">{props.children}</span>;
+    }
+    return <a {...props} className="text-[#a78bfa] hover:underline" />;
+  }
+};
 
 const RoomChatPage: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
@@ -869,7 +897,7 @@ const RoomChatPage: React.FC = () => {
                 <div className="flex flex-col min-w-0">
                   <span className="text-[#a78bfa] font-medium text-xs">Pinned by {pinnedMessages[0].senderName || 'User'}</span>
                   <span className="text-text-muted text-xs truncate max-w-lg line-clamp-1 prose prose-invert prose-p:my-0 prose-p:inline prose-a:text-[#a78bfa]">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{pinnedMessages[0].content}</ReactMarkdown>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{pinnedMessages[0].content}</ReactMarkdown>
                   </span>
                 </div>
               </div>
@@ -941,7 +969,7 @@ const RoomChatPage: React.FC = () => {
                         <span className="text-[10px] text-text-muted font-medium">{formatTime(msg.createdAt)}</span>
                       </div>
                       <div className="text-sm text-gray-300 bg-white/5 px-2.5 py-1.5 rounded inline-block prose prose-invert prose-sm max-w-none prose-p:my-0 prose-a:text-[#a78bfa] prose-code:text-[#a78bfa] prose-code:bg-[#8b5cf6]/10 prose-code:px-1 prose-code:rounded">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{msg.content}</ReactMarkdown>
                       </div>
                     </div>
                   </div>
@@ -1073,14 +1101,7 @@ const RoomChatPage: React.FC = () => {
                             <span className="text-[#8b5cf6] mr-2" title="End-to-End Encrypted">🔒</span>
                             <ReactMarkdown 
                               remarkPlugins={[remarkGfm]}
-                              components={{
-                                a: ({node, ...props}) => {
-                                  if (props.href?.startsWith('#mention-')) {
-                                    return <span className="font-semibold text-brand-400 bg-brand-500/20 px-1 rounded">{props.children}</span>;
-                                  }
-                                  return <a {...props} className="text-[#a78bfa] hover:underline" />;
-                                }
-                              }}
+                              components={markdownComponents}
                             >
                               {(decryptedMessages[msg.id || msg.sequenceNumber] || 'Decrypting...').replace(/@([a-zA-Z0-9_]+)/g, '[@$1](#mention-$1)')}
                             </ReactMarkdown>
@@ -1088,14 +1109,7 @@ const RoomChatPage: React.FC = () => {
                         ) : (
                           <ReactMarkdown 
                             remarkPlugins={[remarkGfm]}
-                            components={{
-                              a: ({node, ...props}) => {
-                                if (props.href?.startsWith('#mention-')) {
-                                  return <span className="font-semibold text-brand-400 bg-brand-500/20 px-1.5 py-0.5 rounded-md text-sm">{props.children}</span>;
-                                }
-                                return <a {...props} className="text-[#a78bfa] hover:underline" />;
-                              }
-                            }}
+                            components={markdownComponents}
                           >
                             {(msg.content || '').replace(/@([a-zA-Z0-9_]+)/g, '[@$1](#mention-$1)')}
                           </ReactMarkdown>
