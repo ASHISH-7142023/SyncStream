@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { getAvatarForUser, getAvatarsForGender } from '../utils/avatarHelper';
 import api from '../services/api';
+import { fileService } from '../services/fileService';
 
 interface Room {
   id: string;
@@ -12,7 +13,7 @@ interface Room {
 }
 
 const ProfilePage: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateProfile, updateSettings } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
   const { rooms, onOpenCreateModal } = useOutletContext<{ 
@@ -40,13 +41,19 @@ const ProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'Overview' | 'Activity' | 'Rooms' | 'Preferences' | 'Security'>('Overview');
   const [showAllBadges, setShowAllBadges] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const [bio, setBio] = useState('Passionate about building scalable, real-time applications. I love clean code, great UX, and collaborating with amazing teams.');
+  const [bio, setBio] = useState(user?.bio || 'Passionate about building scalable, real-time applications. I love clean code, great UX, and collaborating with amazing teams.');
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [tempBio, setTempBio] = useState(bio);
 
-  const handleSaveBio = () => {
-    setBio(tempBio);
-    setIsEditingBio(false);
+  const handleSaveBio = async () => {
+    try {
+      await updateProfile({ bio: tempBio });
+      setBio(tempBio);
+      setIsEditingBio(false);
+      addToast('Bio updated successfully!', 'success');
+    } catch (e) {
+      addToast('Failed to update bio', 'error');
+    }
   };
 
   const [theme, setTheme] = useState(localStorage.getItem('app-theme') || 'default');
@@ -84,10 +91,31 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleThemeChange = (newTheme: string) => {
+  const handleThemeChange = async (newTheme: string) => {
     setTheme(newTheme);
     localStorage.setItem('app-theme', newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
+    try {
+      await updateSettings(newTheme);
+    } catch (e) {
+      console.error('Failed to update theme on backend', e);
+    }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      addToast('Uploading avatar...', 'info');
+      const response = await fileService.uploadFile(file);
+      const url = fileService.getFileUrl(response.fileId);
+      await handleAvatarChange(url);
+      addToast('Avatar updated!', 'success');
+    } catch (err) {
+      console.error('Failed to upload file', err);
+      addToast('Failed to upload avatar', 'error');
+    }
   };
 
   const [is2faEnabled, setIs2faEnabled] = useState(true);
@@ -225,8 +253,12 @@ const ProfilePage: React.FC = () => {
         <div className="p-4 border-t border-obsidian-700 mt-auto flex items-center justify-between cursor-pointer hover:bg-obsidian-700 transition-colors" onClick={() => navigate('/profile')}>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none">
-                {getAvatarForUser(user ? user.username : 'Alex Johnson')}
+              <div className="w-10 h-10 rounded-full border border-obsidian-600 bg-obsidian-750 flex items-center justify-center text-xl select-none overflow-hidden">
+                {user?.avatar?.startsWith('http') || user?.avatar?.startsWith('/') ? (
+                  <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  getAvatarForUser(user ? user.username : 'Alex Johnson')
+                )}
               </div>
               <div className="absolute bottom-0 right-0 flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -323,8 +355,12 @@ const ProfilePage: React.FC = () => {
                     {/* Avatar */}
                     <div className="relative flex-shrink-0">
                       <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full p-1 bg-gradient-to-br from-purple-500 to-obsidian-800 flex items-center justify-center">
-                        <div className="w-full h-full rounded-full border-4 border-obsidian-800 bg-obsidian-750 flex items-center justify-center text-4xl sm:text-5xl select-none">
-                          {selectedAvatar}
+                        <div className="w-full h-full rounded-full border-4 border-obsidian-800 bg-obsidian-750 flex items-center justify-center text-4xl sm:text-5xl select-none overflow-hidden">
+                          {selectedAvatar.startsWith('http') || selectedAvatar.startsWith('/') ? (
+                            <img src={selectedAvatar} alt="Avatar" className="w-full h-full object-cover" />
+                          ) : (
+                            selectedAvatar
+                          )}
                         </div>
                       </div>
                       <div className="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 bg-green-500 border-4 border-obsidian-800 rounded-full"></div>
@@ -607,6 +643,11 @@ const ProfilePage: React.FC = () => {
                         >
                           <option value="default">Dark Obsidian (Default)</option>
                           <option value="midnight">Midnight Blue</option>
+                          <option value="cyberpunk">Cyberpunk</option>
+                          <option value="purple">Purple Accent</option>
+                          <option value="blue">Blue Accent</option>
+                          <option value="emerald">Emerald Accent</option>
+                          <option value="rose">Rose Accent</option>
                         </select>
                       </div>
 
@@ -627,8 +668,12 @@ const ProfilePage: React.FC = () => {
                           </select>
                         </div>
                         <div className="space-y-2">
-                          <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Choose Avatar Character</label>
-                          <div className="flex gap-2 flex-wrap">
+                          <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Choose Avatar Character or Upload Custom</label>
+                          <div className="flex gap-2 flex-wrap mb-4">
+                            <label className="w-12 h-12 rounded-xl flex items-center justify-center text-xl transition-all border bg-obsidian-800 border-obsidian-750 hover:border-purple-500 hover:scale-105 cursor-pointer">
+                              <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+                              <i className="fa-solid fa-upload text-slate-400 hover:text-purple-400"></i>
+                            </label>
                             {getAvatarsForGender(gender).map((av) => (
                               <button 
                                 key={av.emoji}

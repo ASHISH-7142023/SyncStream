@@ -88,7 +88,7 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.generateToken(authentication);
 
-        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getGender(), user.getAvatar(), user.getThemeColor(), user.getNotificationsEnabled(), user.getPublicKey(), user.getEncryptedPrivateKey()));
+        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getGender(), user.getAvatar(), user.getBio(), user.getThemeColor(), user.getNotificationsEnabled(), user.getPublicKey(), user.getEncryptedPrivateKey()));
     }
 
     @PostMapping("/login")
@@ -104,7 +104,7 @@ public class AuthController {
         String jwt = tokenProvider.generateToken(authentication);
         User user = (User) authentication.getPrincipal();
 
-        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getGender(), user.getAvatar(), user.getThemeColor(), user.getNotificationsEnabled(), user.getPublicKey(), user.getEncryptedPrivateKey()));
+        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getGender(), user.getAvatar(), user.getBio(), user.getThemeColor(), user.getNotificationsEnabled(), user.getPublicKey(), user.getEncryptedPrivateKey()));
     }
 
     @GetMapping("/me")
@@ -120,6 +120,7 @@ public class AuthController {
         response.put("createdAt", user.getCreatedAt());
         response.put("gender", user.getGender());
         response.put("avatar", user.getAvatar());
+        response.put("bio", user.getBio());
         response.put("themeColor", user.getThemeColor());
         response.put("notificationsEnabled", user.getNotificationsEnabled());
         response.put("publicKey", user.getPublicKey());
@@ -137,9 +138,13 @@ public class AuthController {
 
         String gender = request.get("gender");
         String avatar = request.get("avatar");
+        String bio = request.get("bio");
+        String themeColor = request.get("themeColor");
 
         if (gender != null) user.setGender(gender);
         if (avatar != null) user.setAvatar(avatar);
+        if (bio != null) user.setBio(bio);
+        if (themeColor != null) user.setThemeColor(themeColor);
 
         userRepository.save(user);
 
@@ -148,6 +153,8 @@ public class AuthController {
         response.put("username", user.getUsername());
         response.put("gender", user.getGender());
         response.put("avatar", user.getAvatar());
+        response.put("bio", user.getBio());
+        response.put("themeColor", user.getThemeColor());
 
         return ResponseEntity.ok(response);
     }

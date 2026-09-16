@@ -11,10 +11,10 @@ interface User {
   createdAt?: string;
   gender?: string;
   avatar?: string;
+  bio?: string;
   themeColor?: string;
   notificationsEnabled?: boolean;
   customStatusText?: string;
-  bio?: string;
   statusEmoji?: string;
 }
 
@@ -28,7 +28,7 @@ interface AuthContextType {
   logout: () => void;
   clearError: () => void;
   updateSettings: (themeColor?: string, notificationsEnabled?: boolean) => Promise<void>;
-  updateProfile: (data: { gender?: string; avatar?: string; bio?: string; statusEmoji?: string; customStatusText?: string }) => Promise<void>;
+  updateProfile: (data: { gender?: string; avatar?: string; bio?: string; themeColor?: string; statusEmoji?: string; customStatusText?: string }) => Promise<void>;
   privateKey: CryptoKey | null;
 }
 
@@ -85,14 +85,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setError(null);
     try {
       const response = await api.post('/api/auth/login', { username: emailOrUsername, password });
-      const { token: receivedToken, userId, username: resUsername, gender, avatar, themeColor, notificationsEnabled, publicKey, encryptedPrivateKey } = response.data;
+      const { token: receivedToken, userId, username: resUsername, gender, avatar, bio, themeColor, notificationsEnabled, publicKey, encryptedPrivateKey } = response.data;
       
       localStorage.setItem('token', receivedToken);
       localStorage.setItem('username', resUsername);
       if (gender) localStorage.setItem('user-gender', gender);
       if (avatar) localStorage.setItem('user-avatar', avatar);
       setToken(receivedToken);
-      setUser({ id: userId, username: resUsername, gender, avatar, themeColor, notificationsEnabled });
+      setUser({ id: userId, username: resUsername, gender, avatar, bio, themeColor, notificationsEnabled });
       if (themeColor) document.documentElement.setAttribute('data-theme', themeColor);
       
       const { cryptoService } = await import('../services/cryptoService');
@@ -140,14 +140,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         publicKey: pubKeyBase64,
         encryptedPrivateKey: encryptedPrivKeyBase64
       });
-      const { token: receivedToken, userId, username: resUsername, themeColor, notificationsEnabled } = response.data;
+      const { token: receivedToken, userId, username: resUsername, themeColor, notificationsEnabled, bio } = response.data;
       
       localStorage.setItem('token', receivedToken);
       localStorage.setItem('username', resUsername);
       localStorage.setItem('user-gender', gender);
       localStorage.setItem('user-avatar', avatar);
       setToken(receivedToken);
-      setUser({ id: userId, username: resUsername, gender, avatar, themeColor, notificationsEnabled });
+      setUser({ id: userId, username: resUsername, gender, avatar, bio, themeColor, notificationsEnabled });
       if (themeColor) document.documentElement.setAttribute('data-theme', themeColor);
       
       setPrivateKey(keyPair.privateKey);
@@ -197,12 +197,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const updateProfile = async (data: { gender?: string; avatar?: string; bio?: string; statusEmoji?: string; customStatusText?: string }) => {
+  const updateProfile = async (data: { gender?: string; avatar?: string; bio?: string; themeColor?: string; statusEmoji?: string; customStatusText?: string }) => {
     try {
       const response = await api.put('/api/users/profile', data);
       setUser(prev => prev ? { 
         ...prev, 
-        gender: response.data.gender, 
+        gender: response.data.gender,
+        themeColor: response.data.themeColor,
         avatar: response.data.avatar,
         bio: response.data.bio,
         statusEmoji: response.data.statusEmoji,

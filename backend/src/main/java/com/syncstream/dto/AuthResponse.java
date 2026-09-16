@@ -11,6 +11,7 @@ public class AuthResponse {
     private String username;
     private String gender;
     private String avatar;
+    private String bio;
     private String themeColor;
     private Boolean notificationsEnabled;
     private String publicKey;

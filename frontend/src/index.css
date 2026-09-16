@@ -343,6 +343,47 @@ html[data-theme="midnight"] .glass-panel {
   border: 1px solid rgba(59, 130, 246, 0.15) !important;
 }
 
+html[data-theme="cyberpunk"] {
+  --bg-main: #0B0A10;
+  --bg-sidebar: #130F1A;
+  --bg-card: #1D1528;
+  --bg-hover: #4F1351;
+  --accent-purple: #F92672;
+  --accent-purple-light: #FF66A3;
+  --accent-green: #00F0FF;
+  --accent-blue: #00F0FF;
+  --text-main: #E5E7EB;
+  --text-muted: #9CA3AF;
+  
+  --surface: #0B0A10;
+  --surface-container-lowest: #130F1A;
+  --surface-container-low: #1D1528;
+  --surface-container: #4F1351;
+  --surface-container-high: #751457;
+  --surface-container-highest: #F92672;
+  --on-surface: #E5E7EB;
+  --on-surface-variant: #9CA3AF;
+  --outline: #2D1B36;
+  --outline-variant: #4F1351;
+  --primary: #00F0FF;
+  --primary-container: rgba(0, 240, 255, 0.15);
+  --on-primary-container: #80F8FF;
+  
+  --surface-dim: #0B0A10;
+  --surface-bright: #1D1528;
+  
+  --obsidian-900: #0B0A10;
+  --obsidian-800: #130F1A;
+  --obsidian-700: #1D1528;
+  --obsidian-600: #4F1351;
+}
+
+html[data-theme="cyberpunk"] .glass-panel {
+  background: linear-gradient(145deg, rgba(29, 21, 40, 0.8) 0%, rgba(19, 15, 26, 0.8) 100%) !important;
+  border: 1px solid rgba(0, 240, 255, 0.25) !important;
+  box-shadow: 0 4px 30px rgba(249, 38, 114, 0.1) !important;
+}
+
 html[data-theme="blue"] {
   --primary: #3b82f6;
   --on-primary-container: #60a5fa;

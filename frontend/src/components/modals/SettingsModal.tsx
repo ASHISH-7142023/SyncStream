@@ -8,10 +8,13 @@ interface SettingsModalProps {
 }
 
 const THEME_COLORS = [
-  { id: 'purple', label: 'Purple (Default)', hex: '#7c3aed' },
-  { id: 'blue', label: 'Blue', hex: '#3b82f6' },
-  { id: 'emerald', label: 'Emerald', hex: '#10b981' },
-  { id: 'rose', label: 'Rose', hex: '#e11d48' },
+  { id: 'default', label: 'Dark Obsidian (Default)', hex: '#0f172a' },
+  { id: 'midnight', label: 'Midnight Blue', hex: '#020617' },
+  { id: 'cyberpunk', label: 'Cyberpunk', hex: '#F92672' },
+  { id: 'purple', label: 'Purple Accent', hex: '#7c3aed' },
+  { id: 'blue', label: 'Blue Accent', hex: '#3b82f6' },
+  { id: 'emerald', label: 'Emerald Accent', hex: '#10b981' },
+  { id: 'rose', label: 'Rose Accent', hex: '#e11d48' },
 ];
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
