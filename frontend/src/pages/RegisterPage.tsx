@@ -45,7 +45,7 @@ const RegisterPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username || !email || !password || !confirmPassword) {
+    if (!displayName || !username || !email || !password || !confirmPassword) {
       setErrorMsg('Please fill in all required fields.');
       return;
     }
@@ -376,6 +376,7 @@ const RegisterPage: React.FC = () => {
                     id="displayName" 
                     placeholder="John Doe" 
                     type="text" 
+                    required
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                   />
