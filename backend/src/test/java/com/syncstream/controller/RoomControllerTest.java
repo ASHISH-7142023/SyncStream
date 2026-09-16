@@ -91,7 +91,7 @@ public class RoomControllerTest {
                 .createdAt(Instant.now())
                 .build();
 
-        when(roomService.createRoom(anyString(), anyString(), anyString())).thenReturn(mockRoom);
+        when(roomService.createRoom(anyString(), anyString(), anyString(), anyBoolean())).thenReturn(mockRoom);
 
         mockMvc.perform(post("/api/rooms")
                 .with(csrf())

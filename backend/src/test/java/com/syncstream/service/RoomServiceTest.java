@@ -41,7 +41,7 @@ public class RoomServiceTest {
         when(roomRepository.existsByName("developers")).thenReturn(false);
         when(roomRepository.save(any(Room.class))).thenReturn(mockRoom);
 
-        Room created = roomService.createRoom("developers", "Dev room", "user-1");
+        Room created = roomService.createRoom("developers", "Dev room", "user-1", false);
 
         assertNotNull(created);
         assertEquals("developers", created.getName());
