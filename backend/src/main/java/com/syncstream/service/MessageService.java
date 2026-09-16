@@ -235,7 +235,22 @@ public class MessageService {
 
     public Message deleteMessage(String messageId, String userId) {
         return messageRepository.findById(messageId).map(message -> {
-            if (!message.getSenderId().equals(userId)) {
+            boolean isAuthor = message.getSenderId().equals(userId);
+            boolean isAuthorized = isAuthor;
+
+            if (!isAuthor) {
+                com.syncstream.model.Room room = roomRepository.findById(message.getRoomId()).orElse(null);
+                if (room != null) {
+                    boolean isOwner = room.getOwnerId().equals(userId);
+                    boolean isAdmin = room.getAdmins() != null && room.getAdmins().contains(userId);
+                    boolean isModerator = room.getModerators() != null && room.getModerators().contains(userId);
+                    if (isOwner || isAdmin || isModerator) {
+                        isAuthorized = true;
+                    }
+                }
+            }
+
+            if (!isAuthorized) {
                 throw new SecurityException("Not authorized to delete this message");
             }
             message.setDeleted(true);

@@ -792,6 +792,12 @@ const RoomChatPage: React.FC = () => {
                 <h1 className="text-lg font-semibold text-white">
                   {room ? (room.isDirectMessage ? room.name.replace('DM-', '').replace(user?.id || '', '').replace('-', '') || 'Direct Message' : room.name) : 'developers'}
                 </h1>
+                {room?.isDirectMessage && (
+                  <div className="flex items-center gap-1.5 ml-2 text-[10px] uppercase font-bold tracking-wider text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full select-none" title="Messages and files in this chat are end-to-end encrypted">
+                    <i className="fa-solid fa-lock text-[9px]"></i>
+                    E2EE
+                  </div>
+                )}
                 <button 
                   onClick={() => setIsFavorite(!isFavorite)}
                   className={`transition-all hover:scale-115 active:scale-90 cursor-pointer ${
@@ -1377,7 +1383,6 @@ const RoomChatPage: React.FC = () => {
                       <i className="fa-solid fa-reply text-xs"></i>
                     </button>
                     {!msg.deleted && msg.senderId === user?.id && (
-                      <>
                         <button 
                           onClick={() => {
                             setEditingMessageId(msg.id);
@@ -1388,6 +1393,8 @@ const RoomChatPage: React.FC = () => {
                         >
                           <i className="fa-solid fa-pen text-xs"></i>
                         </button>
+                    )}
+                    {!msg.deleted && (msg.senderId === user?.id || room?.ownerId === user?.id || room?.admins?.includes(user?.id || '') || room?.moderators?.includes(user?.id || '')) && (
                         <button 
                           onClick={() => {
                             if (window.confirm('Are you sure you want to delete this message?') && roomId) {
@@ -1399,7 +1406,6 @@ const RoomChatPage: React.FC = () => {
                         >
                           <i className="fa-solid fa-trash text-xs"></i>
                         </button>
-                      </>
                     )}
                     <button className="p-1.5 text-text-muted hover:text-white hover:bg-white/5 transition-colors cursor-pointer" title="More actions">
                       <i className="fa-solid fa-ellipsis-vertical text-xs"></i>
