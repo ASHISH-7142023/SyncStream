@@ -565,6 +565,18 @@ const RoomChatPage: React.FC = () => {
     }
   };
 
+  const handleAssignCustomRole = async (targetUserId: string, roleId: string) => {
+    if (!roomId) return;
+    try {
+      await api.put(`/api/rooms/${roomId}/members/${targetUserId}/role`, { roleId });
+      const res = await api.get(`/api/rooms/${roomId}`);
+      setRoom(res.data);
+      addToast('Role assigned successfully', 'success');
+    } catch (err: any) {
+      addToast(err.response?.data?.message || 'Failed to assign role', 'error');
+    }
+  };
+
   const formatTime = (ts?: string) => {
     if (!ts) return '10:30 AM';
     try {
@@ -585,6 +597,91 @@ const RoomChatPage: React.FC = () => {
       </div>
     );
   }
+
+  const renderMemberItem = (m: any, statusColorClass: string, isOffline: boolean = false) => {
+    const roleId = room?.memberRoles?.[m.id];
+    const customRole = roleId ? room?.customRoles?.find((r: any) => r.id === roleId) : null;
+    
+    return (
+      <li key={m.id} className={`flex items-center justify-between group cursor-pointer ${isOffline ? 'opacity-50' : ''}`}>
+        <div className="flex items-center gap-3">
+          <div className="relative cursor-pointer" onClick={(e) => handleAvatarClick(m.username, e)}>
+            <div className={`w-8 h-8 rounded-full bg-[#3b4155]/20 flex items-center justify-center text-lg select-none shrink-0 aspect-square ${isOffline ? 'grayscale' : ''}`}>
+              {getAvatarForUser(m.username, presenceUsers)}
+            </div>
+            <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 ${statusColorClass} border-2 border-[#151723] rounded-full`}></span>
+          </div>
+          <div>
+            <div className="flex flex-col">
+              <div className="text-sm font-medium flex items-center gap-1.5 flex-wrap">
+                <span className="text-white">{m.username}</span>
+                {m.id === room?.ownerId && (
+                  <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
+                )}
+                {room?.admins?.includes(m.id) && m.id !== room?.ownerId && (
+                  <span className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Admin</span>
+                )}
+                {room?.moderators?.includes(m.id) && (
+                  <span className="text-[9px] bg-emerald-900/60 text-emerald-200 border border-emerald-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Mod</span>
+                )}
+                {customRole && (
+                  <span 
+                    className="text-[9px] px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider border"
+                    style={{ 
+                      backgroundColor: `${customRole.color}20`, 
+                      color: customRole.color, 
+                      borderColor: `${customRole.color}50` 
+                    }}
+                  >
+                    {customRole.name}
+                  </span>
+                )}
+                {m.username === user?.username && (
+                  <span className="text-text-muted text-xs font-normal">(You)</span>
+                )}
+              </div>
+              
+              {user?.id && (room?.ownerId === user.id || room?.admins?.includes(user.id) || room?.moderators?.includes(user.id)) && user.id !== m.id && (
+                <div className="hidden group-hover:flex flex-wrap gap-1 mt-1 items-center">
+                  {(room?.ownerId === user.id || room?.admins?.includes(user.id)) && (
+                    <>
+                      <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'kick'); }} className="text-[9px] bg-yellow-900/60 text-yellow-200 border border-yellow-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-yellow-800 transition">Kick</button>
+                      <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'ban'); }} className="text-[9px] bg-red-900/60 text-red-200 border border-red-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-red-800 transition">Ban</button>
+                      {room?.customRoles && room.customRoles.length > 0 && (
+                        <select 
+                          className="text-[9px] bg-[#1a1d2d] text-brand-300 border border-white/10 px-1 rounded outline-none ml-1 cursor-pointer"
+                          value={roleId || ''}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            if (e.target.value) handleAssignCustomRole(m.id, e.target.value);
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <option value="">Assign Role...</option>
+                          {room.customRoles.map((r: any) => (
+                            <option key={r.id} value={r.id}>{r.name}</option>
+                          ))}
+                        </select>
+                      )}
+                    </>
+                  )}
+                  {room?.ownerId === user.id && !room?.admins?.includes(m.id) && (
+                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'promote_admin'); }} className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-blue-800 transition">Admin</button>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <div className="text-xs text-text-muted truncate w-40 mt-0.5">
+              {presenceUsers[m.id]?.customStatusText 
+                ? presenceUsers[m.id].customStatusText 
+                : (isOffline ? 'Offline' : (statusColorClass.includes('away') ? 'Away' : (statusColorClass.includes('dnd') ? 'Do Not Disturb' : 'Online')))}
+            </div>
+          </div>
+        </div>
+      </li>
+    );
+  };
 
   return (
     <div className="h-screen flex flex-col overflow-hidden text-sm selection:bg-brand selection:text-white bg-[#0f111a] text-[#e2e8f0] font-sans antialiased">
@@ -1724,40 +1821,7 @@ const RoomChatPage: React.FC = () => {
                     Online — <span className="text-status-online">{onlineMembers.length}</span>
                   </div>
                   <ul className="space-y-3">
-                    {onlineMembers.map(m => (
-                      <li key={m.id} className="flex items-center justify-between group cursor-pointer">
-                        <div className="flex items-center gap-3">
-                          <div className="relative">
-                            <div className="w-8 h-8 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-lg select-none shrink-0 aspect-square">
-                              {getAvatarForUser(m.username, presenceUsers)}
-                            </div>
-                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-online border-2 border-[#151723] rounded-full"></span>
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium flex items-center gap-1.5">
-                              <span className="text-white">{m.username}</span>
-                              {m.id === room?.ownerId && (
-                                <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
-                              )}
-                              {room?.admins?.includes(m.id) && m.id !== room?.ownerId && (
-                                <span className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Admin</span>
-                              )}
-                              {room?.moderators?.includes(m.id) && (
-                                <span className="text-[9px] bg-emerald-900/60 text-emerald-200 border border-emerald-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Mod</span>
-                              )}
-                              {m.username === user?.username && (
-                                <span className="text-text-muted text-xs font-normal">(You)</span>
-                              )}
-                            </div>
-                            <div className="text-xs text-text-muted truncate w-40">
-                              {presenceUsers[m.id]?.customStatusText 
-                                ? presenceUsers[m.id].customStatusText 
-                                : 'Online'}
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
+                    {onlineMembers.map(m => renderMemberItem(m, 'bg-status-online', false))}
                   </ul>
                   <div 
                     onClick={() => addToast("Online Members: " + onlineMembers.map(m => m.username).join(', '), 'info')}
@@ -1774,52 +1838,7 @@ const RoomChatPage: React.FC = () => {
                     Away — <span className="text-status-away">{awayMembers.length}</span>
                   </div>
                   <ul className="space-y-3">
-                    {awayMembers.map(m => (
-                      <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-70">
-                        <div className="flex items-center gap-3">
-                          <div className="relative cursor-pointer" onClick={(e) => handleAvatarClick(m.username, e)}>
-                            <div className="w-8 h-8 rounded-full bg-[#3b4155]/20 flex items-center justify-center text-lg select-none shrink-0 aspect-square">
-                              {getAvatarForUser(m.username, presenceUsers)}
-                            </div>
-                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-away border-2 border-[#151723] rounded-full"></span>
-                          </div>
-                          <div>
-                            <div className="flex flex-col">
-                            <div className="text-sm font-medium flex items-center gap-1.5">
-                              <span className="text-white">{m.username}</span>
-                              {m.id === room?.ownerId && (
-                                <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
-                              )}
-                              {room?.admins?.includes(m.id) && m.id !== room?.ownerId && (
-                                <span className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Admin</span>
-                              )}
-                              {room?.moderators?.includes(m.id) && (
-                                <span className="text-[9px] bg-emerald-900/60 text-emerald-200 border border-emerald-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Mod</span>
-                              )}
-                            </div>
-                            {user?.id && (room?.ownerId === user.id || room?.admins?.includes(user.id) || room?.moderators?.includes(user.id)) && user.id !== m.id && (
-                              <div className="hidden group-hover:flex gap-1 mt-1">
-                                {(room?.ownerId === user.id || room?.admins?.includes(user.id)) && (
-                                  <>
-                                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'kick'); }} className="text-[9px] bg-yellow-900/60 text-yellow-200 border border-yellow-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-yellow-800 transition">Kick</button>
-                                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'ban'); }} className="text-[9px] bg-red-900/60 text-red-200 border border-red-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-red-800 transition">Ban</button>
-                                  </>
-                                )}
-                                {room?.ownerId === user.id && !room?.admins?.includes(m.id) && (
-                                  <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'promote_admin'); }} className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-blue-800 transition">Admin</button>
-                                )}
-                              </div>
-                            )}
-                            </div>
-                            <div className="text-xs text-text-muted truncate w-40">
-                              {presenceUsers[m.id]?.customStatusText 
-                                ? presenceUsers[m.id].customStatusText 
-                                : 'Away'}
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
+                    {awayMembers.map(m => renderMemberItem(m, 'bg-status-away', false))}
                   </ul>
                 </div>
               )}
@@ -1830,52 +1849,7 @@ const RoomChatPage: React.FC = () => {
                     Do Not Disturb — <span className="text-red-400">{dndMembers.length}</span>
                   </div>
                   <ul className="space-y-3">
-                    {dndMembers.map(m => (
-                      <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-90">
-                        <div className="flex items-center gap-3">
-                          <div className="relative cursor-pointer" onClick={(e) => handleAvatarClick(m.username, e)}>
-                            <div className="w-8 h-8 rounded-full bg-[#ef4444]/20 flex items-center justify-center text-lg select-none shrink-0 aspect-square">
-                              {getAvatarForUser(m.username, presenceUsers)}
-                            </div>
-                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-red-500 border-2 border-[#151723] rounded-full"></span>
-                          </div>
-                          <div>
-                            <div className="flex flex-col">
-                            <div className="text-sm font-medium flex items-center gap-1.5">
-                              <span className="text-white">{m.username}</span>
-                              {m.id === room?.ownerId && (
-                                <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
-                              )}
-                              {room?.admins?.includes(m.id) && m.id !== room?.ownerId && (
-                                <span className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Admin</span>
-                              )}
-                              {room?.moderators?.includes(m.id) && (
-                                <span className="text-[9px] bg-emerald-900/60 text-emerald-200 border border-emerald-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Mod</span>
-                              )}
-                            </div>
-                            {user?.id && (room?.ownerId === user.id || room?.admins?.includes(user.id) || room?.moderators?.includes(user.id)) && user.id !== m.id && (
-                              <div className="hidden group-hover:flex gap-1 mt-1">
-                                {(room?.ownerId === user.id || room?.admins?.includes(user.id)) && (
-                                  <>
-                                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'kick'); }} className="text-[9px] bg-yellow-900/60 text-yellow-200 border border-yellow-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-yellow-800 transition">Kick</button>
-                                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'ban'); }} className="text-[9px] bg-red-900/60 text-red-200 border border-red-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-red-800 transition">Ban</button>
-                                  </>
-                                )}
-                                {room?.ownerId === user.id && !room?.admins?.includes(m.id) && (
-                                  <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'promote_admin'); }} className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-blue-800 transition">Admin</button>
-                                )}
-                              </div>
-                            )}
-                            </div>
-                            <div className="text-xs text-text-muted truncate w-40">
-                              {presenceUsers[m.id]?.customStatusText 
-                                ? presenceUsers[m.id].customStatusText 
-                                : 'Do Not Disturb'}
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
+                    {dndMembers.map(m => renderMemberItem(m, 'bg-red-500', false))}
                   </ul>
                 </div>
               )}
@@ -1886,52 +1860,7 @@ const RoomChatPage: React.FC = () => {
                     Offline — <span className="text-status-offline">{offlineMembers.length}</span>
                   </div>
                   <ul className="space-y-3">
-                    {offlineMembers.map(m => (
-                      <li key={m.id} className="flex items-center justify-between group cursor-pointer opacity-50 grayscale">
-                        <div className="flex items-center gap-3">
-                          <div className="relative cursor-pointer" onClick={(e) => handleAvatarClick(m.username, e)}>
-                            <div className="w-8 h-8 rounded-full bg-[#1a1d2d]/20 flex items-center justify-center text-lg select-none shrink-0 aspect-square">
-                              {getAvatarForUser(m.username, presenceUsers)}
-                            </div>
-                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-offline border-2 border-[#151723] rounded-full"></span>
-                          </div>
-                          <div>
-                            <div className="flex flex-col">
-                            <div className="text-sm font-medium flex items-center gap-1.5">
-                              <span className="text-white">{m.username}</span>
-                              {m.id === room?.ownerId && (
-                                <span className="text-[9px] bg-purple-900/60 text-purple-200 border border-purple-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Owner</span>
-                              )}
-                              {room?.admins?.includes(m.id) && m.id !== room?.ownerId && (
-                                <span className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Admin</span>
-                              )}
-                              {room?.moderators?.includes(m.id) && (
-                                <span className="text-[9px] bg-emerald-900/60 text-emerald-200 border border-emerald-700/50 px-1.5 py-0.5 rounded font-semibold uppercase tracking-wider">Mod</span>
-                              )}
-                            </div>
-                            {user?.id && (room?.ownerId === user.id || room?.admins?.includes(user.id) || room?.moderators?.includes(user.id)) && user.id !== m.id && (
-                              <div className="hidden group-hover:flex gap-1 mt-1">
-                                {(room?.ownerId === user.id || room?.admins?.includes(user.id)) && (
-                                  <>
-                                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'kick'); }} className="text-[9px] bg-yellow-900/60 text-yellow-200 border border-yellow-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-yellow-800 transition">Kick</button>
-                                    <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'ban'); }} className="text-[9px] bg-red-900/60 text-red-200 border border-red-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-red-800 transition">Ban</button>
-                                  </>
-                                )}
-                                {room?.ownerId === user.id && !room?.admins?.includes(m.id) && (
-                                  <button onClick={(e) => { e.stopPropagation(); handleMemberAction(m.id, 'promote_admin'); }} className="text-[9px] bg-blue-900/60 text-blue-200 border border-blue-700/50 px-1.5 py-0.5 rounded font-semibold hover:bg-blue-800 transition">Admin</button>
-                                )}
-                              </div>
-                            )}
-                            </div>
-                            <div className="text-xs text-text-muted truncate w-40">
-                              {presenceUsers[m.id]?.customStatusText 
-                                ? presenceUsers[m.id].customStatusText 
-                                : 'Offline'}
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
+                    {offlineMembers.map(m => renderMemberItem(m, 'bg-status-offline', true))}
                   </ul>
                   <div 
                     onClick={() => addToast("Offline Members: " + offlineMembers.map(m => m.username).join(', '), 'info')}
