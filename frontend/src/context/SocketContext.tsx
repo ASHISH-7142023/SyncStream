@@ -47,6 +47,17 @@ export interface WebRtcSignal {
   candidate?: any;
 }
 
+export interface WhiteboardAction {
+  type: string;
+  prevX: number;
+  prevY: number;
+  currentX: number;
+  currentY: number;
+  color: string;
+  size: number;
+  userId: string;
+}
+
 export interface UserPresence {
   userId: string;
   username: string;
@@ -78,6 +89,8 @@ interface SocketContextType {
   editMessage: (roomId: string, messageId: string, content: string) => void;
   deleteMessage: (roomId: string, messageId: string) => void;
   sendPollVote: (roomId: string, messageId: string, optionIndex: number) => void;
+  subscribeToWhiteboard: (roomId: string, callback: (action: WhiteboardAction) => void) => () => void;
+  sendWhiteboardAction: (roomId: string, action: WhiteboardAction) => void;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -536,6 +549,31 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
+  const subscribeToWhiteboard = (roomId: string, callback: (action: WhiteboardAction) => void) => {
+    if (!clientRef.current || connectionStatus !== 'CONNECTED') return () => {};
+
+    const subscription = clientRef.current.subscribe(
+      `/topic/room.${roomId}.whiteboard`,
+      (message) => {
+        const action: WhiteboardAction = JSON.parse(message.body);
+        callback(action);
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  };
+
+  const sendWhiteboardAction = (roomId: string, action: WhiteboardAction) => {
+    if (!clientRef.current || connectionStatus !== 'CONNECTED') return;
+
+    clientRef.current.publish({
+      destination: `/app/room/${roomId}/whiteboard`,
+      body: JSON.stringify(action),
+    });
+  };
+
   const sendReadReceipt = (roomId: string, messageId: string) => {
     if (clientRef.current && clientRef.current.active && user) {
       // Local optimistic update
@@ -660,7 +698,9 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         editMessage,
         deleteMessage,
         unreadRoomCounts,
-        sendPollVote
+        sendPollVote,
+        subscribeToWhiteboard,
+        sendWhiteboardAction
       }}
     >
       {children}

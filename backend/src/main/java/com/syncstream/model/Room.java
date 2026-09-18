@@ -9,7 +9,11 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Document(collection = "rooms")
@@ -46,6 +50,12 @@ public class Room {
 
     @Builder.Default
     private Set<String> bannedUsers = new HashSet<>();
+
+    @Builder.Default
+    private List<CustomRole> customRoles = new ArrayList<>();
+
+    @Builder.Default
+    private Map<String, String> memberRoles = new HashMap<>();
 
     private Instant createdAt;
 }

@@ -21,6 +21,7 @@ import { E2EEAttachment } from '../components/chat/E2EEAttachment';
 import CreatePollModal from '../components/modals/CreatePollModal';
 import { ImageGalleryModal } from '../components/modals/ImageGalleryModal';
 import type { GalleryImage } from '../components/modals/ImageGalleryModal';
+import { Whiteboard } from '../components/chat/Whiteboard';
 
 interface Member {
   id: string;
@@ -44,6 +45,8 @@ interface RoomDetails {
   moderators?: string[];
   bannedUsers?: string[];
   isVoiceChannel?: boolean;
+  customRoles?: any[];
+  memberRoles?: Record<string, string>;
 }
 
 const markdownComponents: any = {
@@ -108,6 +111,26 @@ const RoomChatPage: React.FC = () => {
   const feedStartRef = useRef<HTMLDivElement | null>(null);
 
   const [room, setRoom] = useState<RoomDetails | null>(null);
+  
+  const [currentUserPerms, setCurrentUserPerms] = useState<string[]>([]);
+  useEffect(() => {
+    if (room && user) {
+      if (room.ownerId === user.id) {
+        setCurrentUserPerms(['PIN_MESSAGES', 'MUTE_USERS', 'MANAGE_WEBHOOKS']);
+      } else if (room.memberRoles && room.memberRoles[user.id]) {
+        const roleId = room.memberRoles[user.id];
+        const role = room.customRoles?.find((r: any) => r.id === roleId);
+        if (role) {
+          setCurrentUserPerms(role.permissions || []);
+        } else {
+          setCurrentUserPerms([]);
+        }
+      } else {
+        setCurrentUserPerms([]);
+      }
+    }
+  }, [room, user]);
+
   const [inputText, setInputText] = useState('');
   const [loadingRoom, setLoadingRoom] = useState(true);
   const [pinnedClosed, setPinnedClosed] = useState(false);
@@ -122,6 +145,8 @@ const RoomChatPage: React.FC = () => {
   const [activeThreadMsg, setActiveThreadMsg] = useState<any | null>(null); // For viewing a thread
   const [showRoomDetails, setShowRoomDetails] = useState(false);
   const [showUpgradePro, setShowUpgradePro] = useState(false);
+  
+  const [activeView, setActiveView] = useState<'chat' | 'whiteboard'>('chat');
   
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editInputText, setEditInputText] = useState('');
@@ -869,6 +894,14 @@ const RoomChatPage: React.FC = () => {
                 <i className="fa-solid fa-users text-xs"></i>
               </button>
               
+              <button 
+                onClick={() => setActiveView(prev => prev === 'chat' ? 'whiteboard' : 'chat')}
+                className={`p-1.5 hover:bg-white/5 hover:text-white rounded-lg transition-all hover:scale-115 active:scale-90 cursor-pointer ${activeView === 'whiteboard' ? 'text-[#a78bfa]' : ''}`}
+                title="Toggle Whiteboard"
+              >
+                <i className="fa-solid fa-palette text-xs"></i>
+              </button>
+              
               {/* WebRTC Video Call Button */}
               {!inCall && (
                 <button 
@@ -931,7 +964,7 @@ const RoomChatPage: React.FC = () => {
         )}
 
         {/* Hide Text Chat elements if it's a Voice Channel */}
-        {!room?.isVoiceChannel && (
+        {!room?.isVoiceChannel && activeView === 'chat' && (
           <>
 
         {/* Pinned Message */}
@@ -1496,8 +1529,9 @@ const RoomChatPage: React.FC = () => {
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={handleKeyPress}
-                className="w-full bg-transparent border-0 text-[15px] placeholder-text-muted/70 resize-none py-3 px-4 focus:ring-0 min-h-[48px] outline-none text-white" 
-                placeholder="Type a message..." 
+                disabled={currentUserPerms.includes('READ_ONLY')}
+                className="w-full bg-transparent border-0 text-[15px] placeholder-text-muted/70 resize-none py-3 px-4 focus:ring-0 min-h-[48px] outline-none text-white disabled:opacity-50 disabled:cursor-not-allowed" 
+                placeholder={currentUserPerms.includes('READ_ONLY') ? "You do not have permission to send messages." : "Type a message..."} 
                 rows={1}
               />
             </div>
@@ -1628,6 +1662,12 @@ const RoomChatPage: React.FC = () => {
           onClose={() => setGalleryOpen(false)}
         />
         </>
+        )}
+
+        {!room?.isVoiceChannel && activeView === 'whiteboard' && (
+          <div className="flex-1 w-full h-full p-4 min-h-[400px]">
+            <Whiteboard roomId={roomId || ''} />
+          </div>
         )}
       </main>
 

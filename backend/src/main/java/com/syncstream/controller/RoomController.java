@@ -343,4 +343,60 @@ public class RoomController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", e.getMessage()));
         }
     }
+
+    @PostMapping("/{roomId}/custom-roles")
+    public ResponseEntity<?> addCustomRole(
+            @PathVariable String roomId,
+            @RequestBody Map<String, Object> request,
+            @AuthenticationPrincipal User user) {
+        try {
+            String name = (String) request.get("name");
+            String color = (String) request.get("color");
+            List<String> permsList = (List<String>) request.get("permissions");
+            java.util.Set<String> permissions = permsList != null ? new java.util.HashSet<>(permsList) : new java.util.HashSet<>();
+            Room room = roomService.addCustomRole(roomId, name, color, permissions, user.getId());
+            return ResponseEntity.ok(room);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{roomId}/custom-roles/{roleId}")
+    public ResponseEntity<?> updateCustomRole(
+            @PathVariable String roomId,
+            @PathVariable String roleId,
+            @RequestBody Map<String, Object> request,
+            @AuthenticationPrincipal User user) {
+        try {
+            String name = (String) request.get("name");
+            String color = (String) request.get("color");
+            List<String> permsList = (List<String>) request.get("permissions");
+            java.util.Set<String> permissions = permsList != null ? new java.util.HashSet<>(permsList) : null;
+            Room room = roomService.updateCustomRole(roomId, roleId, name, color, permissions, user.getId());
+            return ResponseEntity.ok(room);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{roomId}/members/{targetUserId}/role")
+    public ResponseEntity<?> assignCustomRole(
+            @PathVariable String roomId,
+            @PathVariable String targetUserId,
+            @RequestBody Map<String, String> request,
+            @AuthenticationPrincipal User user) {
+        try {
+            String roleId = request.get("roleId");
+            Room room = roomService.assignCustomRole(roomId, targetUserId, roleId, user.getId());
+            return ResponseEntity.ok(room);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", e.getMessage()));
+        }
+    }
 }

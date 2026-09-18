@@ -215,4 +215,52 @@ public class RoomService {
         room.getBannedUsers().remove(targetUserId);
         return roomRepository.save(room);
     }
+
+    public Room addCustomRole(String roomId, String name, String color, java.util.Set<String> permissions, String requesterId) {
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("Room not found"));
+        if (!isAdmin(room, requesterId)) {
+            throw new SecurityException("Only admins can manage custom roles");
+        }
+        com.syncstream.model.CustomRole role = com.syncstream.model.CustomRole.builder()
+                .name(name)
+                .color(color)
+                .permissions(permissions)
+                .build();
+        room.getCustomRoles().add(role);
+        return roomRepository.save(room);
+    }
+
+    public Room updateCustomRole(String roomId, String roleId, String name, String color, java.util.Set<String> permissions, String requesterId) {
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("Room not found"));
+        if (!isAdmin(room, requesterId)) {
+            throw new SecurityException("Only admins can manage custom roles");
+        }
+        room.getCustomRoles().stream()
+                .filter(r -> r.getId().equals(roleId))
+                .findFirst()
+                .ifPresent(r -> {
+                    if (name != null) r.setName(name);
+                    if (color != null) r.setColor(color);
+                    if (permissions != null) r.setPermissions(permissions);
+                });
+        return roomRepository.save(room);
+    }
+
+    public Room assignCustomRole(String roomId, String targetUserId, String roleId, String requesterId) {
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("Room not found"));
+        if (!isAdmin(room, requesterId)) {
+            throw new SecurityException("Only admins can manage member roles");
+        }
+        if (!room.getMembers().contains(targetUserId)) {
+            throw new IllegalArgumentException("User is not a member of the room");
+        }
+        if (roleId == null || roleId.isEmpty()) {
+            room.getMemberRoles().remove(targetUserId);
+        } else {
+            boolean roleExists = room.getCustomRoles().stream().anyMatch(r -> r.getId().equals(roleId));
+            if (!roleExists) throw new IllegalArgumentException("Role not found");
+            room.getMemberRoles().put(targetUserId, roleId);
+        }
+        return roomRepository.save(room);
+    }
 }
