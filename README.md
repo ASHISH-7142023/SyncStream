@@ -20,6 +20,10 @@ Most collaborative chat projects fall into one of two traps: either they are vis
 
 - 💬 **Real-Time Group Chat**: Scalable room-based messaging using STOMP WebSockets and Redis Pub/Sub.
 - 📹 **WebRTC Video & Audio Calling**: Low-latency peer-to-peer media streaming with dynamic grid and Presentation mode layouts for screen sharing.
+- 🔒 **End-to-End Encryption (E2EE)**: Secure Direct Messages using AES-GCM and ECDH key exchange via the Web Crypto API, ensuring zero-knowledge payloads.
+- 🎨 **Real-Time Whiteboard**: A collaborative drawing canvas synced over WebSockets, allowing multiple users to sketch ideas instantly.
+- ⚙️ **Webhooks & Integrations**: Configurable webhook endpoints to receive automated payloads from external services (e.g., GitHub, Jira) directly into channels.
+- 🛡️ **Custom Roles & Permissions**: Granular room moderation capabilities including PIN_MESSAGES, MUTE_USERS, and READ_ONLY assignments.
 - 🎨 **Dynamic UI Theming**: Real-time context-driven CSS variable overrides, allowing users to customize their workspace accent colors without page reloads.
 - 📝 **Markdown & Code Rendering**: Full support for GitHub-flavored markdown, code block syntax highlighting, and text formatting inside chat.
 - 📁 **File & Media Attachments**: Seamlessly upload and share images, PDFs, and code snippets powered by MongoDB GridFS chunked streaming.
@@ -156,8 +160,8 @@ sequenceDiagram
 
 1. **Horizontal Enterprise Team Collaboration**: Deploy SyncStream to multi-container Kubernetes nodes where team members remain connected to separate instances but can interact instantaneously with zero message lag.
 2. **Persistent Discussion Hubs**: Users can create rooms for project areas, track online presence, read pinned announcements, share large files, and scroll through complete history logs.
-3. **Seamless Video Conferences**: Users can join a room and jump directly into a WebRTC video call with zero external plugins, utilizing dynamic Presentation Mode for easy screen sharing.
-4. **Secure Workspace Control**: Administrators can secure their credentials using segmented passwords, track recent log activities, and manage preference settings.
+3. **Seamless Video Conferences & Whiteboarding**: Users can join a room and jump directly into a WebRTC video call or toggle the collaborative whiteboard for brainstorming sessions.
+4. **Secure Workspace Control**: Administrators can configure custom roles and webhooks, while users can chat securely via E2EE Direct Messages.
 
 ---
 
