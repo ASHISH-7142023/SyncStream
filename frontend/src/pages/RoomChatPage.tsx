@@ -1521,11 +1521,11 @@ const RoomChatPage: React.FC = () => {
                           {readers.map((r, i) => (
                             <div 
                               key={r.uId} 
-                              className="w-4 h-4 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center overflow-hidden border border-[#0f111a] -ml-1.5 first:ml-0 z-[1]" 
+                              className="w-4 h-4 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center overflow-hidden border border-[#0f111a] -ml-1.5 first:ml-0 z-[1] text-[10px]" 
                               style={{ zIndex: readers.length - i }}
                               title={`Read by ${r.username}`}
                             >
-                              <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(r.username)}&background=8b5cf6&color=fff&size=16`} alt={r.username} className="w-full h-full object-cover" />
+                              {getAvatarForUser(r.username, presenceUsers)}
                             </div>
                           ))}
                         </div>
