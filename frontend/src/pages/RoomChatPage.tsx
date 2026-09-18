@@ -132,6 +132,44 @@ const RoomChatPage: React.FC = () => {
   }, [room, user]);
 
   const [inputText, setInputText] = useState('');
+  
+  // Slash Commands State
+  const [showCommandMenu, setShowCommandMenu] = useState(false);
+  const [commandFilter, setCommandFilter] = useState('');
+  const [selectedCommandIndex, setSelectedCommandIndex] = useState(0);
+
+  const SLASH_COMMANDS = [
+    { command: '/poll', description: 'Create a new poll' },
+    { command: '/roll', description: 'Roll a random number (1-100)' },
+    { command: '/shrug', description: 'Append ¯\\_(ツ)_/¯' },
+    { command: '/help', description: 'List all available commands' }
+  ];
+
+  const filteredCommands = SLASH_COMMANDS.filter(c => c.command.startsWith(commandFilter.toLowerCase()));
+
+  const executeCommand = (cmd: string) => {
+    switch (cmd) {
+      case '/poll':
+        setIsPollModalOpen(true);
+        setInputText('');
+        break;
+      case '/roll':
+        if (roomId && user) {
+          const roll = Math.floor(Math.random() * 100) + 1;
+          sendMessage(roomId, `🎲 ${user.username} rolled a ${roll}!`, Math.random().toString(36).substring(2, 15));
+        }
+        setInputText('');
+        break;
+      case '/shrug':
+        setInputText(prev => prev.replace(/^\/shrug/i, '').trim() + ' ¯\\_(ツ)_/¯');
+        break;
+      case '/help':
+        addToast('Commands: /poll, /roll, /shrug, /help', 'info');
+        setInputText('');
+        break;
+    }
+    setShowCommandMenu(false);
+  };
   const [loadingRoom, setLoadingRoom] = useState(true);
   const [pinnedClosed, setPinnedClosed] = useState(false);
   const [isPollModalOpen, setIsPollModalOpen] = useState(false);
@@ -438,6 +476,30 @@ const RoomChatPage: React.FC = () => {
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (!roomId) return;
+
+    if (showCommandMenu) {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedCommandIndex(prev => (prev > 0 ? prev - 1 : filteredCommands.length - 1));
+        return;
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedCommandIndex(prev => (prev < filteredCommands.length - 1 ? prev + 1 : 0));
+        return;
+      }
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (filteredCommands.length > 0) {
+          executeCommand(filteredCommands[selectedCommandIndex].command);
+        }
+        return;
+      }
+      if (e.key === 'Escape') {
+        setShowCommandMenu(false);
+        return;
+      }
+    }
 
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -1621,10 +1683,45 @@ const RoomChatPage: React.FC = () => {
                   setTimeout(() => textareaRef.current?.focus(), 0);
                 }}
               />
+              {showCommandMenu && (
+                <div className="absolute bottom-full left-0 mb-2 w-72 bg-[#1f2233]/95 backdrop-blur-md border border-[#3b4155]/50 rounded-xl shadow-2xl overflow-hidden z-50 animate-scale-in">
+                  <div className="px-3 py-2 text-[10px] font-bold text-[#8b5cf6] uppercase tracking-wider border-b border-white/5 bg-black/20">
+                    Slash Commands
+                  </div>
+                  <ul className="max-h-60 overflow-y-auto scrollbar-thin">
+                    {filteredCommands.length > 0 ? (
+                      filteredCommands.map((cmd, idx) => (
+                        <li 
+                          key={cmd.command} 
+                          onClick={() => executeCommand(cmd.command)}
+                          onMouseEnter={() => setSelectedCommandIndex(idx)}
+                          className={`px-3 py-2.5 flex flex-col gap-0.5 cursor-pointer transition-colors ${idx === selectedCommandIndex ? 'bg-[#8b5cf6]/20' : 'hover:bg-white/5'}`}
+                        >
+                          <span className={`font-mono text-sm ${idx === selectedCommandIndex ? 'text-white' : 'text-brand-300'}`}>{cmd.command}</span>
+                          <span className="text-xs text-text-muted">{cmd.description}</span>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="px-3 py-4 text-xs text-text-muted text-center italic">No matching commands</li>
+                    )}
+                  </ul>
+                </div>
+              )}
               <textarea 
                 ref={textareaRef}
                 value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setInputText(val);
+                  
+                  if (val.startsWith('/')) {
+                    setShowCommandMenu(true);
+                    setCommandFilter(val.split(' ')[0]);
+                    setSelectedCommandIndex(0);
+                  } else {
+                    setShowCommandMenu(false);
+                  }
+                }}
                 onKeyDown={handleKeyPress}
                 disabled={currentUserPerms.includes('READ_ONLY')}
                 className="w-full bg-transparent border-0 text-[15px] placeholder-text-muted/70 resize-none py-3 px-4 focus:ring-0 min-h-[48px] outline-none text-white disabled:opacity-50 disabled:cursor-not-allowed" 
