@@ -4,7 +4,7 @@ import com.syncstream.dto.ChatMessageRequest;
 import com.syncstream.model.Webhook;
 import com.syncstream.repository.RoomRepository;
 import com.syncstream.repository.WebhookRepository;
-import com.syncstream.security.UserPrincipal;
+import com.syncstream.model.User;
 import com.syncstream.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,14 +35,14 @@ public class WebhookController {
 
     @GetMapping("/rooms/{roomId}/webhooks")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<Webhook>> getWebhooks(@PathVariable String roomId, @AuthenticationPrincipal UserPrincipal currentUser) {
+    public ResponseEntity<List<Webhook>> getWebhooks(@PathVariable String roomId, @AuthenticationPrincipal User currentUser) {
         // Here we could check if user is an admin/has MANAGE_WEBHOOKS permission
         return ResponseEntity.ok(webhookRepository.findByRoomId(roomId));
     }
 
     @PostMapping("/rooms/{roomId}/webhooks")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> createWebhook(@PathVariable String roomId, @RequestBody Map<String, String> request, @AuthenticationPrincipal UserPrincipal currentUser) {
+    public ResponseEntity<?> createWebhook(@PathVariable String roomId, @RequestBody Map<String, String> request, @AuthenticationPrincipal User currentUser) {
         String name = request.getOrDefault("name", "Incoming Webhook");
         
         Webhook webhook = Webhook.builder()
@@ -59,7 +59,7 @@ public class WebhookController {
 
     @DeleteMapping("/rooms/{roomId}/webhooks/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> deleteWebhook(@PathVariable String roomId, @PathVariable String id, @AuthenticationPrincipal UserPrincipal currentUser) {
+    public ResponseEntity<?> deleteWebhook(@PathVariable String roomId, @PathVariable String id, @AuthenticationPrincipal User currentUser) {
         webhookRepository.findById(id).ifPresent(webhook -> {
             if (webhook.getRoomId().equals(roomId)) {
                 webhookRepository.delete(webhook);
