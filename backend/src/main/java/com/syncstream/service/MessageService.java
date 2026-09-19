@@ -61,6 +61,7 @@ public class MessageService {
                 .senderName(senderName)
                 .content(request.getContent())
                 .messageType(type)
+                .isVanishMode(request.isVanishMode())
                 .createdAt(Instant.now())
                 .sequenceNumber(sequenceNumber)
                 .parentId(request.getParentId())

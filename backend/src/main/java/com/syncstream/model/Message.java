@@ -40,6 +40,8 @@ public class Message {
 
     private MessageType messageType;
 
+    private boolean isVanishMode;
+
     private Instant createdAt;
 
     private Long sequenceNumber;

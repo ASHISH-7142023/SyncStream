@@ -7,6 +7,7 @@ public class ChatMessageRequest {
     private String content;
     private String clientMessageId;
     private String parentId;
+    private boolean isVanishMode;
     
     private String messageType;
     private String attachmentId;

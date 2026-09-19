@@ -23,6 +23,39 @@ import { ImageGalleryModal } from '../components/modals/ImageGalleryModal';
 import type { GalleryImage } from '../components/modals/ImageGalleryModal';
 import { Whiteboard } from '../components/chat/Whiteboard';
 
+const VanishTimer: React.FC<{
+  messageId: string;
+  roomId: string;
+  deleteMessage: (roomId: string, messageId: string) => void;
+  senderId: string;
+  currentUserId: string;
+}> = ({ messageId, roomId, deleteMessage, senderId, currentUserId }) => {
+  const [timeLeft, setTimeLeft] = useState(10);
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      if (senderId === currentUserId) {
+        // Only sender initiates deletion to avoid multiple network calls,
+        // or just let it self-destruct visually for others. We'll delete it from DB via sender.
+        deleteMessage(roomId, messageId);
+      }
+      return;
+    }
+
+    const timerId = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timerId);
+  }, [timeLeft, messageId, roomId, deleteMessage, senderId, currentUserId]);
+
+  return (
+    <span className="text-[10px] text-red-400 font-mono flex items-center gap-1 border border-red-500/30 bg-red-500/10 px-1.5 py-0.5 rounded ml-2 animate-pulse">
+      <i className="fa-solid fa-fire text-[9px]"></i> {timeLeft}s
+    </span>
+  );
+};
+
 interface Member {
   id: string;
   username: string;
@@ -185,6 +218,7 @@ const RoomChatPage: React.FC = () => {
   const [showUpgradePro, setShowUpgradePro] = useState(false);
   
   const [activeView, setActiveView] = useState<'chat' | 'whiteboard'>('chat');
+  const [isVanishMode, setIsVanishMode] = useState(false);
   
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editInputText, setEditInputText] = useState('');
@@ -466,7 +500,7 @@ const RoomChatPage: React.FC = () => {
        finalContent = await cryptoService.encryptMessage(finalContent, sharedSecret);
     }
 
-    sendMessage(roomId, finalContent, Math.random().toString(36).substring(2, 15), selectedThreadMsg?.id, attachmentData);
+    sendMessage(roomId, finalContent, Math.random().toString(36).substring(2, 15), selectedThreadMsg?.id, attachmentData, isVanishMode);
     setInputText('');
     setSelectedThreadMsg(null);
 
@@ -1240,6 +1274,15 @@ const RoomChatPage: React.FC = () => {
                     <div className="flex items-baseline gap-2 mb-1">
                       <span className="font-semibold text-white text-sm">{msg.sender}</span>
                       <span className="text-[10px] text-text-muted">{formatTime(msg.timestamp)}</span>
+                      {msg.isVanishMode && !msg.deleted && (
+                        <VanishTimer 
+                          messageId={msg.id} 
+                          roomId={roomId || ''} 
+                          deleteMessage={deleteMessage} 
+                          senderId={msg.senderId} 
+                          currentUserId={user?.id || ''} 
+                        />
+                      )}
                     </div>
                     {msg.parentId && (() => {
                       const parentMsg = roomMessages.find((m: any) => m.id === msg.parentId);
@@ -1634,7 +1677,7 @@ const RoomChatPage: React.FC = () => {
             )}
           </div>
 
-          <form onSubmit={handleSendMessage} className="bg-[#1f2233] border border-white/10 rounded-2xl flex flex-col focus-within:border-brand-500/50 focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.3)] transition-all overflow-hidden">
+          <form onSubmit={handleSendMessage} className={`${isVanishMode ? 'bg-[#1a0f14] border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'bg-[#1f2233] border border-white/10'} rounded-2xl flex flex-col focus-within:border-brand-500/50 focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.3)] transition-all overflow-hidden`}>
             {selectedThreadMsg && (
               <div className="flex items-center justify-between px-4 py-2 bg-black/20 border-b border-white/5">
                 <div className="flex flex-col min-w-0">
@@ -1733,8 +1776,8 @@ const RoomChatPage: React.FC = () => {
                   }
                 }}
                 disabled={currentUserPerms.includes('READ_ONLY')}
-                className="w-full bg-transparent border-0 text-[15px] placeholder-text-muted/70 resize-none py-3 px-4 focus:ring-0 min-h-[48px] outline-none text-white disabled:opacity-50 disabled:cursor-not-allowed" 
-                placeholder={currentUserPerms.includes('READ_ONLY') ? "You do not have permission to send messages." : "Type a message..."} 
+                className={`w-full bg-transparent border-0 text-[15px] placeholder-text-muted/70 resize-none py-3 px-4 focus:ring-0 min-h-[48px] outline-none text-white disabled:opacity-50 disabled:cursor-not-allowed ${isVanishMode ? 'text-red-100 placeholder-red-500/50 font-mono' : ''}`} 
+                placeholder={currentUserPerms.includes('READ_ONLY') ? "You do not have permission to send messages." : isVanishMode ? "Vanish Mode active: Messages will self-destruct..." : "Type a message..."} 
                 rows={1}
               />
             </div>
@@ -1824,6 +1867,14 @@ const RoomChatPage: React.FC = () => {
                   title="Attach file"
                 >
                   <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                </button>
+                <button 
+                  onClick={() => setIsVanishMode(!isVanishMode)}
+                  type="button" 
+                  className={`p-2 rounded-lg transition-colors cursor-pointer ${isVanishMode ? 'bg-red-500/20 text-red-400 border border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.3)]' : 'hover:bg-white/5 text-text-muted'}`}
+                  title="Toggle Vanish Mode"
+                >
+                  <i className="fa-solid fa-fire text-[16px]"></i>
                 </button>
                 <button 
                   onClick={() => setIsPollModalOpen(true)}

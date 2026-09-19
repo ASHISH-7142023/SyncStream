@@ -28,6 +28,7 @@ export interface ChatMessage {
   pinned?: boolean;
   editedAt?: string;
   deleted?: boolean;
+  isVanishMode?: boolean;
   linkPreviews?: any[];
   pollData?: {
     question: string;
@@ -75,7 +76,7 @@ interface SocketContextType {
   unreadRoomCounts: Record<string, number>;
   joinRoom: (roomId: string) => void;
   leaveRoom: (roomId: string) => void;
-  sendMessage: (roomId: string, content: string, clientMessageId: string, parentId?: string, attachmentData?: any) => void;
+  sendMessage: (roomId: string, content: string, clientMessageId: string, parentId?: string, attachmentData?: any, isVanishMode?: boolean) => void;
   sendReaction: (roomId: string, messageId: string, emoji: string, active: boolean) => void;
   sendTyping: (roomId: string, isTyping: boolean) => void;
   loadMessages: (roomId: string) => Promise<void>;
@@ -431,7 +432,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
-  const sendMessage = (roomId: string, content: string, clientMessageId: string, parentId?: string, attachmentData?: any) => {
+  const sendMessage = (roomId: string, content: string, clientMessageId: string, parentId?: string, attachmentData?: any, isVanishMode?: boolean) => {
     if (!clientRef.current || connectionStatus !== 'CONNECTED') {
       // Append as failed message locally
       const failedMsg: ChatMessage = {
@@ -445,6 +446,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         parentId,
         status: 'FAILED',
         clientMessageId,
+        isVanishMode,
         ...(attachmentData && {
           messageType: attachmentData.messageType || 'FILE',
           attachmentId: attachmentData.attachmentId,
@@ -473,6 +475,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       parentId,
       status: 'SENDING',
       clientMessageId,
+      isVanishMode,
       ...(attachmentData && {
         messageType: attachmentData.messageType || 'FILE',
         attachmentId: attachmentData.attachmentId,
@@ -493,6 +496,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         content, 
         clientMessageId, 
         parentId,
+        isVanishMode,
         ...(attachmentData && {
           messageType: attachmentData.messageType || 'FILE',
           attachmentId: attachmentData.attachmentId,
