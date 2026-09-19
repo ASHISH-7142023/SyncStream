@@ -42,9 +42,9 @@ public class MessageService {
     private LinkPreviewService linkPreviewService;
 
     public Message saveMessage(String roomId, String senderId, ChatMessageRequest request) {
-        String senderName = userRepository.findById(senderId)
-                .map(User::getUsername)
-                .orElse("Unknown");
+        User sender = userRepository.findById(senderId).orElse(null);
+        String senderName = sender != null ? sender.getUsername() : "Unknown";
+        String senderAvatar = sender != null ? sender.getAvatar() : null;
 
         Long sequenceNumber = getNextSequenceNumber(roomId);
 
@@ -106,7 +106,8 @@ public class MessageService {
                                 "New Mention",
                                 senderName + " mentioned you in a message.",
                                 "MENTION",
-                                roomId
+                                roomId,
+                                senderAvatar
                         );
                     }
                 });

@@ -26,7 +26,7 @@ public class NotificationService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public Notification createNotification(String userId, String title, String message, String type, String referenceId) {
+    public Notification createNotification(String userId, String title, String message, String type, String referenceId, String senderAvatar) {
         Notification notification = Notification.builder()
                 .userId(userId)
                 .title(title)
@@ -45,7 +45,8 @@ public class NotificationService {
             String payload = objectMapper.writeValueAsString(Map.of(
                     "title", title,
                     "body", message,
-                    "url", "/rooms/" + referenceId
+                    "url", "/rooms/" + referenceId,
+                    "avatar", senderAvatar != null ? senderAvatar : ""
             ));
             webPushService.sendPushNotification(userId, payload);
         } catch (Exception e) {
