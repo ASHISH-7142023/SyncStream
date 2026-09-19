@@ -1723,6 +1723,15 @@ const RoomChatPage: React.FC = () => {
                   }
                 }}
                 onKeyDown={handleKeyPress}
+                onPaste={(e) => {
+                  if (e.clipboardData.files && e.clipboardData.files.length > 0) {
+                    const file = e.clipboardData.files[0];
+                    if (file.type.startsWith('image/') || file.type.startsWith('video/') || file.type.startsWith('application/pdf')) {
+                      setSelectedFile(file);
+                      e.preventDefault();
+                    }
+                  }
+                }}
                 disabled={currentUserPerms.includes('READ_ONLY')}
                 className="w-full bg-transparent border-0 text-[15px] placeholder-text-muted/70 resize-none py-3 px-4 focus:ring-0 min-h-[48px] outline-none text-white disabled:opacity-50 disabled:cursor-not-allowed" 
                 placeholder={currentUserPerms.includes('READ_ONLY') ? "You do not have permission to send messages." : "Type a message..."} 
