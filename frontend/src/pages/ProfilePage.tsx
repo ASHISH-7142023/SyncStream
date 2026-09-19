@@ -45,6 +45,11 @@ const ProfilePage: React.FC = () => {
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [tempBio, setTempBio] = useState(bio);
 
+  const [statusEmoji, setStatusEmoji] = useState(user?.statusEmoji || '💭');
+  const [customStatusText, setCustomStatusText] = useState(user?.customStatusText || '');
+  const [isEditingStatus, setIsEditingStatus] = useState(false);
+  const [userBadges, setUserBadges] = useState<string[]>(user?.badges || []);
+
   const handleSaveBio = async () => {
     try {
       await updateProfile({ bio: tempBio });
@@ -53,6 +58,16 @@ const ProfilePage: React.FC = () => {
       addToast('Bio updated successfully!', 'success');
     } catch (e) {
       addToast('Failed to update bio', 'error');
+    }
+  };
+
+  const handleSaveStatus = async () => {
+    try {
+      await updateProfile({ statusEmoji, customStatusText, badges: userBadges });
+      setIsEditingStatus(false);
+      addToast('Status and badges updated!', 'success');
+    } catch (e) {
+      addToast('Failed to update status', 'error');
     }
   };
 
@@ -135,12 +150,7 @@ const ProfilePage: React.FC = () => {
   };
 
 
-  const badges = [
-    { title: 'Early Adopter', desc: 'Joined early', icon: '🚀' },
-    { title: 'Helpful User', desc: '25+ reactions', icon: '⚡' },
-    { title: 'Community Member', desc: 'Active in 10+ rooms', icon: '👥' },
-    { title: 'Supporter', desc: 'Helps others', icon: '🛡️' },
-  ];
+
 
     const topRoomColors = [
       'bg-green-500/10 text-green-500',
@@ -487,23 +497,95 @@ const ProfilePage: React.FC = () => {
                         )}
                       </section>
 
-                      {/* Badges */}
+                      {/* Status & Badges */}
                       <section className="glass-panel rounded-2xl p-6">
-                        <div className="flex items-center justify-between mb-5">
-                          <h3 className="text-base font-semibold text-white">Badges</h3>
-                          <button onClick={() => setShowAllBadges(true)} className="text-xs font-medium text-purple-400 hover:text-purple-300 cursor-pointer">View all</button>
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-base font-semibold text-white">Status & Badges</h3>
+                          {!isEditingStatus && (
+                            <button onClick={() => setIsEditingStatus(true)} className="text-xs font-medium text-purple-400 hover:text-purple-300 cursor-pointer">Edit Status</button>
+                          )}
                         </div>
-                        <div className="grid grid-cols-4 gap-4">
-                          {badges.map((badge, i) => (
-                            <div key={i} className="flex flex-col items-center text-center group cursor-pointer hover:scale-[1.05] transition-all" onClick={() => setShowAllBadges(true)}>
-                              <div className="w-12 h-12 mb-2 bg-obsidian-700 rounded-xl flex items-center justify-center text-lg shadow-lg hover:scale-110 transition-transform">
-                                {badge.icon}
+                        
+                        {isEditingStatus ? (
+                          <div className="space-y-4">
+                            <div>
+                              <label className="text-xs font-semibold text-slate-400 mb-1.5 block">Current Status</label>
+                              <div className="flex gap-2">
+                                <select 
+                                  value={statusEmoji} 
+                                  onChange={(e) => setStatusEmoji(e.target.value)}
+                                  className="bg-obsidian-900 border border-obsidian-750 text-white rounded-lg px-2 py-2 text-sm focus:outline-none focus:border-purple-500 w-16 text-center cursor-pointer"
+                                >
+                                  <option value="💭">💭</option>
+                                  <option value="🌴">🌴</option>
+                                  <option value="🤒">🤒</option>
+                                  <option value="🎧">🎧</option>
+                                  <option value="🎮">🎮</option>
+                                  <option value="🚀">🚀</option>
+                                </select>
+                                <input 
+                                  type="text"
+                                  value={customStatusText}
+                                  onChange={(e) => setCustomStatusText(e.target.value)}
+                                  placeholder="What's on your mind?"
+                                  className="flex-1 bg-obsidian-900 border border-obsidian-750 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500"
+                                />
                               </div>
-                              <span className="text-[11px] font-semibold text-slate-200 block leading-tight">{badge.title}</span>
-                              <span className="text-[9px] text-slate-500 mt-0.5">{badge.desc}</span>
                             </div>
-                          ))}
-                        </div>
+                            
+                            <div>
+                              <label className="text-xs font-semibold text-slate-400 mb-1.5 block">Equip Badges</label>
+                              <div className="flex flex-wrap gap-2">
+                                {['Developer', 'Moderator', 'VIP', 'Early Adopter', 'Bug Hunter'].map(badge => (
+                                  <label key={badge} className="flex items-center gap-2 cursor-pointer bg-obsidian-800 px-3 py-1.5 rounded-full text-xs font-medium border border-transparent hover:border-purple-500/30 transition-colors">
+                                    <input 
+                                      type="checkbox" 
+                                      checked={userBadges.includes(badge)}
+                                      onChange={(e) => {
+                                        if (e.target.checked) setUserBadges([...userBadges, badge]);
+                                        else setUserBadges(userBadges.filter(b => b !== badge));
+                                      }}
+                                      className="accent-purple-500"
+                                    />
+                                    {badge}
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div className="flex gap-2 pt-2">
+                              <button onClick={handleSaveStatus} className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded cursor-pointer transition-colors">Save</button>
+                              <button onClick={() => setIsEditingStatus(false)} className="px-3 py-1.5 bg-transparent border border-obsidian-600 text-slate-300 text-xs font-semibold rounded cursor-pointer">Cancel</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-5">
+                            {/* Display Status */}
+                            <div className="flex items-center gap-3 bg-obsidian-800/50 p-3 rounded-xl border border-obsidian-700">
+                              <div className="w-10 h-10 rounded-lg bg-obsidian-700 flex items-center justify-center text-xl shadow-inner">
+                                {user?.statusEmoji || '💭'}
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-sm font-medium text-slate-200">Current Status</span>
+                                <span className="text-xs text-slate-400">{user?.customStatusText || "No status set"}</span>
+                              </div>
+                            </div>
+                            
+                            {/* Display Badges */}
+                            <div>
+                              <h4 className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Equipped Badges</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {user?.badges && user.badges.length > 0 ? user.badges.map(badge => (
+                                  <div key={badge} className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border border-purple-500/30 shadow-sm flex items-center gap-1.5">
+                                    {badge === 'Developer' ? '💻' : badge === 'Moderator' ? '🛡️' : badge === 'VIP' ? '💎' : '⭐'} {badge}
+                                  </div>
+                                )) : (
+                                  <span className="text-xs text-slate-500 italic">No badges equipped.</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </section>
                     </div>
 

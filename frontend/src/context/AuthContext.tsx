@@ -16,6 +16,7 @@ interface User {
   notificationsEnabled?: boolean;
   customStatusText?: string;
   statusEmoji?: string;
+  badges?: string[];
 }
 
 interface AuthContextType {
@@ -28,7 +29,7 @@ interface AuthContextType {
   logout: () => void;
   clearError: () => void;
   updateSettings: (themeColor?: string, notificationsEnabled?: boolean) => Promise<void>;
-  updateProfile: (data: { gender?: string; avatar?: string; bio?: string; themeColor?: string; statusEmoji?: string; customStatusText?: string }) => Promise<void>;
+  updateProfile: (data: { gender?: string; avatar?: string; bio?: string; themeColor?: string; statusEmoji?: string; customStatusText?: string; badges?: string[] }) => Promise<void>;
   privateKey: CryptoKey | null;
 }
 
@@ -197,7 +198,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const updateProfile = async (data: { gender?: string; avatar?: string; bio?: string; themeColor?: string; statusEmoji?: string; customStatusText?: string }) => {
+  const updateProfile = async (data: { gender?: string; avatar?: string; bio?: string; themeColor?: string; statusEmoji?: string; customStatusText?: string; badges?: string[] }) => {
     try {
       const response = await api.put('/api/users/profile', data);
       setUser(prev => prev ? { 
@@ -207,7 +208,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         avatar: response.data.avatar,
         bio: response.data.bio,
         statusEmoji: response.data.statusEmoji,
-        customStatusText: response.data.customStatusText
+        customStatusText: response.data.customStatusText,
+        badges: response.data.badges
       } : response.data);
       if (response.data.gender) localStorage.setItem('user-gender', response.data.gender);
       if (response.data.avatar) localStorage.setItem('user-avatar', response.data.avatar);

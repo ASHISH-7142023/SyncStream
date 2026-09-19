@@ -57,6 +57,8 @@ public class User implements UserDetails {
     
     private String encryptedPrivateKey;
 
+    private java.util.List<String> badges;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));

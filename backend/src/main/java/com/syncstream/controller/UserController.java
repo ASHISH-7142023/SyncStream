@@ -50,6 +50,7 @@ public class UserController {
             if (request.getCustomStatusText() != null) user.setCustomStatusText(request.getCustomStatusText());
             if (request.getThemeColor() != null) user.setThemeColor(request.getThemeColor());
             if (request.getAvatar() != null) user.setAvatar(request.getAvatar());
+            if (request.getBadges() != null) user.setBadges(request.getBadges());
             
             userRepository.save(user);
             return ResponseEntity.ok(mapToDto(user));
@@ -67,6 +68,7 @@ public class UserController {
                 .customStatusText(user.getCustomStatusText())
                 .bio(user.getBio())
                 .statusEmoji(user.getStatusEmoji())
+                .badges(user.getBadges() != null ? user.getBadges() : java.util.Collections.emptyList())
                 .build();
     }
 }

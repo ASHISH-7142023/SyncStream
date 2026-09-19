@@ -21,4 +21,5 @@ public class UserDto {
     private String customStatusText;
     private String bio;
     private String statusEmoji;
+    private java.util.List<String> badges;
 }

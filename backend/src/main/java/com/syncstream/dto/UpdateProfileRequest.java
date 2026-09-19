@@ -9,4 +9,5 @@ public class UpdateProfileRequest {
     private String customStatusText;
     private String themeColor;
     private String avatar;
+    private java.util.List<String> badges;
 }

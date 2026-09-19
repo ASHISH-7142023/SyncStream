@@ -11,6 +11,8 @@ interface UserProfile {
   createdAt?: string;
   themeColor?: string;
   customStatusText?: string;
+  statusEmoji?: string;
+  badges?: string[];
 }
 
 interface UserProfilePopoverProps {
@@ -63,7 +65,6 @@ const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({ username, onClo
 
   const presence = Object.values(presenceUsers).find(p => p.username === username);
   const status = presence?.status || 'OFFLINE';
-  const customStatusText = profile?.customStatusText || presence?.customStatusText;
 
   const joinDate = profile?.createdAt 
     ? new Date(profile.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
@@ -110,12 +111,40 @@ const UserProfilePopover: React.FC<UserProfilePopoverProps> = ({ username, onClo
             <h3 className="text-xl font-bold text-white tracking-tight">{username}</h3>
             
             <div className="mt-3 bg-white/5 rounded-lg p-3 border border-white/5">
-              <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-1">Status</h4>
-              <div className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full ${getStatusColor(status)}`} />
-                <span className="text-sm text-gray-200">{getStatusText(status, customStatusText)}</span>
-              </div>
+              <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Status</h4>
+              {profile?.customStatusText ? (
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded bg-[#151723] flex items-center justify-center text-lg shadow-inner">
+                    {profile.statusEmoji || '💭'}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-slate-200">{profile.customStatusText}</span>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className={`w-1.5 h-1.5 rounded-full ${getStatusColor(status)}`} />
+                      <span className="text-[10px] text-gray-400">{getStatusText(status)}</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full ${getStatusColor(status)}`} />
+                  <span className="text-sm text-gray-200">{getStatusText(status)}</span>
+                </div>
+              )}
             </div>
+
+            {profile?.badges && profile.badges.length > 0 && (
+              <div className="mt-4">
+                <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Badges</h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {profile.badges.map(badge => (
+                    <div key={badge} className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wide bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 border border-purple-500/30 shadow-sm flex items-center gap-1">
+                      {badge === 'Developer' ? '💻' : badge === 'Moderator' ? '🛡️' : badge === 'VIP' ? '💎' : '⭐'} {badge}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="mt-4 space-y-3">
               <div>
