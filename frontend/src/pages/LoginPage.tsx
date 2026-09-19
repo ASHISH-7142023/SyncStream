@@ -32,7 +32,17 @@ const LoginPage: React.FC = () => {
       navigate('/dashboard');
     } catch (error: any) {
       console.error(error);
-      setErrorMsg(error.response?.data?.message || 'Invalid credentials. Please try again.');
+      let finalErrorMsg = 'Login failed. Please check your credentials.';
+      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+        finalErrorMsg = 'Unable to connect to the server. Is the backend running?';
+      } else if (error.response?.data?.message) {
+        finalErrorMsg = error.response.data.message;
+      } else if (error.response?.data?.error && typeof error.response.data.error === 'string') {
+        finalErrorMsg = error.response.data.error;
+      } else if (error.message) {
+        finalErrorMsg = error.message;
+      }
+      setErrorMsg(finalErrorMsg);
     } finally {
       setSubmitting(false);
     }
