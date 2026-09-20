@@ -163,19 +163,19 @@ const FriendsPage: React.FC = () => {
         <nav className="flex-1 overflow-y-auto scrollbar-hide py-4 px-3 flex flex-col gap-6">
           <div className="space-y-1">
             <button onClick={() => navigate('/dashboard')} className="w-full flex items-center gap-3 px-3 py-2 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group text-left">
-              <i className="fa-solid fa-house w-5 group-hover:text-white transition-colors"></i>
+              <img src="/logo.png" alt="Home" className="w-5 h-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
               <span className="font-medium text-sm">Home</span>
             </button>
             <button onClick={() => navigate('/rooms')} className="w-full flex items-center gap-3 px-3 py-2 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group text-left">
-              <i className="fa-solid fa-comment-dots w-5 group-hover:text-white transition-colors"></i>
+              <img src="/chat.png" alt="Rooms" className="w-5 h-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
               <span className="font-medium text-sm">Rooms Feed</span>
             </button>
             <button onClick={() => navigate('/profile')} className="w-full flex items-center gap-3 px-3 py-2 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group text-left">
-              <i className="fa-regular fa-user w-5 group-hover:text-white transition-colors"></i>
+              <img src="/person_logo.png" alt="Profile" className="w-5 h-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
               <span className="font-medium text-sm">My Profile</span>
             </button>
             <button onClick={() => navigate('/friends')} className="w-full flex items-center gap-3 px-3 py-2 bg-gradient-to-r from-accent-purple/20 to-transparent border-l-2 border-accent-purpleLight text-white rounded-r-lg group text-left">
-              <i className="fa-solid fa-user-friends w-5 text-accent-purpleLight transition-colors"></i>
+              <img src="/person_logo.png" alt="Friends" className="w-5 h-5 object-contain" />
               <span className="font-medium text-sm">Friends</span>
             </button>
           </div>

@@ -896,21 +896,27 @@ const RoomChatPage: React.FC = () => {
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-6 scrollbar-hide">
           <ul className="space-y-1">
             <li>
-              <button onClick={() => navigate('/dashboard')} className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-text-muted hover:text-white hover:bg-white/5 transition-colors text-left">
-                <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              <button onClick={() => navigate('/dashboard')} className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-text-muted hover:text-white hover:bg-white/5 transition-colors text-left group">
+                <img src="/logo.png" alt="Home" className="w-5 h-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
                 Home
               </button>
             </li>
             <li>
-              <button onClick={() => navigate('/rooms')} className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-text-muted hover:text-white hover:bg-white/5 transition-colors text-left">
-                <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><line x1="9" x2="15" y1="10" y2="10"></line><line x1="12" x2="12" y1="7" y2="13"></line></svg>
+              <button onClick={() => navigate('/rooms')} className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-text-muted hover:text-white hover:bg-white/5 transition-colors text-left group">
+                <img src="/chat.png" alt="Rooms" className="w-5 h-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
                 Rooms Feed
               </button>
             </li>
             <li>
-              <button onClick={() => navigate('/profile')} className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-text-muted hover:text-white hover:bg-white/5 transition-colors text-left">
-                <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <button onClick={() => navigate('/profile')} className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-text-muted hover:text-white hover:bg-white/5 transition-colors text-left group">
+                <img src="/person_logo.png" alt="Profile" className="w-5 h-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
                 My Profile
+              </button>
+            </li>
+            <li>
+              <button onClick={() => navigate('/friends')} className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-text-muted hover:text-white hover:bg-white/5 transition-colors text-left group">
+                <img src="/person_logo.png" alt="Friends" className="w-5 h-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
+                Friends
               </button>
             </li>
           </ul>
