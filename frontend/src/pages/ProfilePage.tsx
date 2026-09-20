@@ -199,7 +199,6 @@ const ProfilePage: React.FC = () => {
   };
 
   const recentActivity = notifications.slice(0, 10).map(n => {
-    const room = rooms.find(r => r.id === n.referenceId);
     let type = 'system';
     if (n.type === 'MENTION') type = 'chat';
     else if (n.type === 'ROOM_JOIN') type = 'join';
