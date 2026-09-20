@@ -112,7 +112,7 @@ const RoomsPage: React.FC = () => {
               <span className="font-medium ml-3">My Profile</span>
             </button>
             <button onClick={() => navigate('/friends')} className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-dim hover:text-bright hover:bg-surface-200 transition-colors group text-left">
-              <img src="/person_logo.png" alt="Friends" className="w-5 h-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
+              <img src="/friends_logo.png" alt="Friends" className="w-5 h-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
               <span className="font-medium ml-3">Friends</span>
             </button>
           </div>
