@@ -5,6 +5,7 @@ import { useToast } from '../context/ToastContext';
 import { getAvatarForUser, getAvatarsForGender } from '../utils/avatarHelper';
 import api from '../services/api';
 import { fileService } from '../services/fileService';
+import { useSocket } from '../context/SocketContext';
 
 interface Room {
   id: string;
@@ -16,6 +17,7 @@ const ProfilePage: React.FC = () => {
   const { user, logout, updateProfile, updateSettings } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+  const { presenceUsers } = useSocket();
   const { rooms, onOpenCreateModal } = useOutletContext<{ 
     rooms: Room[]; 
     onOpenCreateModal: () => void;
@@ -58,6 +60,25 @@ const ProfilePage: React.FC = () => {
       addToast('Bio updated successfully!', 'success');
     } catch (e) {
       addToast('Failed to update bio', 'error');
+    }
+  };
+
+  const toggleMockSpotify = async () => {
+    if (!user) return;
+    const isCurrentlyListening = presenceUsers[user.id]?.isListening;
+    
+    try {
+      await api.put('/api/auth/spotify', {
+        isListening: !isCurrentlyListening,
+        spotifyTrackId: !isCurrentlyListening ? 'mock_track_id' : null,
+        spotifyTrackName: !isCurrentlyListening ? 'Never Gonna Give You Up' : null,
+        spotifyArtist: !isCurrentlyListening ? 'Rick Astley' : null,
+        spotifyAlbumArt: !isCurrentlyListening ? 'https://i.scdn.co/image/ab67616d0000b273b306bc5d581c8ea39c0fa464' : null
+      });
+      addToast(`Spotify presence turned ${!isCurrentlyListening ? 'on' : 'off'}`, 'success');
+    } catch (err) {
+      console.error('Failed to update Spotify status', err);
+      addToast('Failed to update Spotify status', 'error');
     }
   };
 
@@ -583,6 +604,29 @@ const ProfilePage: React.FC = () => {
                                   <span className="text-xs text-slate-500 italic">No badges equipped.</span>
                                 )}
                               </div>
+                            </div>
+                            
+                            {/* Spotify Rich Presence */}
+                            <div>
+                              <h4 className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Rich Presence</h4>
+                              <button onClick={toggleMockSpotify} className="w-full flex items-center justify-between px-3 py-2 bg-obsidian-800/50 hover:bg-obsidian-700/80 rounded-xl border border-obsidian-700 transition-colors group">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-[#1DB954]/10 flex items-center justify-center text-[#1DB954]">
+                                    <i className="fa-brands fa-spotify text-lg"></i>
+                                  </div>
+                                  <div className="flex flex-col text-left">
+                                    <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">Mock Spotify Listen Along</span>
+                                    <span className="text-xs text-slate-400">
+                                      {presenceUsers[user?.id || '']?.isListening 
+                                        ? `Listening to ${presenceUsers[user?.id || '']?.spotifyTrackName}` 
+                                        : 'Not listening'}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className={`w-10 h-5 rounded-full relative transition-colors ${presenceUsers[user?.id || '']?.isListening ? 'bg-[#1DB954]' : 'bg-obsidian-600'}`}>
+                                  <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${presenceUsers[user?.id || '']?.isListening ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                                </div>
+                              </button>
                             </div>
                           </div>
                         )}
