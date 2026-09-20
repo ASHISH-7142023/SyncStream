@@ -149,7 +149,7 @@ const FriendsPage: React.FC = () => {
       `}>
         <div className="h-16 flex items-center justify-between px-4 shrink-0 border-b border-gray-800">
           <div className="flex items-center gap-2 text-xl font-bold tracking-tight text-white cursor-pointer" onClick={() => navigate('/dashboard')}>
-            <img src="/friends_logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+            <img src="/friends_logo.png" alt="Logo" className="w-10 h-10 object-contain" />
             <img src="/name.png" alt="SyncStream" className="h-7 w-32 object-contain shrink-0" />
           </div>
           <button 
@@ -163,7 +163,7 @@ const FriendsPage: React.FC = () => {
         <nav className="flex-1 overflow-y-auto scrollbar-hide py-4 px-3 flex flex-col gap-6">
           <div className="space-y-1">
             <button onClick={() => navigate('/dashboard')} className="w-full flex items-center gap-3 px-3 py-2 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group text-left">
-              <img src="/logo.png" alt="Home" className="w-5 h-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
+              <img src="/home_logo.png" alt="Home" className="w-5 h-5 object-contain scale-[1.35] opacity-70 group-hover:opacity-100 transition-all" />
               <span className="font-medium text-sm">Home</span>
             </button>
             <button onClick={() => navigate('/rooms')} className="w-full flex items-center gap-3 px-3 py-2 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group text-left">
@@ -175,7 +175,7 @@ const FriendsPage: React.FC = () => {
               <span className="font-medium text-sm">My Profile</span>
             </button>
             <button onClick={() => navigate('/friends')} className="w-full flex items-center gap-3 px-3 py-2 bg-gradient-to-r from-accent-purple/20 to-transparent border-l-2 border-accent-purpleLight text-white rounded-r-lg group text-left">
-              <img src="/friends_logo.png" alt="Friends" className="w-7 h-7 object-contain" />
+              <img src="/friends_logo.png" alt="Friends" className="w-5 h-5 object-contain scale-[1.35] transition-all" />
               <span className="font-medium text-sm">Friends</span>
             </button>
           </div>

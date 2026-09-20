@@ -897,7 +897,7 @@ const RoomChatPage: React.FC = () => {
           <ul className="space-y-1">
             <li>
               <button onClick={() => navigate('/dashboard')} className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-text-muted hover:text-white hover:bg-white/5 transition-colors text-left group">
-                <img src="/logo.png" alt="Home" className="w-5 h-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
+                <img src="/home_logo.png" alt="Home" className="w-5 h-5 object-contain scale-[1.35] opacity-70 group-hover:opacity-100 transition-all" />
                 Home
               </button>
             </li>
@@ -915,7 +915,7 @@ const RoomChatPage: React.FC = () => {
             </li>
             <li>
               <button onClick={() => navigate('/friends')} className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-text-muted hover:text-white hover:bg-white/5 transition-colors text-left group">
-                <img src="/friends_logo.png" alt="Friends" className="w-5 h-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
+                <img src="/friends_logo.png" alt="Friends" className="w-5 h-5 object-contain scale-[1.35] opacity-70 group-hover:opacity-100 transition-all" />
                 Friends
               </button>
             </li>
