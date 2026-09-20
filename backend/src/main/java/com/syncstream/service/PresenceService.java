@@ -62,16 +62,29 @@ public class PresenceService {
         String key = PRESENCE_KEY_PREFIX + userId;
         UserPresenceDto existingPresence = (UserPresenceDto) redisTemplate.opsForValue().get(key);
         
-        if (existingPresence != null) {
-            existingPresence.setListening(isListening);
-            existingPresence.setSpotifyTrackId(trackId);
-            existingPresence.setSpotifyTrackName(trackName);
-            existingPresence.setSpotifyArtist(artist);
-            existingPresence.setSpotifyAlbumArt(albumArt);
-            redisTemplate.opsForValue().set(key, existingPresence, TTL_SECONDS, TimeUnit.SECONDS);
-            return existingPresence;
+        if (existingPresence == null) {
+            User user = userRepository.findById(userId).orElse(null);
+            if (user == null) return null;
+            
+            existingPresence = UserPresenceDto.builder()
+                    .userId(userId)
+                    .username(user.getUsername())
+                    .avatar(user.getAvatar())
+                    .serverId(this.serverId)
+                    .status(PresenceStatus.ONLINE)
+                    .customStatusText(user.getCustomStatusText())
+                    .lastSeen(Instant.now())
+                    .build();
         }
-        return null;
+        
+        existingPresence.setListening(isListening);
+        existingPresence.setSpotifyTrackId(trackId);
+        existingPresence.setSpotifyTrackName(trackName);
+        existingPresence.setSpotifyArtist(artist);
+        existingPresence.setSpotifyAlbumArt(albumArt);
+        
+        redisTemplate.opsForValue().set(key, existingPresence, TTL_SECONDS, TimeUnit.SECONDS);
+        return existingPresence;
     }
 
     public UserPresenceDto getUserPresence(String userId) {
