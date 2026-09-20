@@ -2,6 +2,7 @@
 
 # Database folders
 data/
+dump.rdb
 
 # Portable developer tools
 jdk/
