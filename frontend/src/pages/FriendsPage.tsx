@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 import { getAvatarForUser } from '../utils/avatarHelper';
 import { useToast } from '../context/ToastContext';
 
