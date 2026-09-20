@@ -1411,7 +1411,7 @@ const RoomChatPage: React.FC = () => {
                         </div>
                       </div>
                     ) : msg.messageType === 'GAME_TICTACTOE' && msg.gameData ? (
-                      <TicTacToeBoard roomId={roomId} messageId={msg.id || msg.sequenceNumber.toString()} gameData={msg.gameData} />
+                      <TicTacToeBoard roomId={roomId as string} messageId={msg.id || msg.sequenceNumber.toString()} gameData={msg.gameData} />
                     ) : msg.messageType === 'POLL' && msg.pollData ? (
                       <div className="bg-[#1f2233] border border-white/10 rounded-2xl p-5 mt-1 min-w-[320px] max-w-md w-full text-left relative overflow-hidden">
                         {/* Poll Header */}

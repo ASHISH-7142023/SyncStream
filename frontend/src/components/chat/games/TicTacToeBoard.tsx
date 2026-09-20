@@ -84,7 +84,7 @@ export const TicTacToeBoard: React.FC<TicTacToeBoardProps> = ({ roomId, messageI
           <button
             key={idx}
             onClick={() => handleCellClick(idx)}
-            disabled={gameData.isGameOver || cell !== null || (!isPlaying && gameData.player1Id && gameData.player2Id) || (isPlaying && !isMyTurn)}
+            disabled={gameData.isGameOver || cell !== null || (!isPlaying && Boolean(gameData.player1Id && gameData.player2Id)) || (isPlaying && !isMyTurn)}
             className={`flex items-center justify-center text-4xl rounded-lg transition-all duration-200 bg-white/5 hover:bg-white/10 active:scale-95 disabled:hover:bg-white/5 disabled:active:scale-100 disabled:cursor-not-allowed
               ${cell === 'X' ? 'text-[#8b5cf6]' : cell === 'O' ? 'text-blue-400' : ''}
               ${isMyTurn && !cell && !gameData.isGameOver ? 'cursor-pointer hover:shadow-[inset_0_0_15px_rgba(139,92,246,0.2)]' : ''}
