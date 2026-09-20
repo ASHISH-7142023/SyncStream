@@ -6,6 +6,7 @@ import { getAvatarForUser, getAvatarsForGender } from '../utils/avatarHelper';
 import api from '../services/api';
 import { fileService } from '../services/fileService';
 import { useSocket } from '../context/SocketContext';
+import { useNotification } from '../context/NotificationContext';
 
 interface Room {
   id: string;
@@ -18,6 +19,7 @@ const ProfilePage: React.FC = () => {
   const { addToast } = useToast();
   const navigate = useNavigate();
   const { presenceUsers } = useSocket();
+  const { notifications } = useNotification();
   const { rooms, onOpenCreateModal } = useOutletContext<{ 
     rooms: Room[]; 
     onOpenCreateModal: () => void;
@@ -187,11 +189,29 @@ const ProfilePage: React.FC = () => {
       color: topRoomColors[idx % topRoomColors.length]
     }));
 
-  const recentActivity = [
-    { text: 'Sent a message in #developers', time: '2m ago', desc: "Reacted to Sarah Wilson's message", type: 'chat' },
-    { text: 'Joined #marketing', time: '1h ago', desc: 'Started participating in the conversation', type: 'join' },
-    { text: 'Invited David Brown to #product-updates', time: '2h ago', desc: '', type: 'invite' },
-  ];
+  const formatTime = (isoString: string) => {
+    const date = new Date(isoString);
+    const today = new Date();
+    if (date.toDateString() === today.toDateString()) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    return date.toLocaleDateString();
+  };
+
+  const recentActivity = notifications.slice(0, 10).map(n => {
+    const room = rooms.find(r => r.id === n.referenceId);
+    let type = 'system';
+    if (n.type === 'MENTION') type = 'chat';
+    else if (n.type === 'ROOM_JOIN') type = 'join';
+    else if (n.type === 'MESSAGE') type = 'chat';
+
+    return {
+      text: n.title,
+      time: formatTime(n.createdAt),
+      desc: n.message,
+      type: type
+    };
+  });
 
   return (
     <div className="h-screen flex overflow-hidden font-sans bg-obsidian-900 text-white selection:bg-purple-600 selection:text-white">
@@ -692,14 +712,7 @@ const ProfilePage: React.FC = () => {
                       <h3 className="text-base font-semibold text-white">Recent Activity Logs</h3>
                     </div>
                     <div className="space-y-6 max-h-[450px] overflow-y-auto scrollbar-thin pr-2">
-                      {[
-                        { text: 'Sent a message in #developers', time: '2m ago', desc: "Reacted to Sarah Wilson's message with 👍", type: 'chat' },
-                        { text: 'Joined #marketing', time: '1h ago', desc: 'Started participating in the conversation', type: 'join' },
-                        { text: 'Invited David Brown to #product-updates', time: '2h ago', desc: 'Sent an invitation link', type: 'invite' },
-                        { text: 'Created #help-support room', time: '1d ago', desc: 'Set up room configurations for general user inquiries', type: 'create' },
-                        { text: 'Updated profile picture', time: '2d ago', desc: 'Uploaded new avatar image', type: 'profile' },
-                        { text: 'Enabled Two-Factor Authentication', time: '3d ago', desc: 'Configured Authenticator App', type: 'security' },
-                      ].map((act, i) => (
+                      {recentActivity.map((act, i) => (
                         <div key={i} className="flex gap-4 border-b border-white/5 pb-4 last:border-0 last:pb-0">
                           <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center flex-shrink-0 mt-1 text-purple-400 text-lg">
                             {act.type === 'chat' ? '💬' : act.type === 'join' ? '🚪' : act.type === 'invite' ? '➕' : act.type === 'create' ? '📁' : act.type === 'security' ? '🔑' : '👤'}

@@ -97,13 +97,27 @@ const DashboardPage: React.FC = () => {
     },
   ];
 
-  const recentActivity = [
-    { user: 'Sarah Wilson', room: 'developers', action: 'Updated the authentication flow. Please review!', time: '10:32 AM', unread: true },
-    { user: 'David Brown', room: 'product-updates', action: 'We just launched the new dashboard 🎉', time: '9:45 AM', unread: true },
-    { user: 'Emily Davis', room: 'design-team', action: "Here's the new design system we discussed.", time: '9:21 AM', unread: false },
-    { user: 'Michael Chen', room: 'general', action: 'Good morning everyone! ☕', time: '8:15 AM', unread: false },
-    { user: 'Lisa Anderson', room: 'developers', action: 'Bug fix: Resolved payment gateway issue.', time: 'Yesterday', unread: false },
-  ];
+  const formatTime = (isoString: string) => {
+    const date = new Date(isoString);
+    const today = new Date();
+    if (date.toDateString() === today.toDateString()) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    return date.toLocaleDateString();
+  };
+
+  const recentActivity = notifications.slice(0, 10).map(n => {
+    const room = rooms.find(r => r.id === n.referenceId);
+    return {
+      user: n.title,
+      room: room ? room.name : 'System',
+      action: n.message,
+      time: formatTime(n.createdAt),
+      unread: !n.read,
+      id: n.id,
+      roomId: n.referenceId
+    };
+  });
 
   const roomColors = [
     'bg-indigo-900/50 text-indigo-400',
