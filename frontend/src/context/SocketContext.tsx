@@ -13,7 +13,7 @@ export interface ChatMessage {
   senderId: string;
   senderName: string;
   content: string;
-  messageType: 'TEXT' | 'JOIN' | 'LEAVE' | 'SYSTEM' | 'FILE' | 'IMAGE' | 'AUDIO' | 'POLL';
+  messageType: 'TEXT' | 'JOIN' | 'LEAVE' | 'SYSTEM' | 'FILE' | 'IMAGE' | 'AUDIO' | 'POLL' | 'GAME_TICTACTOE';
   createdAt: string;
   sequenceNumber: number;
   parentId?: string;
@@ -35,6 +35,17 @@ export interface ChatMessage {
     options: string[];
     votes: Record<string, string[]>; // mapping index as string to array of usernames/userIds
     multipleChoice: boolean;
+  };
+  gameData?: {
+    gameType: string;
+    board: (string | null)[];
+    player1Id?: string;
+    player1Name?: string;
+    player2Id?: string;
+    player2Name?: string;
+    currentTurnId?: string;
+    winnerId?: string;
+    isGameOver?: boolean;
   };
 }
 
@@ -66,6 +77,13 @@ export interface UserPresence {
   status: 'ONLINE' | 'AWAY' | 'OFFLINE' | 'DO_NOT_DISTURB';
   customStatusText?: string;
   lastSeen: string;
+  
+  // Spotify Rich Presence
+  isListening?: boolean;
+  spotifyTrackId?: string;
+  spotifyTrackName?: string;
+  spotifyArtist?: string;
+  spotifyAlbumArt?: string;
 }
 
 interface SocketContextType {
@@ -76,9 +94,10 @@ interface SocketContextType {
   unreadRoomCounts: Record<string, number>;
   joinRoom: (roomId: string) => void;
   leaveRoom: (roomId: string) => void;
-  sendMessage: (roomId: string, content: string, clientMessageId: string, parentId?: string, attachmentData?: any, isVanishMode?: boolean) => void;
+  sendMessage: (roomId: string, content: string, clientMessageId: string, parentId?: string, attachmentData?: any, isVanishMode?: boolean, gameData?: any) => void;
   sendReaction: (roomId: string, messageId: string, emoji: string, active: boolean) => void;
   sendTyping: (roomId: string, isTyping: boolean) => void;
+  sendGameMove: (roomId: string, messageId: string, cellIndex: number) => void;
   loadMessages: (roomId: string) => Promise<void>;
   updateMessage: (roomId: string, messageId: string, updates: Partial<ChatMessage>) => void;
   hasMoreMessages: Record<string, boolean>;
@@ -432,7 +451,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   };
 
-  const sendMessage = (roomId: string, content: string, clientMessageId: string, parentId?: string, attachmentData?: any, isVanishMode?: boolean) => {
+  const sendMessage = (roomId: string, content: string, clientMessageId: string, parentId?: string, attachmentData?: any, isVanishMode?: boolean, gameData?: any) => {
     if (!clientRef.current || connectionStatus !== 'CONNECTED') {
       // Append as failed message locally
       const failedMsg: ChatMessage = {
@@ -453,6 +472,10 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           fileName: attachmentData.fileName,
           fileSize: attachmentData.fileSize,
           fileType: attachmentData.fileType,
+        }),
+        ...(gameData && {
+          messageType: 'GAME_TICTACTOE',
+          gameData,
         }),
       };
 
@@ -483,6 +506,10 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         fileSize: attachmentData.fileSize,
         fileType: attachmentData.fileType,
       }),
+      ...(gameData && {
+        messageType: 'GAME_TICTACTOE',
+        gameData,
+      }),
     };
 
     setMessages((prev) => ({
@@ -503,7 +530,11 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           fileName: attachmentData.fileName,
           fileSize: attachmentData.fileSize,
           fileType: attachmentData.fileType,
-        })
+        }),
+        ...(gameData && {
+          messageType: 'GAME_TICTACTOE',
+          gameData,
+        }),
       }),
     });
   };
@@ -549,6 +580,15 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       clientRef.current.publish({
         destination: `/app/rooms/${roomId}/typing`,
         body: JSON.stringify({ isTyping }),
+      });
+    }
+  };
+
+  const sendGameMove = (roomId: string, messageId: string, cellIndex: number) => {
+    if (clientRef.current?.connected) {
+      clientRef.current.publish({
+        destination: `/app/rooms/${roomId}/game/move`,
+        body: JSON.stringify({ messageId, cellIndex }),
       });
     }
   };
@@ -691,6 +731,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         sendMessage,
         sendReaction,
         sendTyping,
+        sendGameMove,
         updateMessage,
         loadMessages,
         hasMoreMessages,

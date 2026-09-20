@@ -75,4 +75,6 @@ public class Message {
     private java.util.List<LinkPreview> linkPreviews = new java.util.ArrayList<>();
 
     private PollData pollData;
+
+    private GameData gameData;
 }

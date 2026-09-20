@@ -95,6 +95,24 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
     navigate('/login');
   };
 
+  const toggleMockSpotify = async () => {
+    if (!user) return;
+    const isCurrentlyListening = presenceUsers[user.id]?.isListening;
+    
+    try {
+      await api.put('/api/auth/spotify', {
+        isListening: !isCurrentlyListening,
+        spotifyTrackId: !isCurrentlyListening ? 'mock_track_id' : null,
+        spotifyTrackName: !isCurrentlyListening ? 'Never Gonna Give You Up' : null,
+        spotifyArtist: !isCurrentlyListening ? 'Rick Astley' : null,
+        spotifyAlbumArt: !isCurrentlyListening ? 'https://i.scdn.co/image/ab67616d0000b273b306bc5d581c8ea39c0fa464' : null
+      });
+      setIsStatusPopoverOpen(false);
+    } catch (err) {
+      console.error('Failed to update Spotify status', err);
+    }
+  };
+
   return (
     <aside 
       className={`bg-[#0F1117] border-r border-[#27272A] flex flex-col transition-all duration-300 ${
@@ -325,11 +343,16 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                     user && presenceUsers[user.id]?.status === 'DO_NOT_DISTURB' ? 'text-red-400' :
                     'text-slate-400'
                   }`}>
-                    {user && presenceUsers[user.id]?.customStatusText 
+                    {user && presenceUsers[user.id]?.isListening ? (
+                      <div className="flex items-center gap-1 text-[#1DB954]">
+                        <i className="fa-brands fa-spotify"></i>
+                        <span>Listening to {presenceUsers[user.id].spotifyTrackName} by {presenceUsers[user.id].spotifyArtist}</span>
+                      </div>
+                    ) : (user && presenceUsers[user.id]?.customStatusText 
                       ? presenceUsers[user.id].customStatusText 
                       : (user && presenceUsers[user.id]?.status ? 
                           presenceUsers[user.id].status.charAt(0) + presenceUsers[user.id].status.slice(1).toLowerCase().replace(/_/g, ' ') 
-                          : 'Online')}
+                          : 'Online'))}
                   </div>
                 </div>
               </div>
@@ -377,6 +400,14 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                     <span className="text-xs text-slate-300 group-hover:text-white">Invisible</span>
                   </div>
                   {presenceUsers[user.id]?.status === 'OFFLINE' && <Check className="w-3.5 h-3.5 text-[#7C3AED]" />}
+                </button>
+                <div className="h-px bg-[#27272A] w-full my-1"></div>
+                <button onClick={() => toggleMockSpotify()} className="flex items-center justify-between px-2 py-1.5 hover:bg-[#1A1D24] rounded-md group">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#1DB954]"></span>
+                    <span className="text-xs text-slate-300 group-hover:text-white">Mock Spotify Listen Along</span>
+                  </div>
+                  {presenceUsers[user.id]?.isListening && <Check className="w-3.5 h-3.5 text-[#1DB954]" />}
                 </button>
               </div>
             </>

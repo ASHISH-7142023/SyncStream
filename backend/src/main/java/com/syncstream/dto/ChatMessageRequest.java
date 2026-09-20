@@ -16,4 +16,5 @@ public class ChatMessageRequest {
     private String fileType;
     
     private com.syncstream.model.PollData pollData;
+    private com.syncstream.model.GameData gameData;
 }

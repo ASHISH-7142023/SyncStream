@@ -23,4 +23,11 @@ public class UserPresenceDto implements Serializable {
     private PresenceStatus status;
     private String customStatusText;
     private Instant lastSeen;
+
+    // Spotify Rich Presence
+    private boolean isListening;
+    private String spotifyTrackId;
+    private String spotifyTrackName;
+    private String spotifyArtist;
+    private String spotifyAlbumArt;
 }

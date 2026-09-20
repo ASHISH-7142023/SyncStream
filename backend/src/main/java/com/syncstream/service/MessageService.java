@@ -73,6 +73,7 @@ public class MessageService {
                 .pinned(false)
                 .reactions(new java.util.HashMap<>())
                 .pollData(request.getPollData())
+                .gameData(request.getGameData())
                 .build();
 
         Message savedMessage = messageRepository.save(message);
@@ -301,5 +302,86 @@ public class MessageService {
 
             return messageRepository.save(message);
         }).orElseThrow(() -> new IllegalArgumentException("Message not found"));
+    }
+    public Message processGameMove(String messageId, int cellIndex, String userId, String username) {
+        return messageRepository.findById(messageId).map(message -> {
+            if (message.getMessageType() != MessageType.GAME_TICTACTOE || message.getGameData() == null) {
+                throw new IllegalArgumentException("Message is not a Tic-Tac-Toe game");
+            }
+
+            com.syncstream.model.GameData game = message.getGameData();
+
+            if (game.isGameOver()) {
+                throw new IllegalStateException("Game is already over");
+            }
+
+            // Assign players if spots are open
+            if (game.getPlayer1Id() == null) {
+                game.setPlayer1Id(userId);
+                game.setPlayer1Name(username);
+                game.setCurrentTurnId(userId); // Player 1 starts
+            } else if (game.getPlayer2Id() == null && !userId.equals(game.getPlayer1Id())) {
+                game.setPlayer2Id(userId);
+                game.setPlayer2Name(username);
+            }
+
+            // Check if user is a player
+            if (!userId.equals(game.getPlayer1Id()) && !userId.equals(game.getPlayer2Id())) {
+                throw new SecurityException("You are not a player in this game");
+            }
+
+            // Check turn
+            if (!userId.equals(game.getCurrentTurnId())) {
+                throw new IllegalStateException("Not your turn");
+            }
+
+            // Validate move
+            if (cellIndex < 0 || cellIndex > 8 || game.getBoard().get(cellIndex) != null) {
+                throw new IllegalArgumentException("Invalid move");
+            }
+
+            String symbol = userId.equals(game.getPlayer1Id()) ? "X" : "O";
+            game.getBoard().set(cellIndex, symbol);
+
+            // Check win/draw
+            String winner = checkTicTacToeWinner(game.getBoard());
+            if (winner != null) {
+                game.setGameOver(true);
+                if (winner.equals("DRAW")) {
+                    game.setWinnerId("DRAW");
+                } else {
+                    game.setWinnerId(winner.equals("X") ? game.getPlayer1Id() : game.getPlayer2Id());
+                }
+            } else {
+                // Switch turn
+                game.setCurrentTurnId(userId.equals(game.getPlayer1Id()) ? game.getPlayer2Id() : game.getPlayer1Id());
+            }
+
+            return messageRepository.save(message);
+        }).orElseThrow(() -> new IllegalArgumentException("Message not found"));
+    }
+
+    private String checkTicTacToeWinner(List<String> board) {
+        int[][] lines = {
+            {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, // rows
+            {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, // cols
+            {0, 4, 8}, {2, 4, 6}             // diagonals
+        };
+        for (int[] line : lines) {
+            String a = board.get(line[0]);
+            String b = board.get(line[1]);
+            String c = board.get(line[2]);
+            if (a != null && a.equals(b) && a.equals(c)) {
+                return a;
+            }
+        }
+        boolean isDraw = true;
+        for (String cell : board) {
+            if (cell == null) {
+                isDraw = false;
+                break;
+            }
+        }
+        return isDraw ? "DRAW" : null;
     }
 }

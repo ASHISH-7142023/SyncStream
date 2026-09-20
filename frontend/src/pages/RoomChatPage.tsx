@@ -22,6 +22,7 @@ import CreatePollModal from '../components/modals/CreatePollModal';
 import { ImageGalleryModal } from '../components/modals/ImageGalleryModal';
 import type { GalleryImage } from '../components/modals/ImageGalleryModal';
 import { Whiteboard } from '../components/chat/Whiteboard';
+import { TicTacToeBoard } from '../components/chat/games/TicTacToeBoard';
 
 const VanishTimer: React.FC<{
   messageId: string;
@@ -105,6 +106,13 @@ const markdownComponents: any = {
       return <span className="font-semibold text-brand-400 bg-brand-500/20 px-1.5 py-0.5 rounded-md text-sm">{props.children}</span>;
     }
     return <a {...props} className="text-[#a78bfa] hover:underline" />;
+  },
+  img: ({node, ...props}: any) => {
+    // Check if this is a custom emoji image (we render them with relative API path)
+    if (props.src?.startsWith('/api/files/download/')) {
+      return <img {...props} className="inline-block w-6 h-6 object-contain align-middle mx-0.5" title={`:${props.alt}:`} />;
+    }
+    return <img {...props} className="max-w-full rounded-md mt-2" />;
   }
 };
 
@@ -175,6 +183,8 @@ const RoomChatPage: React.FC = () => {
     { command: '/poll', description: 'Create a new poll' },
     { command: '/roll', description: 'Roll a random number (1-100)' },
     { command: '/shrug', description: 'Append ¯\\_(ツ)_/¯' },
+    { command: '/tictactoe', description: 'Start a game of Tic-Tac-Toe' },
+    { command: '/addemoji', description: 'Upload a custom emoji (attach an image and type /addemoji <name>)' },
     { command: '/help', description: 'List all available commands' }
   ];
 
@@ -197,7 +207,28 @@ const RoomChatPage: React.FC = () => {
         setInputText(prev => prev.replace(/^\/shrug/i, '').trim() + ' ¯\\_(ツ)_/¯');
         break;
       case '/help':
-        addToast('Commands: /poll, /roll, /shrug, /help', 'info');
+        addToast('Commands: /poll, /roll, /shrug, /tictactoe, /addemoji, /help', 'info');
+        setInputText('');
+        break;
+      case '/tictactoe':
+        if (roomId && user) {
+          sendMessage(
+            roomId, 
+            '🎮 Started a game of Tic-Tac-Toe!', 
+            Math.random().toString(36).substring(2, 15), 
+            undefined, 
+            undefined, 
+            false, 
+            {
+              gameType: 'TICTACTOE',
+              board: Array(9).fill(null),
+              player1Id: user.id,
+              player1Name: user.username,
+              currentTurnId: user.id,
+              isGameOver: false
+            }
+          );
+        }
         setInputText('');
         break;
     }
@@ -245,6 +276,26 @@ const RoomChatPage: React.FC = () => {
 
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryInitialIndex, setGalleryInitialIndex] = useState(0);
+
+  const [customEmojis, setCustomEmojis] = useState<any[]>([]);
+
+  useEffect(() => {
+    import('../services/emojiService').then(({ emojiService }) => {
+      emojiService.getAllEmojis().then(emojis => {
+        setCustomEmojis(emojis);
+      }).catch(err => console.error("Failed to fetch custom emojis:", err));
+    });
+  }, []);
+
+  const parseEmojis = (text: string) => {
+    let parsed = text;
+    customEmojis.forEach(emoji => {
+      // Replace :shortcut: with ![shortcut](imageUrl) so Markdown renders it as an image
+      const regex = new RegExp(`:${emoji.shortcut}:`, 'g');
+      parsed = parsed.replace(regex, `![${emoji.shortcut}](${emoji.imageUrl})`);
+    });
+    return parsed;
+  };
 
   const handleAvatarClick = (username: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -463,6 +514,31 @@ const RoomChatPage: React.FC = () => {
       e.preventDefault();
     }
     if ((!inputText.trim() && !selectedFile) || !roomId) return;
+
+    if (inputText.trim().startsWith('/addemoji')) {
+      const parts = inputText.trim().split(' ');
+      if (parts.length < 2 || !selectedFile) {
+        addToast('Please attach an image and provide a shortcut name (e.g., /addemoji pepe)', 'error');
+        return;
+      }
+      const shortcut = parts[1].replace(/[^a-zA-Z0-9_]/g, '').toLowerCase();
+      setUploading(true);
+      try {
+        const { emojiService } = await import('../services/emojiService');
+        await emojiService.createEmoji(shortcut, selectedFile);
+        addToast(`Emoji :${shortcut}: added successfully!`, 'success');
+        // Refresh emojis
+        const emojis = await emojiService.getAllEmojis();
+        setCustomEmojis(emojis);
+      } catch (err: any) {
+        addToast(err.response?.data || 'Failed to add emoji', 'error');
+      } finally {
+        setUploading(false);
+        setSelectedFile(null);
+        setInputText('');
+      }
+      return;
+    }
 
     let attachmentData = null;
     
@@ -769,9 +845,14 @@ const RoomChatPage: React.FC = () => {
             </div>
             
             <div className="text-xs text-text-muted truncate w-40 mt-0.5">
-              {presenceUsers[m.id]?.customStatusText 
+              {presenceUsers[m.id]?.isListening ? (
+                <div className="flex items-center gap-1 text-[#1DB954]" title={`Listening to ${presenceUsers[m.id].spotifyTrackName} by ${presenceUsers[m.id].spotifyArtist}`}>
+                  <i className="fa-brands fa-spotify"></i>
+                  <span className="truncate">Listening to {presenceUsers[m.id].spotifyTrackName}</span>
+                </div>
+              ) : (presenceUsers[m.id]?.customStatusText 
                 ? presenceUsers[m.id].customStatusText 
-                : (isOffline ? 'Offline' : (statusColorClass.includes('away') ? 'Away' : (statusColorClass.includes('dnd') ? 'Do Not Disturb' : 'Online')))}
+                : (isOffline ? 'Offline' : (statusColorClass.includes('away') ? 'Away' : (statusColorClass.includes('dnd') ? 'Do Not Disturb' : 'Online'))))}
             </div>
           </div>
         </div>
@@ -1329,6 +1410,8 @@ const RoomChatPage: React.FC = () => {
                           }} className="text-[#a78bfa] hover:underline">save</button>
                         </div>
                       </div>
+                    ) : msg.messageType === 'GAME_TICTACTOE' && msg.gameData ? (
+                      <TicTacToeBoard roomId={roomId} messageId={msg.id || msg.sequenceNumber.toString()} gameData={msg.gameData} />
                     ) : msg.messageType === 'POLL' && msg.pollData ? (
                       <div className="bg-[#1f2233] border border-white/10 rounded-2xl p-5 mt-1 min-w-[320px] max-w-md w-full text-left relative overflow-hidden">
                         {/* Poll Header */}
@@ -1384,7 +1467,7 @@ const RoomChatPage: React.FC = () => {
                               remarkPlugins={[remarkGfm]}
                               components={markdownComponents}
                             >
-                              {(decryptedMessages[msg.id || msg.sequenceNumber] || 'Decrypting...').replace(/@([a-zA-Z0-9_]+)/g, '[@$1](#mention-$1)')}
+                              {parseEmojis((decryptedMessages[msg.id || msg.sequenceNumber] || 'Decrypting...').replace(/@([a-zA-Z0-9_]+)/g, '[@$1](#mention-$1)'))}
                             </ReactMarkdown>
                           </>
                         ) : (
@@ -1392,7 +1475,7 @@ const RoomChatPage: React.FC = () => {
                             remarkPlugins={[remarkGfm]}
                             components={markdownComponents}
                           >
-                            {(msg.content || '').replace(/@([a-zA-Z0-9_]+)/g, '[@$1](#mention-$1)')}
+                            {parseEmojis((msg.content || '').replace(/@([a-zA-Z0-9_]+)/g, '[@$1](#mention-$1)'))}
                           </ReactMarkdown>
                         )}
                         {msg.editedAt && <span className="text-[10px] text-gray-500 ml-2 italic select-none">(edited)</span>}

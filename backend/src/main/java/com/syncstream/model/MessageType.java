@@ -8,5 +8,6 @@ public enum MessageType {
     FILE,
     IMAGE,
     AUDIO,
-    POLL
+    POLL,
+    GAME_TICTACTOE
 }

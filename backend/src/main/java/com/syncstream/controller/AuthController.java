@@ -212,4 +212,30 @@ public class AuthController {
 
         return ResponseEntity.ok(presence);
     }
+
+    @PutMapping("/spotify")
+    public ResponseEntity<?> updateSpotify(
+            @AuthenticationPrincipal User userDetails,
+            @RequestBody Map<String, Object> request) {
+            
+        User user = userRepository.findById(userDetails.getId()).orElse(null);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        boolean isListening = Boolean.TRUE.equals(request.get("isListening"));
+        String trackId = (String) request.get("spotifyTrackId");
+        String trackName = (String) request.get("spotifyTrackName");
+        String artist = (String) request.get("spotifyArtist");
+        String albumArt = (String) request.get("spotifyAlbumArt");
+
+        UserPresenceDto presence = presenceService.updateSpotifyPresence(
+                user.getId(), isListening, trackId, trackName, artist, albumArt);
+                
+        if (presence != null) {
+            redisMessagePublisher.publish("syncstream:presence", presence);
+            return ResponseEntity.ok(presence);
+        }
+        return ResponseEntity.badRequest().body("Presence not initialized");
+    }
 }

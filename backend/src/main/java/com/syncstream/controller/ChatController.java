@@ -248,6 +248,32 @@ public class ChatController {
         }
     }
 
+    @MessageMapping("/rooms/{roomId}/game/move")
+    public void handleGameMove(
+            @DestinationVariable String roomId,
+            @Payload Map<String, Object> payload,
+            Principal principal) {
+        
+        User user = getUserFromPrincipal(principal);
+        if (user == null || !roomService.isMember(roomId, user.getId())) {
+            return;
+        }
+
+        String messageId = (String) payload.get("messageId");
+        Integer cellIndex = (Integer) payload.get("cellIndex"); // For Tic-Tac-Toe
+
+        if (messageId == null || cellIndex == null) {
+            return;
+        }
+
+        try {
+            Message updatedMessage = messageService.processGameMove(messageId, cellIndex, user.getId(), user.getUsername());
+            redisMessagePublisher.publish("syncstream:room:" + roomId, updatedMessage);
+        } catch (Exception e) {
+            log.error("Failed to process game move", e);
+        }
+    }
+
     private User getUserFromPrincipal(Principal principal) {
         if (principal instanceof UsernamePasswordAuthenticationToken) {
             return (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
