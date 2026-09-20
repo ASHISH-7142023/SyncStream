@@ -175,7 +175,7 @@ const FriendsPage: React.FC = () => {
               <span className="font-medium text-sm">My Profile</span>
             </button>
             <button onClick={() => navigate('/friends')} className="w-full flex items-center gap-3 px-3 py-2 bg-gradient-to-r from-accent-purple/20 to-transparent border-l-2 border-accent-purpleLight text-white rounded-r-lg group text-left">
-              <img src="/friends_logo.png" alt="Friends" className="w-5 h-5 object-contain" />
+              <img src="/friends_logo.png" alt="Friends" className="w-7 h-7 object-contain" />
               <span className="font-medium text-sm">Friends</span>
             </button>
           </div>
