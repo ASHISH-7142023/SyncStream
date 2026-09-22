@@ -91,6 +91,22 @@ docker compose up -d --build
 ```
 3. Navigate to `http://localhost` in your browser. Nginx will handle routing to the static frontend and proxying API/WebSocket requests to the backend container.
 
+## 🔄 CI/CD Workflows
+
+SyncStream uses GitHub Actions for Continuous Integration. The pipeline automatically runs on every push and pull request to the `main` branch.
+
+The workflow (`.github/workflows/ci.yml`) consists of two main jobs:
+- **Backend Build**:
+  - Sets up Java 21 and a temporary MongoDB/Redis service environment.
+  - Runs all Spring Boot unit and integration tests.
+  - Builds the backend Docker image.
+- **Frontend Build**:
+  - Sets up Node.js 22.
+  - Installs dependencies and runs unit tests (Vitest).
+  - Builds the React production bundle.
+  - Runs Cypress End-to-End (E2E) tests.
+  - Builds the frontend Nginx Docker image.
+
 ## 🔒 Architecture & Security
 
 SyncStream employs a robust security model:
