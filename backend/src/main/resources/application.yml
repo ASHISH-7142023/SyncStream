@@ -18,6 +18,8 @@ spring:
       password: ${SPRING_DATA_REDIS_PASSWORD:}
 
 app:
+  giphy:
+    api-key: ${GIPHY_API_KEY:dc6zaTOxFJmzC}
   jwt:
     secret: ${JWT_SECRET:5573796e6353747265616d53757065725365637265744b65793230323623}
     expiration: ${JWT_EXPIRATION:86400000} # 24 hours in ms
@@ -33,7 +35,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,env
+        include: health,info
   endpoint:
     health:
       show-details: always

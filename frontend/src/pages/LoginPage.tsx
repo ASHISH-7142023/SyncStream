@@ -5,11 +5,13 @@ import { useAuth } from '../context/AuthContext';
 import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 import OAuthConnectModal from '../components/modals/OAuthConnectModal';
 import { useToast } from '../context/ToastContext';
+import { useHealthCheck } from '../hooks/useHealthCheck';
 
 const LoginPage: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const { addToast } = useToast();
+  const isBackendOnline = useHealthCheck(15000);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -402,10 +404,10 @@ const LoginPage: React.FC = () => {
 
             <button 
               type="submit"
-              disabled={submitting}
-              className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-base font-semibold text-white btn-gradient focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6d28d9] focus:ring-offset-[#060e20] transition-all hover:scale-[1.02] active:scale-[0.98] mt-6 disabled:opacity-50 cursor-pointer"
+              disabled={submitting || !isBackendOnline}
+              className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-base font-semibold text-white btn-gradient focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6d28d9] focus:ring-offset-[#060e20] transition-all hover:scale-[1.02] active:scale-[0.98] mt-6 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              {submitting ? 'Authenticating...' : 'Log In →'}
+              {submitting ? 'Authenticating...' : !isBackendOnline ? 'Server Offline' : 'Log In →'}
             </button>
           </form>
 

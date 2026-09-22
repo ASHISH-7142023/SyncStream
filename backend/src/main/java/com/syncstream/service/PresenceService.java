@@ -30,6 +30,8 @@ public class PresenceService {
         String username = user != null ? user.getUsername() : "Unknown";
         String avatar = user != null ? user.getAvatar() : null;
         String customStatusText = user != null ? user.getCustomStatusText() : null;
+        String statusEmoji = user != null ? user.getStatusEmoji() : null;
+        java.util.List<String> badges = user != null ? user.getBadges() : null;
 
         String key = PRESENCE_KEY_PREFIX + userId;
         UserPresenceDto existingPresence = (UserPresenceDto) redisTemplate.opsForValue().get(key);
@@ -41,6 +43,8 @@ public class PresenceService {
                 .serverId(serverId)
                 .status(status)
                 .customStatusText(customStatusText)
+                .statusEmoji(statusEmoji)
+                .badges(badges)
                 .lastSeen(Instant.now())
                 .isListening(existingPresence != null && existingPresence.isListening())
                 .spotifyTrackId(existingPresence != null ? existingPresence.getSpotifyTrackId() : null)
@@ -73,6 +77,8 @@ public class PresenceService {
                     .serverId(this.serverId)
                     .status(PresenceStatus.ONLINE)
                     .customStatusText(user.getCustomStatusText())
+                    .statusEmoji(user.getStatusEmoji())
+                    .badges(user.getBadges())
                     .lastSeen(Instant.now())
                     .build();
         }
@@ -95,6 +101,8 @@ public class PresenceService {
             String username = user != null ? user.getUsername() : "Unknown";
             String avatar = user != null ? user.getAvatar() : null;
             String customStatusText = user != null ? user.getCustomStatusText() : null;
+            String statusEmoji = user != null ? user.getStatusEmoji() : null;
+            java.util.List<String> badges = user != null ? user.getBadges() : null;
             
             return UserPresenceDto.builder()
                     .userId(userId)
@@ -103,6 +111,8 @@ public class PresenceService {
                     .serverId(null)
                     .status(PresenceStatus.OFFLINE)
                     .customStatusText(customStatusText)
+                    .statusEmoji(statusEmoji)
+                    .badges(badges)
                     .lastSeen(Instant.EPOCH)
                     .build();
         }

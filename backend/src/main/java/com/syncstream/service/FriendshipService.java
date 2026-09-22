@@ -21,6 +21,7 @@ public class FriendshipService {
 
     private final FriendshipRepository friendshipRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public Friendship sendRequest(String requesterId, String receiverId) {
         if (requesterId.equals(receiverId)) {
@@ -46,7 +47,22 @@ public class FriendshipService {
                 .updatedAt(Instant.now())
                 .build();
                 
-        return friendshipRepository.save(friendship);
+        Friendship saved = friendshipRepository.save(friendship);
+        
+        // Fetch requester to get username for notification
+        User requester = userRepository.findById(requesterId).orElse(null);
+        if (requester != null) {
+            notificationService.createNotification(
+                receiverId,
+                "New Friend Request",
+                requester.getUsername() + " sent you a friend request.",
+                "FRIEND_REQUEST",
+                saved.getId(),
+                requester.getAvatar()
+            );
+        }
+        
+        return saved;
     }
 
     public Friendship acceptRequest(String userId, String friendshipId) {
@@ -59,7 +75,20 @@ public class FriendshipService {
         
         friendship.setStatus(FriendshipStatus.ACCEPTED);
         friendship.setUpdatedAt(Instant.now());
-        return friendshipRepository.save(friendship);
+        Friendship saved = friendshipRepository.save(friendship);
+        
+        User receiver = userRepository.findById(userId).orElse(null);
+        if (receiver != null) {
+            notificationService.createNotification(
+                friendship.getRequesterId(), // Notify the original requester
+                "Friend Request Accepted",
+                receiver.getUsername() + " accepted your friend request.",
+                "FRIEND_ACCEPT",
+                saved.getId(),
+                receiver.getAvatar()
+            );
+        }
+        return saved;
     }
     
     public void declineRequest(String userId, String friendshipId) {

@@ -63,8 +63,10 @@ public class ChatController {
                 request
         );
 
-        // Include clientMessageId if needed, but here we just broadcast
-        redisMessagePublisher.publish("syncstream:room:" + roomId, savedMessage);
+        if (savedMessage != null) {
+            // Include clientMessageId if needed, but here we just broadcast
+            redisMessagePublisher.publish("syncstream:room:" + roomId, savedMessage);
+        }
     }
 
     @MessageMapping("/rooms/{roomId}/reactions")

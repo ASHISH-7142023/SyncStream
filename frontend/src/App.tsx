@@ -5,6 +5,7 @@ import { SocketProvider } from './context/SocketContext';
 import { WebRTCProvider } from './context/WebRTCContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { ToastProvider } from './context/ToastContext';
+import SystemStatusBanner from './components/ui/SystemStatusBanner';
 
 // Layout wrappers
 import PublicLayout from './layouts/PublicLayout';
@@ -84,6 +85,7 @@ function App() {
   return (
     <ToastProvider>
       <AuthProvider>
+        <SystemStatusBanner />
         <AppContent />
       </AuthProvider>
     </ToastProvider>

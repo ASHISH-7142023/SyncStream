@@ -7,10 +7,12 @@ import OAuthConnectModal from '../components/modals/OAuthConnectModal';
 import { useToast } from '../context/ToastContext';
 
 import { getAvatarsForGender } from '../utils/avatarHelper';
+import { useHealthCheck } from '../hooks/useHealthCheck';
 
 const RegisterPage: React.FC = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const isBackendOnline = useHealthCheck(15000);
 
   const [displayName, setDisplayName] = useState('');
   const [username, setUsername] = useState('');
@@ -551,10 +553,10 @@ const RegisterPage: React.FC = () => {
 
               <button 
                 type="submit"
-                disabled={submitting}
-                className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-lg text-base font-semibold text-white bg-[#6366f1] hover:bg-[#4f46e5] transition-all hover:scale-[1.02] active:scale-[0.98] mt-6 disabled:opacity-50 cursor-pointer"
+                disabled={submitting || !isBackendOnline}
+                className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-lg text-base font-semibold text-white bg-[#6366f1] hover:bg-[#4f46e5] transition-all hover:scale-[1.02] active:scale-[0.98] mt-6 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
-                {submitting ? 'Registering...' : 'Create Account'}
+                {submitting ? 'Registering...' : !isBackendOnline ? 'Server Offline' : 'Create Account'}
               </button>
 
               <div className="text-center text-[10px] text-zinc-500 mt-4 leading-normal">

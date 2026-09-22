@@ -193,6 +193,7 @@ public class AuthController {
 
         String statusStr = (String) request.get("status");
         String customStatusText = (String) request.get("customStatusText");
+        String statusEmoji = (String) request.get("statusEmoji");
 
         if (statusStr != null) {
             try {
@@ -202,7 +203,13 @@ public class AuthController {
             }
         }
         
-        user.setCustomStatusText(customStatusText);
+        
+        if (request.containsKey("customStatusText")) {
+            user.setCustomStatusText(customStatusText);
+        }
+        if (request.containsKey("statusEmoji")) {
+            user.setStatusEmoji(statusEmoji);
+        }
         userRepository.save(user);
 
         // Update in Redis and broadcast

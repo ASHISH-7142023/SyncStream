@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import com.syncstream.dto.RoomDto;
+import com.syncstream.repository.UserRepository;
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -32,6 +35,39 @@ public class RoomController {
 
     @Autowired
     private ReadReceiptService readReceiptService;
+    
+    @Autowired
+    private UserRepository userRepository;
+
+    private RoomDto mapToDto(Room room, String currentUserId) {
+        RoomDto dto = RoomDto.builder()
+                .id(room.getId())
+                .name(room.getName())
+                .description(room.getDescription())
+                .isDirectMessage(room.isDirectMessage())
+                .isVoiceChannel(room.isVoiceChannel())
+                .ownerId(room.getOwnerId())
+                .members(room.getMembers())
+                .admins(room.getAdmins())
+                .bannedUsers(room.getBannedUsers())
+                .createdAt(room.getCreatedAt())
+                .userRoles(room.getMemberRoles())
+                .build();
+                
+        if (room.isDirectMessage() && room.getMembers() != null) {
+            String otherUserId = room.getMembers().stream()
+                    .filter(id -> !id.equals(currentUserId))
+                    .findFirst()
+                    .orElse(currentUserId); // Fallback if self DM
+            userRepository.findById(otherUserId).ifPresent(otherUser -> {
+                dto.setOtherUsername(otherUser.getUsername());
+                dto.setOtherUserAvatar(otherUser.getAvatar());
+                dto.setOtherUserPublicKey(otherUser.getPublicKey());
+            });
+        }
+        
+        return dto;
+    }
 
     @GetMapping("/{roomId}/presence")
     public ResponseEntity<?> getRoomPresence(
@@ -75,11 +111,12 @@ public class RoomController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Room>> getAllRooms(@AuthenticationPrincipal User user) {
+    public ResponseEntity<List<RoomDto>> getAllRooms(@AuthenticationPrincipal User user) {
         List<Room> allRooms = roomService.getAllRooms();
-        List<Room> filtered = allRooms.stream()
+        List<RoomDto> filtered = allRooms.stream()
                 .filter(room -> !room.isDirectMessage() || room.getMembers().contains(user.getId()))
-                .collect(java.util.stream.Collectors.toList());
+                .map(room -> mapToDto(room, user.getId()))
+                .collect(Collectors.toList());
         return ResponseEntity.ok(filtered);
     }
 
@@ -102,7 +139,7 @@ public class RoomController {
                         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                                 .body(Map.of("message", "You are not a member of this room"));
                     }
-                    return ResponseEntity.ok(room);
+                    return ResponseEntity.ok(mapToDto(room, user.getId()));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -276,7 +313,7 @@ public class RoomController {
             @AuthenticationPrincipal User user) {
         try {
             Room room = roomService.getOrCreateDirectMessageRoom(user.getId(), targetUserId);
-            return ResponseEntity.ok(room);
+            return ResponseEntity.ok(mapToDto(room, user.getId()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }

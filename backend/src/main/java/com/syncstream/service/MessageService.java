@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MessageService {
@@ -41,10 +42,25 @@ public class MessageService {
     @Autowired
     private LinkPreviewService linkPreviewService;
 
+    @Autowired
+    private CommandService commandService;
+
     public Message saveMessage(String roomId, String senderId, ChatMessageRequest request) {
         User sender = userRepository.findById(senderId).orElse(null);
         String senderName = sender != null ? sender.getUsername() : "Unknown";
         String senderAvatar = sender != null ? sender.getAvatar() : null;
+
+        // Command interception
+        if (commandService.isCommand(request.getContent())) {
+            Optional<String> commandResult = commandService.processCommand(request.getContent(), sender);
+            if (commandResult.isEmpty()) {
+                // Command executed silently (e.g., /remind), do not save a message
+                return null;
+            } else {
+                // Command returned public content (e.g., ![GIF](url)), replace original request text
+                request.setContent(commandResult.get());
+            }
+        }
 
         Long sequenceNumber = getNextSequenceNumber(roomId);
 

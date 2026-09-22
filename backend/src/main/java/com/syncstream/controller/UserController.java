@@ -3,7 +3,9 @@ package com.syncstream.controller;
 import com.syncstream.dto.UpdateProfileRequest;
 import com.syncstream.dto.UserDto;
 import com.syncstream.model.User;
+import com.syncstream.model.PresenceStatus;
 import com.syncstream.repository.UserRepository;
+import com.syncstream.service.PresenceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserRepository userRepository;
+    private final PresenceService presenceService;
 
     @GetMapping("/search")
     public ResponseEntity<List<UserDto>> searchUsers(@RequestParam("query") String query) {
@@ -53,6 +56,10 @@ public class UserController {
             if (request.getBadges() != null) user.setBadges(request.getBadges());
             
             userRepository.save(user);
+            
+            // Broadcast presence update immediately
+            presenceService.updateUserStatus(user.getId(), PresenceStatus.ONLINE);
+            
             return ResponseEntity.ok(mapToDto(user));
         }).orElse(ResponseEntity.notFound().build());
     }

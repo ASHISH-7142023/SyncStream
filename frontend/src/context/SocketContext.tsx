@@ -4,6 +4,7 @@ import { Client } from '@stomp/stompjs';
 import type { IMessage } from '@stomp/stompjs';
 import { useAuth } from './AuthContext';
 import api from '../services/api';
+import { playNotificationSound } from '../utils/audio/notificationSound';
 
 export type ConnectionStatus = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED';
 
@@ -76,6 +77,8 @@ export interface UserPresence {
   serverId: string | null;
   status: 'ONLINE' | 'AWAY' | 'OFFLINE' | 'DO_NOT_DISTURB';
   customStatusText?: string;
+  statusEmoji?: string;
+  badges?: string[];
   lastSeen: string;
   
   // Spotify Rich Presence
@@ -283,6 +286,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           // Update unread count if it's not our own message and we're not currently looking at this room
           // (assuming if we are at the bottom of the room, read receipts will naturally clear it)
           if (chatMsg.senderId !== user?.id) {
+            playNotificationSound();
             setUnreadRoomCounts(prev => ({
               ...prev,
               [roomId]: (prev[roomId] || 0) + 1

@@ -10,6 +10,8 @@ interface Room {
   name: string;
   description?: string;
   isDirectMessage?: boolean;
+  otherUsername?: string;
+  otherUserAvatar?: string;
 }
 
 interface UserDto {
@@ -194,10 +196,20 @@ const FriendsPage: React.FC = () => {
                   className="w-full flex items-center justify-between px-3 py-1.5 text-text-muted hover:text-white hover:bg-bg-hover rounded-lg transition-colors group text-left"
                 >
                   <div className="flex items-center gap-3 truncate">
-                    <span className="text-accent-purpleLight font-bold w-4 text-center">#</span>
-                    <span className="text-sm truncate">{r.name}</span>
+                    {r.isDirectMessage ? (
+                      r.otherUserAvatar ? (
+                        <img src={r.otherUserAvatar} alt="Avatar" className="w-5 h-5 rounded-full object-cover shrink-0" />
+                      ) : (
+                        <div className="w-5 h-5 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-[10px] text-[#8b5cf6] shrink-0 font-bold">
+                          {r.otherUsername ? r.otherUsername.slice(0, 1).toUpperCase() : r.name.replace('DM-', '').slice(0,2).toUpperCase()}
+                        </div>
+                      )
+                    ) : (
+                      <span className="text-accent-purpleLight font-bold w-4 text-center">#</span>
+                    )}
+                    <span className="text-sm truncate">{r.isDirectMessage ? (r.otherUsername || 'DM Chat') : r.name}</span>
                   </div>
-                  {r.name === 'general' && <div className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></div>}
+                  {!r.isDirectMessage && r.name === 'general' && <div className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></div>}
                 </button>
               ))}
             </div>

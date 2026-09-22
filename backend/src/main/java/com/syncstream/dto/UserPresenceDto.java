@@ -22,6 +22,8 @@ public class UserPresenceDto implements Serializable {
     private String serverId;
     private PresenceStatus status;
     private String customStatusText;
+    private String statusEmoji;
+    private java.util.List<String> badges;
     private Instant lastSeen;
 
     // Spotify Rich Presence

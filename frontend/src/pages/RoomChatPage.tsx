@@ -23,6 +23,8 @@ import { ImageGalleryModal } from '../components/modals/ImageGalleryModal';
 import type { GalleryImage } from '../components/modals/ImageGalleryModal';
 import { Whiteboard } from '../components/chat/Whiteboard';
 import { TicTacToeBoard } from '../components/chat/games/TicTacToeBoard';
+import { Virtuoso } from 'react-virtuoso';
+import { motion } from 'framer-motion';
 
 const VanishTimer: React.FC<{
   messageId: string;
@@ -81,6 +83,9 @@ interface RoomDetails {
   isVoiceChannel?: boolean;
   customRoles?: any[];
   memberRoles?: Record<string, string>;
+  otherUsername?: string;
+  otherUserAvatar?: string;
+  otherUserPublicKey?: string;
 }
 
 const markdownComponents: any = {
@@ -148,7 +153,6 @@ const RoomChatPage: React.FC = () => {
 
   const { addToast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const feedEndRef = useRef<HTMLDivElement | null>(null);
   const feedStartRef = useRef<HTMLDivElement | null>(null);
 
   const [room, setRoom] = useState<RoomDetails | null>(null);
@@ -393,15 +397,24 @@ const RoomChatPage: React.FC = () => {
 
   useEffect(() => {
     if (room?.isDirectMessage && privateKey) {
-       const otherUserId = room.members?.find(m => m !== user?.id);
-       if (otherUserId) {
-         api.get(`/api/crypto/users/${otherUserId}/public-key`).then(async (res) => {
-           if (res.status === 200 && res.data.publicKey) {
-             const { cryptoService } = await import('../services/cryptoService');
-             const key = await cryptoService.importPublicKey(res.data.publicKey);
+       if (room.otherUserPublicKey) {
+         import('../services/cryptoService').then(({ cryptoService }) => {
+           cryptoService.importPublicKey(room.otherUserPublicKey!).then(key => {
              setOtherUserPubKey(key);
-           }
-         }).catch(console.error);
+           }).catch(console.error);
+         });
+       } else {
+         // Fallback if not populated
+         const otherUserId = room.members?.find(m => m !== user?.id);
+         if (otherUserId) {
+           api.get(`/api/crypto/users/${otherUserId}/public-key`).then(async (res) => {
+             if (res.status === 200 && res.data.publicKey) {
+               const { cryptoService } = await import('../services/cryptoService');
+               const key = await cryptoService.importPublicKey(res.data.publicKey);
+               setOtherUserPubKey(key);
+             }
+           }).catch(console.error);
+         }
        }
     }
   }, [room, privateKey, user]);
@@ -439,36 +452,6 @@ const RoomChatPage: React.FC = () => {
     };
     decryptAll();
   }, [roomMessages, sharedSecret]);
-
-  useEffect(() => {
-    feedEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [roomMessages.length]);
-
-  // Read Receipts: Detect when the feed end is visible
-  useEffect(() => {
-    const el = feedEndRef.current;
-    if (!el || !roomId || roomMessages.length === 0 || !user) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          const lastMsg = roomMessages[roomMessages.length - 1];
-          // Check if we already sent a read receipt for this message
-          const myLastRead = readReceipts[roomId]?.[user.id]?.messageId;
-          if (lastMsg.id && lastMsg.id !== myLastRead) {
-            sendReadReceipt(roomId, lastMsg.id);
-          }
-
-          // Clear any unread mentions for this room
-          const roomMentions = notifications.filter(n => !n.read && n.referenceId === roomId && n.type === 'MENTION');
-          roomMentions.forEach(n => markNotificationAsRead(n.id));
-        }
-      },
-      { threshold: 1.0 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [roomId, roomMessages.length, user, readReceipts, notifications]);
 
   // Infinite Scroll: Detect when the feed start is visible to load older messages
   useEffect(() => {
@@ -943,13 +926,17 @@ const RoomChatPage: React.FC = () => {
                     >
                       <div className="flex items-center gap-2 truncate">
                         {r.isDirectMessage ? (
-                          <div className="w-5 h-5 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-[10px] text-[#8b5cf6] shrink-0 font-bold">
-                            {r.name.replace('DM-', '').slice(0,2).toUpperCase()}
-                          </div>
+                          r.otherUserAvatar ? (
+                            <img src={r.otherUserAvatar} alt="Avatar" className="w-5 h-5 rounded-full object-cover shrink-0" />
+                          ) : (
+                            <div className="w-5 h-5 rounded-full bg-[#8b5cf6]/20 flex items-center justify-center text-[10px] text-[#8b5cf6] shrink-0 font-bold">
+                              {r.otherUsername ? r.otherUsername.slice(0, 1).toUpperCase() : r.name.replace('DM-', '').slice(0,2).toUpperCase()}
+                            </div>
+                          )
                         ) : (
                           <span className="text-lg opacity-60 font-light">#</span>
                         )}
-                        <span className={`truncate ${unreadCount > 0 && !isActive ? 'text-white font-semibold' : ''}`}>{r.isDirectMessage ? 'DM Chat' : r.name}</span>
+                        <span className={`truncate ${unreadCount > 0 && !isActive ? 'text-white font-semibold' : ''}`}>{r.isDirectMessage ? (r.otherUsername || 'DM Chat') : r.name}</span>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         {hasMention && <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div>}
@@ -1090,12 +1077,16 @@ const RoomChatPage: React.FC = () => {
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 {room?.isDirectMessage ? (
-                  <span className="text-xl text-text-muted">@</span>
+                  room?.otherUserAvatar ? (
+                    <img src={room.otherUserAvatar} alt="Avatar" className="w-6 h-6 rounded-full object-cover" />
+                  ) : (
+                    <span className="text-xl text-text-muted">@</span>
+                  )
                 ) : (
                   <span className="text-xl text-text-muted">#</span>
                 )}
                 <h1 className="text-lg font-semibold text-white">
-                  {room ? (room.isDirectMessage ? room.name.replace('DM-', '').replace(user?.id || '', '').replace('-', '') || 'Direct Message' : room.name) : 'developers'}
+                  {room ? (room.isDirectMessage ? room.otherUsername || room.name.replace('DM-', '').replace(user?.id || '', '').replace('-', '') || 'Direct Message' : room.name) : 'developers'}
                 </h1>
                 {room?.isDirectMessage && (
                   <div className="flex items-center gap-1.5 ml-2 text-[10px] uppercase font-bold tracking-wider text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full select-none" title="Messages and files in this chat are end-to-end encrypted">
@@ -1339,11 +1330,37 @@ const RoomChatPage: React.FC = () => {
 
           <div ref={feedStartRef} className="w-full h-1 shrink-0" />
           
-          {roomMessages.map((msg: any, idx: number) => {
-            const isMention = msg.content?.includes(`@${user?.username}`);
-            return (
-              <React.Fragment key={msg.id || msg.sequenceNumber}>
-                {idx === roomMessages.length - 2 && roomMessages.length > 2 && (
+          <div className="flex-1 min-h-0 relative w-full h-full pb-4">
+            <Virtuoso
+              data={roomMessages}
+              initialTopMostItemIndex={roomMessages.length > 0 ? roomMessages.length - 1 : 0}
+              followOutput="smooth"
+              alignToBottom
+              className="scrollbar-thin"
+              style={{ height: '100%', width: '100%' }}
+              atBottomStateChange={(atBottom) => {
+                if (atBottom && roomId && roomMessages.length > 0 && user) {
+                  const lastMsg = roomMessages[roomMessages.length - 1];
+                  const myLastRead = readReceipts[roomId]?.[user.id]?.messageId;
+                  if (lastMsg.id && lastMsg.id !== myLastRead) {
+                    sendReadReceipt(roomId, lastMsg.id);
+                  }
+                  const roomMentions = notifications.filter(n => !n.read && n.referenceId === roomId && n.type === 'MENTION');
+                  roomMentions.forEach(n => markNotificationAsRead(n.id));
+                }
+              }}
+              itemContent={(idx, msg: any) => {
+                const isMention = msg.content?.includes(`@${user?.username}`);
+                const isNewest = idx === roomMessages.length - 1;
+                return (
+                  <motion.div 
+                    initial={isNewest ? { opacity: 0, y: 15 } : false}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                    className="w-full mb-2"
+                  >
+                    <React.Fragment key={msg.id || msg.sequenceNumber}>
+                      {idx === roomMessages.length - 2 && roomMessages.length > 2 && (
                   <div className="flex items-center my-2 shrink-0 w-full select-none">
                     <div className="flex-grow h-px bg-purple-500/20"></div>
                     <span className="mx-4 text-[9px] font-bold tracking-widest text-[#a78bfa] uppercase bg-[#0f111a] px-2">New Messages</span>
@@ -1359,7 +1376,12 @@ const RoomChatPage: React.FC = () => {
                   </div>
                   <div className="flex-grow min-w-0">
                     <div className="flex items-baseline gap-2 mb-1">
-                      <span className="font-semibold text-white text-sm">{msg.sender}</span>
+                      <span className="font-semibold text-white text-sm">
+                        {msg.sender}
+                        {presenceUsers[msg.senderId]?.statusEmoji && (
+                          <span className="ml-1 text-sm">{presenceUsers[msg.senderId].statusEmoji}</span>
+                        )}
+                      </span>
                       <span className="text-[10px] text-text-muted">{formatTime(msg.timestamp)}</span>
                       {msg.isVanishMode && !msg.deleted && (
                         <VanishTimer 
@@ -1737,8 +1759,11 @@ const RoomChatPage: React.FC = () => {
                   </div>
                 </div>
               </React.Fragment>
-            );
-          })}
+                  </motion.div>
+                );
+              }}
+            />
+          </div>
           
           {roomMessages.length === 0 && (
             <div className="my-auto text-center space-y-2">
@@ -1747,8 +1772,6 @@ const RoomChatPage: React.FC = () => {
               <p className="text-xs text-[#94a3b8] max-w-sm mx-auto">This is the start of the #{room?.name || 'room'} channel. Send a message to start collaborating!</p>
             </div>
           )}
-
-          <div ref={feedEndRef} />
         </div>
 
         {/* Typing indicator & Input composer */}

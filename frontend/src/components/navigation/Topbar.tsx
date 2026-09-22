@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Bell, HelpCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getAvatarForUser } from '../../utils/avatarHelper';
+import HelpModal from '../modals/HelpModal';
+import { useState } from 'react';
 
 interface TopbarProps {
   notificationsCount?: number;
@@ -17,6 +19,7 @@ const Topbar: React.FC<TopbarProps> = ({
 }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
 
   return (
@@ -52,6 +55,7 @@ const Topbar: React.FC<TopbarProps> = ({
 
         {/* Help Center */}
         <button 
+          onClick={() => setIsHelpOpen(true)}
           className="p-2 hover:bg-[#151923] text-[#94A3B8] hover:text-[#F8FAFC] rounded-lg transition-colors"
           title="SyncStream Help Center"
         >
@@ -79,6 +83,9 @@ const Topbar: React.FC<TopbarProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Render the Help Modal */}
+      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
     </header>
   );
 };

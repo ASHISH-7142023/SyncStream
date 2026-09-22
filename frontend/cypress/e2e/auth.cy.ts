@@ -36,6 +36,11 @@ describe('Authentication Flow', () => {
       statusCode: 200,
       body: []
     }).as('getRooms');
+
+    cy.intercept('GET', '**/api/health', {
+      statusCode: 200,
+      body: { status: 'UP' }
+    }).as('health');
   });
 
   it('should allow a user to register and login', () => {

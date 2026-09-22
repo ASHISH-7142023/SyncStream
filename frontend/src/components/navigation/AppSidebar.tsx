@@ -16,6 +16,8 @@ interface Room {
   id: string;
   name: string;
   isDirectMessage?: boolean;
+  otherUsername?: string;
+  otherUserAvatar?: string;
 }
 
 interface AppSidebarProps {
@@ -42,10 +44,11 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   const [isStatusPopoverOpen, setIsStatusPopoverOpen] = React.useState(false);
   const [customStatusInput, setCustomStatusInput] = React.useState('');
+  const [statusEmojiInput, setStatusEmojiInput] = React.useState('💬');
 
   const handleStatusChange = async (status: string) => {
     try {
-      await api.put('/api/auth/status', { status, customStatusText: customStatusInput });
+      await api.put('/api/auth/status', { status, customStatusText: customStatusInput, statusEmoji: statusEmojiInput });
       setIsStatusPopoverOpen(false);
     } catch (e) {
       console.error('Failed to update status', e);
@@ -55,7 +58,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const handleCustomStatusSubmit = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       try {
-        await api.put('/api/auth/status', { customStatusText: customStatusInput });
+        await api.put('/api/auth/status', { customStatusText: customStatusInput, statusEmoji: statusEmojiInput });
         setIsStatusPopoverOpen(false);
       } catch (e) {
         console.error('Failed to update custom status', e);
@@ -64,8 +67,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   };
 
   React.useEffect(() => {
-    if (user && presenceUsers[user.id]?.customStatusText) {
-      setCustomStatusInput(presenceUsers[user.id].customStatusText || '');
+    if (user && presenceUsers[user.id]) {
+      if (presenceUsers[user.id].customStatusText !== undefined) {
+        setCustomStatusInput(presenceUsers[user.id].customStatusText || '');
+      }
+      if (presenceUsers[user.id].statusEmoji !== undefined) {
+        setStatusEmojiInput(presenceUsers[user.id].statusEmoji || '💬');
+      }
     }
   }, [user, presenceUsers]);
 
@@ -79,15 +87,18 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const publicRooms = rooms.filter(r => !r.isDirectMessage);
   const directMessages = rooms.filter(r => r.isDirectMessage);
 
-  const formatDMName = (name: string) => {
-    if (name.startsWith('DM-')) {
-      const parts = name.split('-');
+  const formatDMName = (room: Room) => {
+    if (room.otherUsername) {
+      return room.otherUsername;
+    }
+    if (room.name.startsWith('DM-')) {
+      const parts = room.name.split('-');
       if (parts.length >= 3) {
         const otherId = parts[1] === user?.id ? parts[2] : parts[1];
         return `DM with ${otherId.substring(0, 6)}...`;
       }
     }
-    return name;
+    return room.name;
   };
 
   const handleLogout = () => {
@@ -255,7 +266,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           <div className="space-y-1">
             {directMessages.map((room) => {
               const isActive = activeRoomId === room.id;
-              const displayName = formatDMName(room.name);
+              const displayName = formatDMName(room);
               return (
                 <div key={room.id} className="space-y-0.5">
                   <button
@@ -267,8 +278,14 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                     }`}
                     title={isCollapsed ? displayName : undefined}
                   >
-                    <div className={`w-5 h-5 rounded-full bg-[#7C3AED]/20 flex items-center justify-center shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-2.5'}`}>
-                      <span className="text-[10px] text-white font-bold">{displayName.substring(0, 1).toUpperCase()}</span>
+                    <div className={`relative w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-2.5'}`}>
+                      {room.otherUserAvatar ? (
+                        <img src={room.otherUserAvatar} alt={displayName} className="w-full h-full rounded-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-[#7C3AED]/20 rounded-full flex items-center justify-center">
+                          <span className="text-[10px] text-white font-bold">{displayName.substring(0, 1).toUpperCase()}</span>
+                        </div>
+                      )}
                     </div>
                     {!isCollapsed && (
                       <span className="truncate flex-1 text-left">{displayName}</span>
@@ -348,8 +365,11 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                         <i className="fa-brands fa-spotify"></i>
                         <span>Listening to {presenceUsers[user.id].spotifyTrackName} by {presenceUsers[user.id].spotifyArtist}</span>
                       </div>
-                    ) : (user && presenceUsers[user.id]?.customStatusText 
-                      ? presenceUsers[user.id].customStatusText 
+                    ) : (user && (presenceUsers[user.id]?.customStatusText || presenceUsers[user.id]?.statusEmoji)
+                      ? <span className="flex items-center gap-1">
+                          {presenceUsers[user.id]?.statusEmoji && <span>{presenceUsers[user.id].statusEmoji}</span>}
+                          <span>{presenceUsers[user.id]?.customStatusText || ''}</span>
+                        </span>
                       : (user && presenceUsers[user.id]?.status ? 
                           presenceUsers[user.id].status.charAt(0) + presenceUsers[user.id].status.slice(1).toLowerCase().replace(/_/g, ' ') 
                           : 'Online'))}
@@ -363,14 +383,25 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
             <>
               <div className="fixed inset-0 z-40" onClick={() => setIsStatusPopoverOpen(false)}></div>
               <div className="absolute bottom-[72px] left-4 w-64 bg-[#111318] border border-[#27272A] rounded-xl shadow-xl z-50 overflow-hidden flex flex-col p-2">
-                <input 
-                  type="text"
-                  placeholder="Set a custom status..."
-                  value={customStatusInput}
-                  onChange={(e) => setCustomStatusInput(e.target.value)}
-                  onKeyDown={handleCustomStatusSubmit}
-                  className="w-full bg-[#1A1D24] border border-[#27272A] rounded-md px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#7C3AED] mb-2"
-                />
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    placeholder="💬"
+                    value={statusEmojiInput}
+                    onChange={(e) => setStatusEmojiInput(e.target.value)}
+                    onKeyDown={handleCustomStatusSubmit}
+                    className="w-12 bg-[#1A1D24] border border-[#27272A] rounded-md px-2 py-1.5 text-xs text-white text-center focus:outline-none focus:border-[#7C3AED]"
+                    maxLength={2}
+                  />
+                  <input 
+                    type="text"
+                    placeholder="Set a custom status..."
+                    value={customStatusInput}
+                    onChange={(e) => setCustomStatusInput(e.target.value)}
+                    onKeyDown={handleCustomStatusSubmit}
+                    className="flex-1 bg-[#1A1D24] border border-[#27272A] rounded-md px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#7C3AED]"
+                  />
+                </div>
                 <div className="h-px bg-[#27272A] w-full mb-2"></div>
                 
                 <button onClick={() => handleStatusChange('ONLINE')} className="flex items-center justify-between px-2 py-1.5 hover:bg-[#1A1D24] rounded-md group">

@@ -39,10 +39,9 @@ public class WebPushService {
         Security.addProvider(new BouncyCastleProvider());
 
         if (publicKey == null || publicKey.isEmpty() || privateKey == null || privateKey.isEmpty()) {
-            log.warn("VAPID keys not configured in application.properties. Using static fallback keys for this session...");
-            // Valid fallback keys to prevent application crash on boot
-            publicKey = "BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBtc3sAHXvdTr-kAlx7cZgP6E";
-            privateKey = "3gJGz_X5rB_Gg9K2p7v403Zz2Y71qWlG_R9sDq_hOQc";
+            log.warn("VAPID keys not configured in application.yml. Web push notifications will be disabled.");
+            pushService = null;
+            return;
         }
 
         try {

@@ -42,6 +42,9 @@ public class MessageServiceTest {
     @Mock
     private ValueOperations<String, Object> valueOperations;
 
+    @Mock
+    private CommandService commandService;
+
     @InjectMocks
     private MessageService messageService;
 
@@ -61,6 +64,7 @@ public class MessageServiceTest {
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.increment(anyString())).thenReturn(5L);
         when(messageRepository.save(any(Message.class))).thenReturn(mockSaved);
+        when(commandService.isCommand(anyString())).thenReturn(false);
 
         ChatMessageRequest request = new ChatMessageRequest();
         request.setContent("Hello World");
