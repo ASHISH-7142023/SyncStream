@@ -29,6 +29,66 @@
 
 ---
 
+## 🗺️ User Workflow
+
+This flowchart maps the user journey and navigation paths throughout the SyncStream frontend application.
+
+```mermaid
+graph TD
+    %% Core Entry
+    Entry(["User Visits http://localhost"]) --> AuthCheck{"Is Authenticated? <br/> (Valid JWT)"}
+
+    %% Authentication Flow
+    AuthCheck -->|No| AuthPage["Authentication Page"]
+    AuthPage --> Login["Login Form"]
+    AuthPage --> Register["Register Form"]
+    
+    Register --> |Derive Encryption Keys| Login
+    Login --> |Store JWT & Unlock Keys| Dashboard["Dashboard / Home"]
+    
+    %% Dashboard Flow
+    AuthCheck -->|Yes| Dashboard
+    
+    Dashboard --> CreateRoom("➕ Create New Room")
+    Dashboard --> JoinRoom("🔗 Join Room via Code")
+    Dashboard --> SelectRoom("💬 Select Existing Room")
+    Dashboard --> Profile("👤 View Profile")
+
+    %% Room Interactions
+    SelectRoom --> RoomChat["Room Chat Interface"]
+    CreateRoom --> RoomChat
+    JoinRoom --> RoomChat
+
+    %% Inside the Room
+    subgraph Room Activity
+        RoomChat --> ConnectWS(("Connect WebSocket"))
+        ConnectWS --> Decrypt["Decrypt Message History"]
+        RoomChat --> SendMsg["Type & Send Message"]
+        RoomChat --> UploadFile["Encrypt & Upload File"]
+        RoomChat --> ViewMembers["View Active Participants"]
+    end
+
+    %% Profile & Settings
+    Profile --> EditProfile["Edit Display Name / Avatar"]
+    Profile --> Logout["Logout & Clear Session"]
+    Logout --> AuthPage
+
+    %% Styling
+    classDef page fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff;
+    classDef action fill:#334155,stroke:#94a3b8,stroke-width:1px,color:#fff;
+    classDef logic fill:#0f172a,stroke:#f59e0b,stroke-width:2px,color:#fff;
+    classDef terminal fill:#ef4444,stroke:#7f1d1d,stroke-width:2px,color:#fff;
+    classDef connection fill:#059669,stroke:#047857,stroke-width:2px,color:#fff;
+
+    class Dashboard,RoomChat,AuthPage,Profile page;
+    class CreateRoom,JoinRoom,SelectRoom,Login,Register,SendMsg,UploadFile,ViewMembers,EditProfile action;
+    class AuthCheck logic;
+    class Logout terminal;
+    class ConnectWS,Decrypt connection;
+```
+
+---
+
 ## 📂 Project Directory Structure
 
 ```text
