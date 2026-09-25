@@ -29,6 +29,34 @@
 
 ---
 
+## 🏰 Core System Architecture (Real-Time Messaging)
+
+SyncStream uses a scalable WebSocket architecture backed by Redis Pub/Sub, allowing instant message delivery across multiple horizontally-scaled Spring Boot nodes.
+
+```mermaid
+flowchart TD
+    ClientA["User A (Frontend)"] -->|"STOMP Send Message"| Server1["Spring Boot Node 1"]
+    ClientB["User B (Frontend)"] -->|"STOMP Subscribe"| Server2["Spring Boot Node 2"]
+    
+    Server1 -->|"Save to DB"| Mongo[("MongoDB")]
+    Server1 -->|"Publish Event"| Redis(("Redis Pub/Sub"))
+    
+    Redis -->|"Broadcast Event"| Server1
+    Redis -->|"Broadcast Event"| Server2
+    
+    Server1 -->|"STOMP Push"| ClientA
+    Server2 -->|"STOMP Push"| ClientB
+    
+    classDef node fill:#7C3AED,stroke:#4F46E5,color:#fff;
+    classDef db fill:#10B981,stroke:#047857,color:#fff;
+    classDef redis fill:#E11D48,stroke:#9F1239,color:#fff;
+    class Server1,Server2 node;
+    class Mongo db;
+    class Redis redis;
+```
+
+---
+
 ## 🗺️ User Workflow
 
 This flowchart maps the user journey and navigation paths throughout the SyncStream frontend application.
