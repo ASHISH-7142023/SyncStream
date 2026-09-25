@@ -3,7 +3,15 @@
   <br/>
   <img src="frontend/public/name.png" alt="SyncStream Name" height="60" />
   
-  <p>A real-time, highly scalable, and secure team communication platform.</p>
+  <p><b>A real-time, highly scalable, and secure team communication platform.</b></p>
+
+  <p align="center">
+    <a href="https://github.com/ASHISH-7142023/SyncStream/stargazers"><img src="https://img.shields.io/github/stars/ASHISH-7142023/SyncStream?style=for-the-badge&color=f59e0b" alt="Stars Badge"/></a>
+    <a href="https://github.com/ASHISH-7142023/SyncStream/network/members"><img src="https://img.shields.io/github/forks/ASHISH-7142023/SyncStream?style=for-the-badge&color=3b82f6" alt="Forks Badge"/></a>
+    <a href="https://github.com/ASHISH-7142023/SyncStream/pulls"><img src="https://img.shields.io/github/issues-pr/ASHISH-7142023/SyncStream?style=for-the-badge&color=10b981" alt="Pull Requests Badge"/></a>
+    <a href="https://github.com/ASHISH-7142023/SyncStream/issues"><img src="https://img.shields.io/github/issues/ASHISH-7142023/SyncStream?style=for-the-badge&color=ef4444" alt="Issues Badge"/></a>
+    <a href="https://github.com/ASHISH-7142023/SyncStream/blob/main/LICENSE"><img src="https://img.shields.io/github/license/ASHISH-7142023/SyncStream?style=for-the-badge&color=8b5cf6" alt="License Badge"/></a>
+  </p>
 
   <p align="center">
     <a href="https://skillicons.dev">
@@ -14,18 +22,32 @@
 
 ---
 
-> Designed for high performance and seamless interaction, SyncStream features real-time messaging, end-to-end encryption (E2EE), WebSocket integrations, and an intuitive modern UI.
+> ⚡ **SyncStream** is designed for high performance and seamless interaction. It features **real-time messaging**, **end-to-end encryption (E2EE)**, **WebSocket integrations**, and an incredibly intuitive modern UI.
+
+---
+
+## 📑 Table of Contents
+- [🚀 Features](#-features)
+- [🏰 Core System Architecture](#-core-system-architecture-real-time-messaging)
+- [🗺️ User Workflow](#-user-workflow)
+- [📂 Project Directory Structure](#-project-directory-structure)
+- [⚙️ Installation & Local Development](#-installation--local-development)
+- [📦 Production Deployment](#-production-deployment-docker-compose)
+- [🔄 CI/CD Workflows](#-cicd-workflows)
+- [🔒 Cryptographic Safeguards](#-cryptographic-safeguards--e2ee)
 
 ---
 
 ## 🚀 Features
 
-*   **Real-Time Messaging**: Built on STOMP over WebSockets for instant, full-duplex message delivery.
-*   **End-to-End Encryption (E2EE)**: Messages and file attachments are securely encrypted using the WebCrypto API before they leave your browser. Only authenticated participants in the room possess the ephemeral keys to decrypt them.
-*   **Modern UI**: A sleek, dark-themed responsive user interface built with React, Vite, and Tailwind CSS.
-*   **Scalable Architecture**: Spring Boot backend backed by MongoDB (persistent storage) and Redis (caching and high-throughput pub/sub).
-*   **Secure File Sharing**: Upload and share files within rooms securely, with chunked processing and local decryption.
-*   **Robust Authentication**: JWT-based stateless authentication and secure session management.
+| Feature | Description |
+| :--- | :--- |
+| 💬 **Real-Time Messaging** | Built on **STOMP over WebSockets** for instant, full-duplex message delivery. |
+| 🛡️ **End-to-End Encryption** | Messages and files are securely encrypted using the **WebCrypto API** locally. Only authenticated participants can decrypt them. |
+| 🎨 **Premium Modern UI** | A sleek, dark-themed responsive user interface built with **React, Vite, and Tailwind CSS**. |
+| 🚀 **Scalable Architecture** | **Spring Boot** backend backed by **MongoDB** (persistence) and **Redis** (high-throughput pub/sub). |
+| 📁 **Secure File Sharing** | Upload and share files within rooms securely, with chunked processing and local decryption via **GridFS**. |
+| 🔑 **Robust Authentication** | **JWT-based** stateless authentication and secure cryptographic session management. |
 
 ---
 
@@ -54,6 +76,60 @@ flowchart TD
     class Mongo db;
     class Redis redis;
 ```
+
+<details>
+<summary><b>📹 Click to view: WebRTC Peer-to-Peer Calling Architecture</b></summary>
+
+```mermaid
+sequenceDiagram
+    participant PeerA as "User A Browser"
+    participant Server as "SyncStream Backend"
+    participant PeerB as "User B Browser"
+    
+    Note over PeerA,PeerB: 1. Signaling Phase (Via WebSocket)
+    PeerA->>Server: Send WebRTC Offer (SDP)
+    Server->>PeerB: Route Offer to User B
+    PeerB->>Server: Send WebRTC Answer (SDP)
+    Server->>PeerA: Route Answer to User A
+    
+    PeerA->>Server: Send ICE Candidates (Network Routes)
+    Server->>PeerB: Route ICE Candidates
+    PeerB->>Server: Send ICE Candidates
+    Server->>PeerA: Route ICE Candidates
+    
+    Note over PeerA,PeerB: 2. Peer-to-Peer Phase (Bypasses Backend)
+    PeerA->>PeerB: Direct Encrypted Video/Audio Stream
+    PeerB->>PeerA: Direct Encrypted Video/Audio Stream
+    PeerA->>PeerB: Screen Sharing Stream
+```
+</details>
+
+<details>
+<summary><b>📁 Click to view: Secure File Sharing (GridFS) Architecture</b></summary>
+
+```mermaid
+sequenceDiagram
+    participant User as "Client (Browser)"
+    participant API as "FileController"
+    participant GridFS as "MongoDB GridFS (Chunks)"
+    participant DB as "MongoDB (Message Collection)"
+    
+    %% Upload Phase
+    User->>API: POST /api/files/upload (Multipart File)
+    API->>GridFS: Stream file in 255KB chunks
+    GridFS-->>API: Return unique File ID
+    API-->>User: Return Download URL
+    
+    %% Attach to Message Phase
+    User->>DB: Send Message with File URL attached
+    
+    %% Download Phase
+    User->>API: GET /api/files/{id}
+    API->>GridFS: Request chunks for File ID
+    GridFS-->>API: Stream chunks
+    API-->>User: Pipe stream to Browser (Download)
+```
+</details>
 
 ---
 
