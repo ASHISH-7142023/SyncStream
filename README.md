@@ -35,6 +35,7 @@
 - [📦 Production Deployment](#-production-deployment-docker-compose)
 - [🔄 CI/CD Workflows](#-cicd-workflows)
 - [🔒 Cryptographic Safeguards](#-cryptographic-safeguards--e2ee)
+- [📄 License & Plagiarism Policy](#-license--plagiarism-policy)
 
 ---
 
@@ -311,3 +312,14 @@ To ensure absolute privacy, the backend never sees plaintext messages or private
 * Room keys are symmetric AES keys encrypted individually for every authorized participant's public key.
 
 For complete documentation on the architecture and security model, please refer to the [ARCHITECTURE.md](file:///d:/ASHISH%20GITHUB/SyncStream/ARCHITECTURE.md).
+
+---
+
+## 📄 License & Plagiarism Policy
+
+This project is open-source and released under the **MIT License**, but with strict **anti-plagiarism and attribution** conditions attached. 
+
+While you are free to use, modify, and distribute this codebase, **you must retain the original copyright notice and explicitly attribute the original author (Ashish Ranjan Singh)**. 
+
+> [!WARNING]
+> Any attempt to misrepresent this software as your own original creation, strip the attribution, or plagiarize the architecture for academic, personal, or commercial gain is strictly prohibited and constitutes a direct violation of the intellectual property terms outlined in the [`LICENSE`](./LICENSE) file.
