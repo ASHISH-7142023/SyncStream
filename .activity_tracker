@@ -23,3 +23,4 @@ chore(deps): bump internal spring boot dependencies
 style(chat): update scrollbar css for better visibility
 test(room): add edge case coverage for room creation
 perf(redis): tune pub/sub connection timeout parameters
+refactor(crypto): streamline AES-GCM decryption pipeline
