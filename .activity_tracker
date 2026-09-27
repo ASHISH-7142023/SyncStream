@@ -17,3 +17,4 @@ Daily activity ping 8 at 09/25/2026 22:12:24
 Daily activity ping 9 at 09/25/2026 22:12:25
 Daily activity ping 10 at 09/25/2026 22:12:25
 refactor(auth): optimize jwt validation loop for performance
+docs: update endpoint documentation for webRTC signaling
