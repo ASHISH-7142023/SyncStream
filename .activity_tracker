@@ -22,3 +22,4 @@ fix(ui): correct padding issues on the dashboard layout
 chore(deps): bump internal spring boot dependencies
 style(chat): update scrollbar css for better visibility
 test(room): add edge case coverage for room creation
+perf(redis): tune pub/sub connection timeout parameters
