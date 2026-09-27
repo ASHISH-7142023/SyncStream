@@ -27,3 +27,4 @@ refactor(crypto): streamline AES-GCM decryption pipeline
 fix(file): prevent memory leak during large file uploads
 docs(readme): fix minor markdown syntax in architecture block
 chore: clean up deprecated helper methods in context provider
+feat(ux): improve error boundary handling on connection drop
