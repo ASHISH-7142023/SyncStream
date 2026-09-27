@@ -20,3 +20,4 @@ refactor(auth): optimize jwt validation loop for performance
 docs: update endpoint documentation for webRTC signaling
 fix(ui): correct padding issues on the dashboard layout
 chore(deps): bump internal spring boot dependencies
+style(chat): update scrollbar css for better visibility
