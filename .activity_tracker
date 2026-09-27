@@ -25,3 +25,4 @@ test(room): add edge case coverage for room creation
 perf(redis): tune pub/sub connection timeout parameters
 refactor(crypto): streamline AES-GCM decryption pipeline
 fix(file): prevent memory leak during large file uploads
+docs(readme): fix minor markdown syntax in architecture block
