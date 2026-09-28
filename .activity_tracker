@@ -47,3 +47,4 @@ docs(architecture): clarify WebRTC signaling flow in system_workflows
 test(e2ee): add boundary tests for very large file encryption chunks
 perf(ws): reduce payload overhead for basic presence broadcasts
 style(theme): adjust contrast ratios for accessible dark mode text
+refactor(backend): standardize error response payloads across controllers
