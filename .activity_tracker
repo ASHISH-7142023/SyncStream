@@ -40,3 +40,4 @@ fix(file): add robust mime-type validation to gridfs upload
 docs(readme): update deployment instructions for Nginx proxy
 chore: remove unused imports in core component modules
 feat(ux): implement toast notifications for connection state changes
+refactor(ui): optimize re-renders in the main dashboard view
