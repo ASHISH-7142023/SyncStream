@@ -51,3 +51,4 @@ refactor(backend): standardize error response payloads across controllers
 fix(rtc): prevent stale ICE candidates from causing connection timeouts
 docs(deployment): add missing docker-compose network configuration details
 chore: clean up console.logs and debugging artifacts
+feat(chat): support markdown parsing for code snippets in messages
