@@ -32,3 +32,4 @@ refactor(ws): enhance STOMP endpoint connection resilience
 fix(db): ensure mongo index covers timestamp and roomID
 chore(frontend): update tailwind configuration for dark mode accents
 docs(api): document REST endpoints for user authentication
+test(chat): implement unit tests for AES-GCM message encryption
