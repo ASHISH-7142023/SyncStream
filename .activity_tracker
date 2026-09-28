@@ -44,3 +44,4 @@ refactor(ui): optimize re-renders in the main dashboard view
 fix(auth): handle expired jwt tokens more gracefully on the client
 chore(deps): update vite and react dependencies to latest patch versions
 docs(architecture): clarify WebRTC signaling flow in system_workflows
+test(e2ee): add boundary tests for very large file encryption chunks
