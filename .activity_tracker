@@ -38,3 +38,4 @@ style(ui): tweak sidebar transition animations for smoother UX
 refactor(security): separate JWT generation and validation logic
 fix(file): add robust mime-type validation to gridfs upload
 docs(readme): update deployment instructions for Nginx proxy
+chore: remove unused imports in core component modules
