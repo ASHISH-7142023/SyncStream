@@ -30,3 +30,4 @@ chore: clean up deprecated helper methods in context provider
 feat(ux): improve error boundary handling on connection drop
 refactor(ws): enhance STOMP endpoint connection resilience
 fix(db): ensure mongo index covers timestamp and roomID
+chore(frontend): update tailwind configuration for dark mode accents
