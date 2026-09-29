@@ -117,3 +117,4 @@ refactor(services): convert legacy promise chains to async/await syntax
 fix(ws): patch race condition during abrupt websocket disconnects
 docs(crypto): explain elliptical curve parameters used for key exchange
 test(file): add assertions for gridfs multi-part chunk reassembly
+perf(mongo): create sparse indexes on optional user metadata fields
