@@ -84,3 +84,4 @@ fix(webrtc): resolve media stream freezing on long-running calls
 feat(admin): add basic telemetry dashboard for active socket counts
 refactor(gridfs): streamline chunk retrieval pipeline for large media
 docs(readme): update feature matrix with p2p calling details
+perf(crypto): offload AES-GCM decryption to web worker threads
