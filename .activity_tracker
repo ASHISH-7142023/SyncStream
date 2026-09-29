@@ -105,3 +105,4 @@ style(forms): standardize error state colors and helper text padding
 test(integration): verify redis pub/sub failover mechanisms
 chore(actions): update github actions runner to ubuntu-latest
 fix(chat): maintain scroll position when rendering new reactions
+feat(presence): synchronize 'do not disturb' status with notification engine
