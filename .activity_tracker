@@ -110,3 +110,4 @@ refactor(crypto): migrate random number generation to secure webcrypto apis
 docs(setup): add troubleshooting guide for local mongodb connectivity
 perf(db): configure connection pooling limits for high-concurrency environments
 style(ux): add skeletal loaders during initial room data fetch
+fix(auth): sanitize user input in profile update requests
