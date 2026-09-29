@@ -101,3 +101,4 @@ fix(webrtc): handle unexpected STUN server resolution failures
 refactor(hooks): decouple intersection observer logic for infinite scroll
 docs(arch): update diagrams to reflect gridfs shard allocations
 perf(bundler): extract vendor chunks to optimize frontend load times
+style(forms): standardize error state colors and helper text padding
