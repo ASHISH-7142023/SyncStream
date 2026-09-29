@@ -58,3 +58,4 @@ fix(layout): resolve overflow issues in the chat message container
 chore(db): update mongodb java driver to version 5.0
 perf(react): memoize heavy cryptographic components using useMemo
 style(auth): redesign login form inputs with floating labels
+docs(setup): clarify prerequisites for running the local redis instance
