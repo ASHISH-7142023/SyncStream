@@ -107,3 +107,4 @@ chore(actions): update github actions runner to ubuntu-latest
 fix(chat): maintain scroll position when rendering new reactions
 feat(presence): synchronize 'do not disturb' status with notification engine
 refactor(crypto): migrate random number generation to secure webcrypto apis
+docs(setup): add troubleshooting guide for local mongodb connectivity
