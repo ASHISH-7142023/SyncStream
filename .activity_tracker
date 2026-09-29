@@ -125,3 +125,4 @@ fix(layout): prevent message bubbles from overflowing off-screen on xs devices
 refactor(context): break monolith socket context into distinct providers
 docs(deployment): update nginx proxy buffers to handle large ws frames
 perf(cache): implement redis pipelining for bulk presence updates
+style(scrollbar): customize webkit scrollbar for a seamless dark theme
