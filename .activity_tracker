@@ -95,3 +95,4 @@ docs(testing): outline procedures for generating mock cryptographic keys
 test(auth): cover rate limiting scenarios on login endpoints
 perf(socket): implement frame compression for large stomp payloads
 style(dashboard): refine border radius consistency across cards
+chore(deps): upgrade internal react testing library dependencies
