@@ -99,3 +99,4 @@ chore(deps): upgrade internal react testing library dependencies
 feat(search): add fuzzy matching for room discovery queries
 fix(webrtc): handle unexpected STUN server resolution failures
 refactor(hooks): decouple intersection observer logic for infinite scroll
+docs(arch): update diagrams to reflect gridfs shard allocations
