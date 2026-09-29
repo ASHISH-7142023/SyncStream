@@ -82,3 +82,4 @@ test(e2e): cover user registration and key derivation flows
 chore(config): synchronize dev and prod environment variable templates
 fix(webrtc): resolve media stream freezing on long-running calls
 feat(admin): add basic telemetry dashboard for active socket counts
+refactor(gridfs): streamline chunk retrieval pipeline for large media
