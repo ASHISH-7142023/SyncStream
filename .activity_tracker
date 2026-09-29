@@ -65,3 +65,4 @@ refactor(css): consolidate redundant tailwind utility classes
 chore: update .gitignore to exclude local cypress screenshots
 feat(security): enforce strict origin validation on websocket handshake
 feat(ux): add typing indicators for active room participants
+refactor(auth): simplify user context population in security filter
