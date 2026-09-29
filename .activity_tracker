@@ -133,3 +133,4 @@ feat(chat): add context menu options to reply to specific messages
 refactor(hooks): create useDebounce hook to throttle heavy api calls
 docs(contributing): outline branch naming conventions for new PRs
 perf(bundler): implement dynamic imports for heavy route components
+style(avatar): generate persistent deterministic colors based on username
