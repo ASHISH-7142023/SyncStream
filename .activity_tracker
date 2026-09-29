@@ -80,3 +80,4 @@ perf(assets): configure aggressive gzip caching in nginx
 style(ui): introduce glassmorphism effects to modal backdrops
 test(e2e): cover user registration and key derivation flows
 chore(config): synchronize dev and prod environment variable templates
+fix(webrtc): resolve media stream freezing on long-running calls
