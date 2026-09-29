@@ -68,3 +68,4 @@ feat(ux): add typing indicators for active room participants
 refactor(auth): simplify user context population in security filter
 fix(ws): prevent duplicate subscriptions on poor network reconnects
 docs(api): expand swagger documentation for file upload endpoints
+test(crypto): ensure graceful failure on corrupted ciphertext
