@@ -64,3 +64,4 @@ fix(webrtc): handle remote peer disconnection events cleanly
 refactor(css): consolidate redundant tailwind utility classes
 chore: update .gitignore to exclude local cypress screenshots
 feat(security): enforce strict origin validation on websocket handshake
+feat(ux): add typing indicators for active room participants
