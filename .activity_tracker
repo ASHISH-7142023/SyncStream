@@ -53,3 +53,4 @@ docs(deployment): add missing docker-compose network configuration details
 chore: clean up console.logs and debugging artifacts
 feat(chat): support markdown parsing for code snippets in messages
 feat(pwa): register service worker for offline asset caching
+refactor(api): implement axios interceptors for automatic token refresh
