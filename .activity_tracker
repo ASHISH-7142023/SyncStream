@@ -89,3 +89,4 @@ style(chat): refine timestamp formatting and alignment in bubbles
 fix(auth): clear local storage completely upon manual logout
 chore: format core java services with standard google style guide
 feat(voice): implement adaptive bitrate scaling for audio channels
+refactor(mongo): transition aggregate pipelines to typed repositories
