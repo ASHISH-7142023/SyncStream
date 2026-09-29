@@ -120,3 +120,4 @@ test(file): add assertions for gridfs multi-part chunk reassembly
 perf(mongo): create sparse indexes on optional user metadata fields
 style(buttons): implement subtle pulse animations for primary actions
 chore(maven): resolve transitive dependency conflicts in spring boot starter
+feat(profile): allow users to toggle global typing indicator visibility
