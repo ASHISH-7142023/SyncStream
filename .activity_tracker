@@ -111,3 +111,4 @@ docs(setup): add troubleshooting guide for local mongodb connectivity
 perf(db): configure connection pooling limits for high-concurrency environments
 style(ux): add skeletal loaders during initial room data fetch
 fix(auth): sanitize user input in profile update requests
+chore: normalize line endings and indentation across the repository
