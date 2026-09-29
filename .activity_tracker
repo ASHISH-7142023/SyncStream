@@ -55,3 +55,4 @@ feat(chat): support markdown parsing for code snippets in messages
 feat(pwa): register service worker for offline asset caching
 refactor(api): implement axios interceptors for automatic token refresh
 fix(layout): resolve overflow issues in the chat message container
+chore(db): update mongodb java driver to version 5.0
