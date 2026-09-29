@@ -86,3 +86,4 @@ refactor(gridfs): streamline chunk retrieval pipeline for large media
 docs(readme): update feature matrix with p2p calling details
 perf(crypto): offload AES-GCM decryption to web worker threads
 style(chat): refine timestamp formatting and alignment in bubbles
+fix(auth): clear local storage completely upon manual logout
