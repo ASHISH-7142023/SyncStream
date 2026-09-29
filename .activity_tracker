@@ -61,3 +61,4 @@ style(auth): redesign login form inputs with floating labels
 docs(setup): clarify prerequisites for running the local redis instance
 test(socket): mock stomp client in component integration tests
 fix(webrtc): handle remote peer disconnection events cleanly
+refactor(css): consolidate redundant tailwind utility classes
