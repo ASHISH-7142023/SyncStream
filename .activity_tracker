@@ -127,3 +127,4 @@ docs(deployment): update nginx proxy buffers to handle large ws frames
 perf(cache): implement redis pipelining for bulk presence updates
 style(scrollbar): customize webkit scrollbar for a seamless dark theme
 test(cypress): write automated flows for end-to-end room creation
+chore(ci): parallelize frontend vitest and cypress action jobs
