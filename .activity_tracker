@@ -132,3 +132,4 @@ fix(webrtc): fallback to relay turn servers when host candidates fail
 feat(chat): add context menu options to reply to specific messages
 refactor(hooks): create useDebounce hook to throttle heavy api calls
 docs(contributing): outline branch naming conventions for new PRs
+perf(bundler): implement dynamic imports for heavy route components
