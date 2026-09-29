@@ -74,3 +74,4 @@ style(components): unify button hover states across the application
 chore(deps): bump internal vite plugins to mitigate security warnings
 feat(chat): implement automatic link unfurling and previews
 fix(layout): adjust z-index layering for mobile navigation drawer
+refactor(state): extract socket connection logic into custom hook
