@@ -71,3 +71,4 @@ docs(api): expand swagger documentation for file upload endpoints
 test(crypto): ensure graceful failure on corrupted ciphertext
 perf(db): batch update read receipts to minimize mongo writes
 style(components): unify button hover states across the application
+chore(deps): bump internal vite plugins to mitigate security warnings
