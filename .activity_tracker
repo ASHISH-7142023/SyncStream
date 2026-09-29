@@ -102,3 +102,4 @@ refactor(hooks): decouple intersection observer logic for infinite scroll
 docs(arch): update diagrams to reflect gridfs shard allocations
 perf(bundler): extract vendor chunks to optimize frontend load times
 style(forms): standardize error state colors and helper text padding
+test(integration): verify redis pub/sub failover mechanisms
