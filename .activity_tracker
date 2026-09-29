@@ -93,3 +93,4 @@ refactor(mongo): transition aggregate pipelines to typed repositories
 fix(ui): correct z-index overlap on context menus and tooltips
 docs(testing): outline procedures for generating mock cryptographic keys
 test(auth): cover rate limiting scenarios on login endpoints
+perf(socket): implement frame compression for large stomp payloads
