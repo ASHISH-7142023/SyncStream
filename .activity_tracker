@@ -114,3 +114,4 @@ fix(auth): sanitize user input in profile update requests
 chore: normalize line endings and indentation across the repository
 feat(i18n): prepare internationalization framework for localization
 refactor(services): convert legacy promise chains to async/await syntax
+fix(ws): patch race condition during abrupt websocket disconnects
