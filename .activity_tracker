@@ -130,3 +130,4 @@ test(cypress): write automated flows for end-to-end room creation
 chore(ci): parallelize frontend vitest and cypress action jobs
 fix(webrtc): fallback to relay turn servers when host candidates fail
 feat(chat): add context menu options to reply to specific messages
+refactor(hooks): create useDebounce hook to throttle heavy api calls
