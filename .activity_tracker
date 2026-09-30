@@ -154,3 +154,4 @@ test(auth): verify correct behavior of bcrypt password hashing
 chore(actions): cache maven dependencies in github actions pipeline
 fix(chat): prevent empty messages from triggering scroll events
 feat(reactions): aggregate multiple identical emoji reactions visually
+refactor(crypto): centralize key export and import logic
