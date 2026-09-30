@@ -157,3 +157,4 @@ feat(reactions): aggregate multiple identical emoji reactions visually
 refactor(crypto): centralize key export and import logic
 docs(api): document websocket endpoint heartbeat intervals
 perf(db): implement pagination for retrieving long message histories
+style(inputs): highlight input borders on focus-visible states
