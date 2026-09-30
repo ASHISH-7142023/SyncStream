@@ -146,3 +146,4 @@ style(modals): add subtle backdrop blur to active dialogs
 chore(npm): audit and fix moderate security vulnerabilities
 feat(rooms): allow room owners to transfer ownership to peers
 fix(webrtc): handle remote track unmuting correctly in firefox
+refactor(config): externalize backend CORS allowed origins
