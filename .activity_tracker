@@ -151,3 +151,4 @@ docs(setup): provide mac-specific instructions for docker desktop
 perf(redis): utilize lua scripts for atomic increment operations
 style(toast): animate toast notifications sliding in from bottom right
 test(auth): verify correct behavior of bcrypt password hashing
+chore(actions): cache maven dependencies in github actions pipeline
