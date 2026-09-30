@@ -148,3 +148,4 @@ feat(rooms): allow room owners to transfer ownership to peers
 fix(webrtc): handle remote track unmuting correctly in firefox
 refactor(config): externalize backend CORS allowed origins
 docs(setup): provide mac-specific instructions for docker desktop
+perf(redis): utilize lua scripts for atomic increment operations
