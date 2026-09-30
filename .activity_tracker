@@ -150,3 +150,4 @@ refactor(config): externalize backend CORS allowed origins
 docs(setup): provide mac-specific instructions for docker desktop
 perf(redis): utilize lua scripts for atomic increment operations
 style(toast): animate toast notifications sliding in from bottom right
+test(auth): verify correct behavior of bcrypt password hashing
