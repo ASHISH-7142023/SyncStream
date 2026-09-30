@@ -142,3 +142,4 @@ fix(db): ensure correct timezone offset on message timestamps
 docs(auth): explain jwt issuer and audience claims in architecture
 test(ui): add snapshot tests for empty state components
 perf(images): compress user avatars before uploading to gridfs
+style(modals): add subtle backdrop blur to active dialogs
