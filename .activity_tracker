@@ -144,3 +144,4 @@ test(ui): add snapshot tests for empty state components
 perf(images): compress user avatars before uploading to gridfs
 style(modals): add subtle backdrop blur to active dialogs
 chore(npm): audit and fix moderate security vulnerabilities
+feat(rooms): allow room owners to transfer ownership to peers
