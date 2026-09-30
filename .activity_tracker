@@ -153,3 +153,4 @@ style(toast): animate toast notifications sliding in from bottom right
 test(auth): verify correct behavior of bcrypt password hashing
 chore(actions): cache maven dependencies in github actions pipeline
 fix(chat): prevent empty messages from triggering scroll events
+feat(reactions): aggregate multiple identical emoji reactions visually
