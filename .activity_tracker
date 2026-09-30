@@ -136,3 +136,4 @@ perf(bundler): implement dynamic imports for heavy route components
 style(avatar): generate persistent deterministic colors based on username
 fix(auth): redirect unauthorized users to login without breaking history stack
 chore: clean up obsolete feature flags in environment configurations
+feat(a11y): add aria-labels to icon buttons across the application
