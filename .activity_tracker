@@ -183,3 +183,4 @@ test(e2e): cover end-to-end media upload and decryption flow
 perf(socket): batch outgoing stomp messages to reduce tcp overhead
 style(theme): enhance contrast for inline code blocks in dark mode
 chore(deps): bump tailwindcss to v3.4 to resolve peer dependency issues
+feat(rooms): allow owners to generate expiring join links
