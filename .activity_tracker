@@ -192,3 +192,4 @@ style(modals): animate modal entry and exit transitions smoothly
 test(cypress): mock websocket connections for deterministic testing
 chore(actions): parameterize node and java versions in ci pipelines
 fix(presence): handle edge case where user goes offline abruptly
+feat(reactions): support custom unicode emoji rendering in reactions
