@@ -171,3 +171,4 @@ chore(deps): upgrade core spring boot dependencies to v3.2.3
 feat(webrtc): add visual indicators for microphone and camera state
 fix(layout): prevent text selection inside draggable modal headers
 refactor(crypto): consolidate derived key cache into a singleton service
+docs(setup): document steps for rotating local jwt signing keys
