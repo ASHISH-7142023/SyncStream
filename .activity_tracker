@@ -174,3 +174,4 @@ refactor(crypto): consolidate derived key cache into a singleton service
 docs(setup): document steps for rotating local jwt signing keys
 perf(db): implement bulk insert strategies for initial data seeding
 style(inputs): add floating label transition to authentication forms
+chore(ci): update github actions cache keys for node modules
