@@ -168,3 +168,4 @@ test(ws): add load testing scripts for stomp broker capacity
 perf(react): utilize React.lazy for code-splitting less frequent routes
 style(chat): implement alternating message bubble background colors
 chore(deps): upgrade core spring boot dependencies to v3.2.3
+feat(webrtc): add visual indicators for microphone and camera state
