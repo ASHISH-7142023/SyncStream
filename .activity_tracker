@@ -181,3 +181,4 @@ fix(webrtc): handle track mute events during peer renegotiation
 docs(api): clarify authentication requirements for file downloads
 test(e2e): cover end-to-end media upload and decryption flow
 perf(socket): batch outgoing stomp messages to reduce tcp overhead
+style(theme): enhance contrast for inline code blocks in dark mode
