@@ -161,3 +161,4 @@ style(inputs): highlight input borders on focus-visible states
 fix(presence): clear user presence accurately on page unload
 chore: update copyright year and attribution in legal headers
 feat(ux): implement drag-and-drop support for file attachments
+refactor(mongo): optimize geospatial queries for proximity-based room discovery
