@@ -191,3 +191,4 @@ perf(db): implement compound indexes for message query optimization
 style(modals): animate modal entry and exit transitions smoothly
 test(cypress): mock websocket connections for deterministic testing
 chore(actions): parameterize node and java versions in ci pipelines
+fix(presence): handle edge case where user goes offline abruptly
