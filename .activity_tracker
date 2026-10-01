@@ -162,3 +162,4 @@ fix(presence): clear user presence accurately on page unload
 chore: update copyright year and attribution in legal headers
 feat(ux): implement drag-and-drop support for file attachments
 refactor(mongo): optimize geospatial queries for proximity-based room discovery
+fix(auth): correct token parsing logic for edge cases in jwt headers
