@@ -187,3 +187,4 @@ feat(rooms): allow owners to generate expiring join links
 fix(auth): prevent infinite redirect loop on expired sessions
 refactor(ui): extract reusable tooltip wrapper for action icons
 docs(arch): outline peer-to-peer signalling fallback mechanisms
+perf(db): implement compound indexes for message query optimization
