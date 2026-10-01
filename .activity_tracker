@@ -177,3 +177,4 @@ style(inputs): add floating label transition to authentication forms
 chore(ci): update github actions cache keys for node modules
 feat(ux): implement sticky headers for long chat histories
 refactor(mongo): consolidate index creation scripts into migrations
+fix(webrtc): handle track mute events during peer renegotiation
