@@ -199,3 +199,4 @@ fix(layout): prevent double scrollbars in nested sidebars on windows
 docs(testing): detail procedures for benchmarking websocket throughput
 test(e2e): verify edge cases in concurrent room joins
 perf(auth): cache public keys in memory to speed up jwt verification
+style(theme): harmonize accent colors across alert components
