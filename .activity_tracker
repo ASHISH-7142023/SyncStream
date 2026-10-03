@@ -194,3 +194,4 @@ chore(actions): parameterize node and java versions in ci pipelines
 fix(presence): handle edge case where user goes offline abruptly
 feat(reactions): support custom unicode emoji rendering in reactions
 feat(voice): implement automatic gain control for peer connections
+refactor(mongo): update repository interfaces to use reactive streams
