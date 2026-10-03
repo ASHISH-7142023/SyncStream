@@ -38,7 +38,30 @@ public class RoomService {
     }
 
     public List<Room> getAllRooms() {
+        if (!roomRepository.existsByName("General")) {
+            getOrCreateGlobalRoom("system");
+        }
         return roomRepository.findAll();
+    }
+
+    public Room getOrCreateGlobalRoom(String ownerId) {
+        return roomRepository.findByName("General").orElseGet(() -> {
+            Room room = Room.builder()
+                    .id("general")
+                    .name("General")
+                    .description("Global chat for everyone")
+                    .ownerId(ownerId)
+                    .isVoiceChannel(false)
+                    .members(new HashSet<>())
+                    .admins(new HashSet<>())
+                    .moderators(new HashSet<>())
+                    .bannedUsers(new HashSet<>())
+                    .createdAt(Instant.now())
+                    .build();
+            room.getMembers().add(ownerId);
+            room.getAdmins().add(ownerId);
+            return roomRepository.save(room);
+        });
     }
 
     public Optional<Room> getRoomById(String roomId) {

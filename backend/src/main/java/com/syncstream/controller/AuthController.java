@@ -3,9 +3,12 @@ package com.syncstream.controller;
 import com.syncstream.dto.AuthResponse;
 import com.syncstream.dto.LoginRequest;
 import com.syncstream.dto.RegisterRequest;
+import com.syncstream.model.Room;
 import com.syncstream.model.User;
+import com.syncstream.repository.RoomRepository;
 import com.syncstream.repository.UserRepository;
 import com.syncstream.security.JwtTokenProvider;
+import com.syncstream.service.RoomService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,6 +51,12 @@ public class AuthController {
     @Autowired
     private RedisMessagePublisher redisMessagePublisher;
 
+    @Autowired
+    private RoomService roomService;
+
+    @Autowired
+    private RoomRepository roomRepository;
+
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         if (userRepository.existsByUsername(registerRequest.getUsername())) {
@@ -77,6 +86,16 @@ public class AuthController {
 
         userRepository.save(user);
 
+        // Auto join #general room
+        try {
+            Room generalRoom = roomService.getOrCreateGlobalRoom(user.getId());
+            if (!generalRoom.getMembers().contains(user.getId())) {
+                roomService.joinRoom(generalRoom.getId(), user.getId());
+            }
+        } catch (Exception e) {
+            // Silently ignore auto-join failures
+        }
+
         // Auto authenticate after registration
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -103,6 +122,16 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.generateToken(authentication);
         User user = (User) authentication.getPrincipal();
+
+        // Auto join #general room for existing users
+        try {
+            Room generalRoom = roomService.getOrCreateGlobalRoom(user.getId());
+            if (!generalRoom.getMembers().contains(user.getId())) {
+                roomService.joinRoom(generalRoom.getId(), user.getId());
+            }
+        } catch (Exception e) {
+            // Silently ignore auto-join failures
+        }
 
         return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getGender(), user.getAvatar(), user.getBio(), user.getThemeColor(), user.getNotificationsEnabled(), user.getPublicKey(), user.getEncryptedPrivateKey()));
     }

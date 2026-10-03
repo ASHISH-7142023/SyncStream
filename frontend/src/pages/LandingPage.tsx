@@ -81,7 +81,7 @@ const LandingPage: React.FC = () => {
               <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#features">Features</a>
               <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#how">How It Works</a>
               <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#pricing">Pricing</a>
-              <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#about">About Us</a>
+              <Link to="/about" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">About Us</Link>
               <a className="text-sm font-medium text-gray-300 hover:text-white transition-colors" href="#docs">Docs</a>
             </nav>
 

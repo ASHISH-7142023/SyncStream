@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
-  Home, MessageSquare, AtSign, Bookmark, Plus, Sparkles, LogOut, ChevronLeft, Settings, Volume2, Check
+  Home, MessageSquare, AtSign, Bookmark, Plus, Sparkles, LogOut, ChevronLeft, Settings, Volume2, Check, Hash
 } from 'lucide-react';
 import api from '../../services/api';
 import { useWebRTC } from '../../context/WebRTCContext';
@@ -79,6 +79,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
   const menuItems = [
     { id: 'home', label: 'Home', icon: Home, path: '/dashboard' },
+    { id: 'general', label: 'Global Chat', icon: Hash, path: '/rooms/general' },
     { id: 'threads', label: 'Threads', icon: MessageSquare, path: '/threads', badge: 0 },
     { id: 'mentions', label: 'Notifications', icon: AtSign, path: '/notifications', badge: unreadCount },
     { id: 'saved', label: 'Saved Messages', icon: Bookmark, path: '/saved', badge: 0 },

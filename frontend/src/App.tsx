@@ -20,6 +20,7 @@ import RoomsPage from './pages/RoomsPage';
 import RoomChatPage from './pages/RoomChatPage';
 import ProfilePage from './pages/ProfilePage';
 import FriendsPage from './pages/FriendsPage';
+import AboutPage from './pages/AboutPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -49,6 +50,7 @@ function AppContent() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/about" element={<AboutPage />} />
         </Route>
         
         {/* Authenticated routes inside AppLayout sharing SocketProvider */}
