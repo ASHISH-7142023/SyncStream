@@ -201,3 +201,4 @@ test(e2e): verify edge cases in concurrent room joins
 perf(auth): cache public keys in memory to speed up jwt verification
 style(theme): harmonize accent colors across alert components
 chore(deps): update spring boot starter security to address cves
+feat(rooms): allow moderators to temporarily lock chat channels
