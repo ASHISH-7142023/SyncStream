@@ -206,3 +206,4 @@ fix(webrtc): handle ice candidate generation failures elegantly
 refactor(ui): extract avatar group overlapping into a shared component
 docs(deployment): add missing steps for ssl certificate renewal in nginx
 perf(db): implement TTL indexes on ephemeral presence tracking collections
+style(modals): standardise padding and typographic scales across dialogs
