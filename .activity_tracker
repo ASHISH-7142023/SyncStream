@@ -208,3 +208,4 @@ docs(deployment): add missing steps for ssl certificate renewal in nginx
 perf(db): implement TTL indexes on ephemeral presence tracking collections
 style(modals): standardise padding and typographic scales across dialogs
 test(cypress): intercept external api calls during component testing
+chore(actions): compress artifacts before caching to speed up CI
