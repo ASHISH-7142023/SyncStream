@@ -195,3 +195,4 @@ fix(presence): handle edge case where user goes offline abruptly
 feat(reactions): support custom unicode emoji rendering in reactions
 feat(voice): implement automatic gain control for peer connections
 refactor(mongo): update repository interfaces to use reactive streams
+fix(layout): prevent double scrollbars in nested sidebars on windows
