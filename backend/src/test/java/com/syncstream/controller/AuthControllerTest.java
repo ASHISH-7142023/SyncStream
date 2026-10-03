@@ -66,6 +66,12 @@ public class AuthControllerTest {
     @MockBean
     private RedisMessagePublisher redisMessagePublisher;
 
+    @MockBean
+    private com.syncstream.service.RoomService roomService;
+
+    @MockBean
+    private com.syncstream.repository.RoomRepository roomRepository;
+
     @Test
     public void testRegisterUser_Success() throws Exception {
         RegisterRequest request = new RegisterRequest();
