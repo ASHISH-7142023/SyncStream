@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Zap, Server, Users, ArrowRight, Github, Lock, Database, Globe } from 'lucide-react';
+import { Server, Users, ArrowRight, Lock, Database } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SyncStreamLogo from '../components/ui/SyncStreamLogo';
 
@@ -37,12 +37,11 @@ const AboutPage: React.FC = () => {
       {/* Header */}
       <header className="relative z-10 w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
         <Link to="/" className="hover:opacity-80 transition-opacity">
-          <SyncStreamLogo size="md" />
+          <SyncStreamLogo className="w-10 h-10" />
         </Link>
         <div className="flex items-center gap-6 text-sm font-medium">
           <Link to="/" className="text-[#94A3B8] hover:text-white transition-colors">Home</Link>
           <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-[#94A3B8] hover:text-white transition-colors flex items-center gap-2">
-            <Github className="w-4 h-4" />
             GitHub
           </a>
           <Link to="/register" className="px-5 py-2 bg-[#F8FAFC] text-[#0F172A] rounded-full hover:bg-white transition-colors shadow-[0_0_15px_rgba(255,255,255,0.1)]">
