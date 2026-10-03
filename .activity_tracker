@@ -203,3 +203,4 @@ style(theme): harmonize accent colors across alert components
 chore(deps): update spring boot starter security to address cves
 feat(rooms): allow moderators to temporarily lock chat channels
 fix(webrtc): handle ice candidate generation failures elegantly
+refactor(ui): extract avatar group overlapping into a shared component
