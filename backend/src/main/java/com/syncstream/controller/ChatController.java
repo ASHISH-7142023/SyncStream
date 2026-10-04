@@ -88,12 +88,7 @@ public class ChatController {
             return;
         }
 
-        Message updatedMessage;
-        if (active) {
-            updatedMessage = messageService.addReaction(messageId, emoji, user.getUsername());
-        } else {
-            updatedMessage = messageService.removeReaction(messageId, emoji, user.getUsername());
-        }
+        Message updatedMessage = messageService.toggleReaction(messageId, emoji, user.getUsername());
 
         // We can publish the updated message, or a special reaction event. Let's just publish the updated message.
         // It will have the same sequenceNumber, so clients can just replace it or merge it.
