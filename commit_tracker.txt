@@ -6,3 +6,4 @@ docs(setup): update prerequisite versions in README
 test(socket): verify reconnect logic on network drop
 chore(deps): update lucide-react to latest minor version
 feat(presence): distinguish between idle and away states
+refactor(mongo): streamline user query aggregations
