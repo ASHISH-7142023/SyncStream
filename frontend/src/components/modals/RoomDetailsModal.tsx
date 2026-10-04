@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../ui/Modal';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 interface Webhook {
   id: string;
@@ -25,10 +26,13 @@ interface RoomDetailsModalProps {
 }
 
 const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, room, memberCount }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'roles' | 'webhooks'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'roles' | 'webhooks' | 'members'>('overview');
   const [webhooks, setWebhooks] = useState<Webhook[]>([]);
   const [loadingWebhooks, setLoadingWebhooks] = useState(false);
   const [newWebhookName, setNewWebhookName] = useState('');
+  const [members, setMembers] = useState<any[]>([]);
+  const [loadingMembers, setLoadingMembers] = useState(false);
+  const { user } = useAuth();
   
   const [newRoleName, setNewRoleName] = useState('');
   const [newRoleColor, setNewRoleColor] = useState('#a78bfa');
@@ -38,8 +42,56 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
   useEffect(() => {
     if (isOpen && activeTab === 'webhooks') {
       fetchWebhooks();
+    } else if (isOpen && activeTab === 'members') {
+      fetchMembers();
     }
   }, [isOpen, activeTab]);
+
+  const fetchMembers = async () => {
+    setLoadingMembers(true);
+    try {
+      const res = await api.get(`/api/rooms/${room.id}/members/details`);
+      setMembers(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingMembers(false);
+    }
+  };
+
+  const assignRole = async (userId: string, roleId: string) => {
+    try {
+      await api.put(`/api/rooms/${room.id}/members/${userId}/role`, { roleId });
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to assign role: ' + (err as any).response?.data?.message || 'Unknown error');
+    }
+  };
+
+  const kickUser = async (userId: string) => {
+    if (!window.confirm("Are you sure you want to kick this user?")) return;
+    try {
+      await api.post(`/api/rooms/${room.id}/kick/${userId}`);
+      fetchMembers();
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to kick user: ' + (err as any).response?.data?.message || 'Unknown error');
+    }
+  };
+
+  const banUser = async (userId: string) => {
+    if (!window.confirm("Are you sure you want to ban this user?")) return;
+    try {
+      await api.post(`/api/rooms/${room.id}/ban/${userId}`);
+      fetchMembers();
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to ban user: ' + (err as any).response?.data?.message || 'Unknown error');
+    }
+  };
 
   const fetchWebhooks = async () => {
     setLoadingWebhooks(true);
@@ -113,6 +165,12 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
               onClick={() => setActiveTab('roles')}
             >
               Roles
+            </button>
+            <button 
+              className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'members' ? 'text-brand-400 border-b-2 border-brand-400' : 'text-text-muted hover:text-white'}`}
+              onClick={() => setActiveTab('members')}
+            >
+              Members
             </button>
             <button 
               className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'webhooks' ? 'text-brand-400 border-b-2 border-brand-400' : 'text-text-muted hover:text-white'}`}
@@ -205,6 +263,58 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'members' && (
+          <div className="space-y-4">
+            <h4 className="text-sm font-semibold text-white mb-3">Manage Members</h4>
+            {loadingMembers ? (
+              <div className="text-center text-text-muted text-sm py-4">Loading members...</div>
+            ) : members.length > 0 ? (
+              <div className="space-y-2">
+                {members.map((m: any) => {
+                  const isOwner = room.ownerId === m.id;
+                  const isAdmin = room.admins?.includes(m.id) || isOwner;
+                  return (
+                    <div key={m.id} className="flex items-center justify-between bg-[#1f2233]/50 border border-white/5 p-3 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <img src={m.avatar || `https://ui-avatars.com/api/?name=${m.username}`} alt={m.username} className="w-8 h-8 rounded-full" />
+                        <div className="flex flex-col">
+                          <span className="text-white text-sm font-medium flex items-center gap-2">
+                            {m.username}
+                            {isOwner && <i className="fa-solid fa-crown text-yellow-500 text-[10px]" title="Owner"></i>}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {user && m.id !== user.id && !isOwner && (
+                        <div className="flex items-center gap-2">
+                          <select 
+                            className="bg-[#1a1d2d] border border-white/10 text-xs text-white rounded p-1 outline-none"
+                            onChange={(e) => assignRole(m.id, e.target.value)}
+                            defaultValue={room.userRoles?.[m.id] || ''}
+                          >
+                            <option value="">No Role</option>
+                            {room.customRoles?.map((r: any) => (
+                              <option key={r.id} value={r.id}>{r.name}</option>
+                            ))}
+                          </select>
+                          <button onClick={() => kickUser(m.id)} className="p-1.5 text-text-muted hover:text-red-400 bg-white/5 rounded hover:bg-white/10 transition-colors" title="Kick">
+                            <i className="fa-solid fa-user-minus"></i>
+                          </button>
+                          <button onClick={() => banUser(m.id)} className="p-1.5 text-text-muted hover:text-red-500 bg-white/5 rounded hover:bg-white/10 transition-colors" title="Ban">
+                            <i className="fa-solid fa-ban"></i>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-sm text-text-muted">No members found.</p>
+            )}
           </div>
         )}
 
