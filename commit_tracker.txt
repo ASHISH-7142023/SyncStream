@@ -11,3 +11,4 @@ fix(sidebar): prevent overflow when numerous rooms are created
 perf(state): memoize heavy component renders in chat list
 style(theme): enhance focus rings on active input fields
 docs(api): add examples for websocket payload structures
+test(e2e): mock camera and microphone for webrtc tests
