@@ -1,1 +1,2 @@
 refactor(ui): update chat bubble padding for better readability
+perf(network): debounce search input for room filtering
