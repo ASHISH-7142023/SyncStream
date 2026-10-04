@@ -16,3 +16,4 @@ chore(actions): cache maven dependencies for backend builds
 feat(rooms): add support for muting specific channels
 refactor(core): encapsulate generic error response mapping
 perf(image): pre-load avatar thumbnails on hover
+fix(security): sanitize custom room names before display
