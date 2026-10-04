@@ -31,4 +31,21 @@ public class MessageController {
         Page<Message> results = messageService.searchGlobalMessages(query, user.getId(), PageRequest.of(page, size));
         return ResponseEntity.ok(results);
     }
+    @PostMapping("/{id}/reactions")
+    public ResponseEntity<Message> toggleReaction(
+            @PathVariable("id") String messageId,
+            @RequestBody java.util.Map<String, String> payload,
+            @AuthenticationPrincipal User user) {
+        String emoji = payload.get("emoji");
+        if (emoji == null || emoji.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        try {
+            Message updatedMessage = messageService.toggleReaction(messageId, emoji, user.getId());
+            return ResponseEntity.ok(updatedMessage);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
