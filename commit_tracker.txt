@@ -1,2 +1,3 @@
 refactor(ui): update chat bubble padding for better readability
 perf(network): debounce search input for room filtering
+fix(webrtc): handle track mute events properly during calls
