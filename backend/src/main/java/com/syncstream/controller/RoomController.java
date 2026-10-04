@@ -144,6 +144,30 @@ public class RoomController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{roomId}/members/details")
+    public ResponseEntity<?> getRoomMemberDetails(
+            @PathVariable String roomId,
+            @AuthenticationPrincipal User user) {
+        
+        return roomService.getRoomById(roomId)
+                .map(room -> {
+                    if (!room.getMembers().contains(user.getId())) {
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                .body(Map.of("message", "You are not a member of this room"));
+                    }
+                    List<com.syncstream.dto.UserDto> memberDetails = userRepository.findAllById(room.getMembers())
+                            .stream()
+                            .map(u -> com.syncstream.dto.UserDto.builder()
+                                    .id(u.getId())
+                                    .username(u.getUsername())
+                                    .avatar(u.getAvatar())
+                                    .build())
+                            .collect(Collectors.toList());
+                    return ResponseEntity.ok(memberDetails);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{roomId}")
     public ResponseEntity<?> deleteRoom(
             @PathVariable String roomId,
