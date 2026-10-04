@@ -169,39 +169,35 @@ public class MessageService {
         return messageRepository.findByParentIdOrderByCreatedAtAsc(messageId);
     }
 
-    public Message addReaction(String messageId, String emoji, String username) {
+    public Message toggleReaction(String messageId, String emoji, String username) {
         return messageRepository.findById(messageId).map(message -> {
             java.util.Map<String, List<String>> reactions = message.getReactions();
             if (reactions == null) {
                 reactions = new java.util.HashMap<>();
             }
             List<String> users = reactions.getOrDefault(emoji, new java.util.ArrayList<>());
-            if (!users.contains(username)) {
+            if (users.contains(username)) {
+                users.remove(username);
+                if (users.isEmpty()) {
+                    reactions.remove(emoji);
+                } else {
+                    reactions.put(emoji, users);
+                }
+            } else {
                 users.add(username);
                 reactions.put(emoji, users);
-                message.setReactions(reactions);
-                return messageRepository.save(message);
             }
-            return message;
-        }).orElseThrow(() -> new IllegalArgumentException("Message not found"));
-    }
-
-    public Message removeReaction(String messageId, String emoji, String username) {
-        return messageRepository.findById(messageId).map(message -> {
-            java.util.Map<String, List<String>> reactions = message.getReactions();
-            if (reactions != null && reactions.containsKey(emoji)) {
-                List<String> users = reactions.get(emoji);
-                if (users.remove(username)) {
-                    if (users.isEmpty()) {
-                        reactions.remove(emoji);
-                    } else {
-                        reactions.put(emoji, users);
-                    }
-                    message.setReactions(reactions);
-                    return messageRepository.save(message);
-                }
+            message.setReactions(reactions);
+            Message savedMessage = messageRepository.save(message);
+            
+            // Broadcast the updated message
+            try {
+                String jsonMessage = objectMapper.writeValueAsString(savedMessage);
+                redisTemplate.convertAndSend("syncstream:room:" + savedMessage.getRoomId(), jsonMessage);
+            } catch (Exception e) {
+                // Ignore parsing error
             }
-            return message;
+            return savedMessage;
         }).orElseThrow(() -> new IllegalArgumentException("Message not found"));
     }
 
