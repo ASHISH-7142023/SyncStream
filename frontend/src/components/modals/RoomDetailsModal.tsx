@@ -275,7 +275,6 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
               <div className="space-y-2">
                 {members.map((m: any) => {
                   const isOwner = room.ownerId === m.id;
-                  const isAdmin = room.admins?.includes(m.id) || isOwner;
                   return (
                     <div key={m.id} className="flex items-center justify-between bg-[#1f2233]/50 border border-white/5 p-3 rounded-lg">
                       <div className="flex items-center gap-3">
