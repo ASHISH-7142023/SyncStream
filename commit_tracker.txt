@@ -8,3 +8,4 @@ chore(deps): update lucide-react to latest minor version
 feat(presence): distinguish between idle and away states
 refactor(mongo): streamline user query aggregations
 fix(sidebar): prevent overflow when numerous rooms are created
+perf(state): memoize heavy component renders in chat list
