@@ -14,3 +14,4 @@ docs(api): add examples for websocket payload structures
 test(e2e): mock camera and microphone for webrtc tests
 chore(actions): cache maven dependencies for backend builds
 feat(rooms): add support for muting specific channels
+refactor(core): encapsulate generic error response mapping
