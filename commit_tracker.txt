@@ -1,0 +1,1 @@
+refactor(ui): update chat bubble padding for better readability
