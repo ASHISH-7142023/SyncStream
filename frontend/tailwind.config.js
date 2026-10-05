@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */
+// Shared design tokens and theme configuration for SyncStream
 export default {
   content: [
     "./index.html",
@@ -40,3 +42,4 @@ export default {
   },
   plugins: [],
 }
+
