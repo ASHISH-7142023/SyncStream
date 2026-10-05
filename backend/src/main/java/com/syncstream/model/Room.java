@@ -21,6 +21,9 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Represents a chat room (either public, private, or a direct message) in the system.
+ */
 public class Room {
 
     @Id
@@ -59,3 +62,4 @@ public class Room {
 
     private Instant createdAt;
 }
+
