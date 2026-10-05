@@ -11,6 +11,9 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Safe representation of a user sent to clients (excludes sensitive info like passwords).
+ */
 public class UserDto {
     private String id;
     private String username;
@@ -23,3 +26,4 @@ public class UserDto {
     private String statusEmoji;
     private java.util.List<String> badges;
 }
+
