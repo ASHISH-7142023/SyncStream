@@ -5,6 +5,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
+/**
+ * Data Transfer Object for authentication response containing JWT token.
+ */
 public class AuthResponse {
     private String token;
     private String userId;
@@ -17,3 +20,4 @@ public class AuthResponse {
     private String publicKey;
     private String encryptedPrivateKey;
 }
+
