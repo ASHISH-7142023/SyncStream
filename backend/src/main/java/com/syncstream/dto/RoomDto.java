@@ -13,6 +13,9 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Room details projected for client consumption, omitting internal IDs where appropriate.
+ */
 public class RoomDto {
     private String id;
     private String name;
@@ -31,3 +34,4 @@ public class RoomDto {
     private String otherUserAvatar;
     private String otherUserPublicKey;
 }
+
