@@ -20,6 +20,9 @@ import java.util.Collections;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Domain model representing a registered user in SyncStream.
+ */
 public class User implements UserDetails {
 
     @Id
@@ -84,3 +87,4 @@ public class User implements UserDetails {
         return true;
     }
 }
+
