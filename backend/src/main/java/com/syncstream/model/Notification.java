@@ -14,6 +14,9 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder
 @Document(collection = "notifications")
+/**
+ * Notification entity for mentions, friend requests, and system alerts.
+ */
 public class Notification {
     @Id
     private String id;
@@ -31,3 +34,4 @@ public class Notification {
     @Builder.Default
     private Instant createdAt = Instant.now();
 }
+
