@@ -22,6 +22,9 @@ import java.time.Instant;
     @CompoundIndex(name = "room_created_at_idx", def = "{'roomId': 1, 'createdAt': 1}"),
     @CompoundIndex(name = "room_seq_idx", def = "{'roomId': 1, 'sequenceNumber': 1}")
 })
+/**
+ * Represents a chat message, including attachments, replies, and reactions.
+ */
 public class Message {
 
     @Id
@@ -78,3 +81,4 @@ public class Message {
 
     private GameData gameData;
 }
+
