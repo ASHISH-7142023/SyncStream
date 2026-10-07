@@ -13,6 +13,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/friends")
 @RequiredArgsConstructor
+/**
+ * REST API for the friends system and social graph.
+ */
 public class FriendshipController {
 
     private final FriendshipService friendshipService;
@@ -43,3 +46,4 @@ public class FriendshipController {
         return ResponseEntity.ok(friendshipService.getPendingRequests(user.getId()));
     }
 }
+
