@@ -13,6 +13,9 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Represents the online status and custom presence text of a user.
+ */
 public class UserPresenceDto implements Serializable {
     private static final long serialVersionUID = 1L;
     
@@ -33,3 +36,4 @@ public class UserPresenceDto implements Serializable {
     private String spotifyArtist;
     private String spotifyAlbumArt;
 }
+
