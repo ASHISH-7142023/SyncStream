@@ -24,6 +24,9 @@ import java.util.Map;
 
 @Controller
 @Slf4j
+/**
+ * WebSocket controller for real-time messaging and signaling.
+ */
 public class ChatController {
 
     @Autowired
@@ -278,3 +281,4 @@ public class ChatController {
         return null;
     }
 }
+
