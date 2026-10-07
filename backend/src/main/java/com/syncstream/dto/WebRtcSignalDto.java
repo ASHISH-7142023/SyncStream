@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * DTO for passing WebRTC signaling data (offer, answer, ICE candidates) between peers.
+ */
 public class WebRtcSignalDto {
     private String type; // e.g., "offer", "answer", "candidate", "join", "leave"
     private String roomId;
@@ -16,3 +19,4 @@ public class WebRtcSignalDto {
     private Object sdp;
     private Object candidate;
 }
+
