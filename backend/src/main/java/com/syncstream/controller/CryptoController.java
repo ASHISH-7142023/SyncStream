@@ -14,6 +14,9 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/crypto")
+/**
+ * REST API for managing end-to-end encryption keys (E2EE).
+ */
 public class CryptoController {
 
     @Autowired
@@ -64,3 +67,4 @@ public class CryptoController {
         return ResponseEntity.ok("Keys updated successfully");
     }
 }
+
