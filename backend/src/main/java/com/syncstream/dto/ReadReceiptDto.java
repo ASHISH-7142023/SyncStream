@@ -11,6 +11,9 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * DTO for sending message read receipts via WebSocket.
+ */
 public class ReadReceiptDto {
     private String roomId;
     private String userId;
@@ -18,3 +21,4 @@ public class ReadReceiptDto {
     private String messageId;
     private Instant timestamp;
 }
+
