@@ -41,6 +41,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return <>{children}</>;
 };
 
+// Main routing configuration and layout provider hierarchy
 function AppContent() {
   return (
     <Router>
@@ -95,3 +96,4 @@ function App() {
 }
 
 export default App;
+
