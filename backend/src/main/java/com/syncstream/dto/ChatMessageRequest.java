@@ -3,6 +3,9 @@ package com.syncstream.dto;
 import lombok.Data;
 
 @Data
+/**
+ * Payload for sending a new chat message to a room.
+ */
 public class ChatMessageRequest {
     private String content;
     private String clientMessageId;
@@ -18,3 +21,4 @@ public class ChatMessageRequest {
     private com.syncstream.model.PollData pollData;
     private com.syncstream.model.GameData gameData;
 }
+
