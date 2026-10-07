@@ -15,6 +15,9 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/files")
 @CrossOrigin(origins = "*")
+/**
+ * REST API for file uploads and media handling.
+ */
 public class FileController {
 
     private final FileService fileService;
@@ -56,3 +59,4 @@ public class FileController {
         }
     }
 }
+
