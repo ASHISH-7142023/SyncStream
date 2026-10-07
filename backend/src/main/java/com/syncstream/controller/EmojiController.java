@@ -18,6 +18,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/emojis")
 @Slf4j
+/**
+ * REST API for managing custom server emojis.
+ */
 public class EmojiController {
 
     @Autowired
@@ -68,3 +71,4 @@ public class EmojiController {
         }
     }
 }
+
