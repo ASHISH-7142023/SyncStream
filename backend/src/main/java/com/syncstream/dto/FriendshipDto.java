@@ -12,9 +12,13 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Data Transfer Object representing a friendship or friend request.
+ */
 public class FriendshipDto {
     private String id;
     private UserDto user; // The "other" user
     private FriendshipStatus status;
     private Instant createdAt;
 }
+
