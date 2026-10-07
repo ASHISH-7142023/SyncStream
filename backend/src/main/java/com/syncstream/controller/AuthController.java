@@ -31,6 +31,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+/**
+ * REST API for user registration and authentication.
+ */
 public class AuthController {
 
     @Autowired
@@ -275,3 +278,4 @@ public class AuthController {
         return ResponseEntity.badRequest().body("Presence not initialized");
     }
 }
+
