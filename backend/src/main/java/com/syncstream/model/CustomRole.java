@@ -13,6 +13,9 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Represents a custom role within a specific room.
+ */
 public class CustomRole {
     @Builder.Default
     private String id = UUID.randomUUID().toString();
@@ -23,3 +26,4 @@ public class CustomRole {
     @Builder.Default
     private Set<String> permissions = new HashSet<>();
 }
+
