@@ -13,6 +13,9 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
+/**
+ * Tracks and broadcasts user online status and custom presence.
+ */
 public class PresenceService {
 
     private final String serverId = UUID.randomUUID().toString();
@@ -128,3 +131,4 @@ public class PresenceService {
         return this.serverId;
     }
 }
+
