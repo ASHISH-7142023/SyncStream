@@ -7,6 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
+/**
+ * Repository for persisting collaborative whiteboard sessions.
+ */
 public interface WhiteboardSessionRepository extends MongoRepository<WhiteboardSession, String> {
     Optional<WhiteboardSession> findByRoomId(String roomId);
 }
+
