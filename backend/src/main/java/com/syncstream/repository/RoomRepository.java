@@ -4,6 +4,9 @@ import com.syncstream.model.Room;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
+/**
+ * Handles database operations for chat rooms and DMs.
+ */
 public interface RoomRepository extends MongoRepository<Room, String> {
     Optional<Room> findByName(String name);
     boolean existsByName(String name);
@@ -13,3 +16,4 @@ public interface RoomRepository extends MongoRepository<Room, String> {
 
     java.util.List<Room> findByMembersContaining(String userId);
 }
+
