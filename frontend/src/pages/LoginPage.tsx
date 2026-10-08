@@ -7,6 +7,9 @@ import OAuthConnectModal from '../components/modals/OAuthConnectModal';
 import { useToast } from '../context/ToastContext';
 import { useHealthCheck } from '../hooks/useHealthCheck';
 
+/**
+ * Authentication page for existing users.
+ */
 const LoginPage: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -439,3 +442,4 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
+
