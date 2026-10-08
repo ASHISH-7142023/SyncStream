@@ -8,7 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+/**
+ * Data store for room webhook integrations.
+ */
 public interface WebhookRepository extends MongoRepository<Webhook, String> {
     List<Webhook> findByRoomId(String roomId);
     Optional<Webhook> findByToken(String token);
 }
+
