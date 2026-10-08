@@ -15,6 +15,9 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Entity representing a custom emoji uploaded by a user.
+ */
 public class CustomEmoji {
 
     @Id
@@ -30,3 +33,4 @@ public class CustomEmoji {
     @Builder.Default
     private Instant createdAt = Instant.now();
 }
+
