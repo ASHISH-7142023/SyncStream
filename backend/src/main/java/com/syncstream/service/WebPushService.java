@@ -18,6 +18,9 @@ import java.util.List;
 
 @Service
 @Slf4j
+/**
+ * Handles browser Push API subscriptions and dispatch.
+ */
 public class WebPushService {
 
     @Value("${vapid.public.key:}")
@@ -113,3 +116,4 @@ public class WebPushService {
         }
     }
 }
+
