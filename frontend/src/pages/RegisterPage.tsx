@@ -9,6 +9,9 @@ import { useToast } from '../context/ToastContext';
 import { getAvatarsForGender } from '../utils/avatarHelper';
 import { useHealthCheck } from '../hooks/useHealthCheck';
 
+/**
+ * User registration page with form validation and error handling.
+ */
 const RegisterPage: React.FC = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -578,3 +581,4 @@ const RegisterPage: React.FC = () => {
 };
 
 export default RegisterPage;
+
