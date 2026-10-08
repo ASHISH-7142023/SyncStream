@@ -16,6 +16,9 @@ interface Room {
   isDirectMessage?: boolean;
 }
 
+/**
+ * Main dashboard layout featuring global statistics and room feed.
+ */
 const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
   const { unreadRoomCounts, presenceUsers } = useSocket();
@@ -653,3 +656,4 @@ const DashboardPage: React.FC = () => {
 };
 
 export default DashboardPage;
+
