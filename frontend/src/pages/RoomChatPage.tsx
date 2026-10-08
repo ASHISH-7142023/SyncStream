@@ -121,6 +121,9 @@ const markdownComponents: any = {
   }
 };
 
+/**
+ * Core real-time chat interface for room messaging and WebRTC calls.
+ */
 const RoomChatPage: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
@@ -2247,3 +2250,4 @@ const emojiCategories = [
 ];
 
 export default RoomChatPage;
+
