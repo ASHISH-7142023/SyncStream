@@ -29,6 +29,9 @@ interface FriendshipDto {
   createdAt: string;
 }
 
+/**
+ * Interface for managing friendships and pending friend requests.
+ */
 const FriendsPage: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -407,3 +410,4 @@ const FriendsPage: React.FC = () => {
 };
 
 export default FriendsPage;
+
