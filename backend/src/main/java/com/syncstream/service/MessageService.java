@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+/**
+ * Core service for message persistence and real-time broadcasting.
+ */
 public class MessageService {
 
     @Autowired
@@ -397,3 +400,4 @@ public class MessageService {
         return isDraw ? "DRAW" : null;
     }
 }
+
