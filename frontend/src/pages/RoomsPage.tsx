@@ -16,6 +16,9 @@ interface Room {
   isVoiceChannel?: boolean;
 }
 
+/**
+ * Directory listing of all available public chat rooms.
+ */
 const RoomsPage: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -492,3 +495,4 @@ const RoomsPage: React.FC = () => {
 };
 
 export default RoomsPage;
+
