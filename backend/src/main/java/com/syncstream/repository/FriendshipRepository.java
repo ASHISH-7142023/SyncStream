@@ -7,8 +7,12 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository handling CRUD operations for user friendships.
+ */
 public interface FriendshipRepository extends MongoRepository<Friendship, String> {
     Optional<Friendship> findByRequesterIdAndReceiverId(String requesterId, String receiverId);
     List<Friendship> findByRequesterIdOrReceiverId(String requesterId, String receiverId);
     List<Friendship> findByReceiverIdAndStatus(String receiverId, FriendshipStatus status);
 }
+
