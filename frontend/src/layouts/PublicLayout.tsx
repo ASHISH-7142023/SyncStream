@@ -2,6 +2,9 @@ import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 
+/**
+ * Unauthenticated layout wrapper for landing and auth pages.
+ */
 const PublicLayout: React.FC = () => {
   const location = useLocation();
 
@@ -24,3 +27,4 @@ const PublicLayout: React.FC = () => {
 };
 
 export default PublicLayout;
+
