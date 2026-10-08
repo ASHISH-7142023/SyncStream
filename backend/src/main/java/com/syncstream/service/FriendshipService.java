@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+/**
+ * Business logic for managing friend requests and relationships.
+ */
 public class FriendshipService {
 
     private final FriendshipRepository friendshipRepository;
@@ -140,3 +143,4 @@ public class FriendshipService {
                 .build();
     }
 }
+
