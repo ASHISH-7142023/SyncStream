@@ -8,7 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+/**
+ * Repository for tracking message read receipts per user.
+ */
 public interface ReadReceiptRepository extends MongoRepository<ReadReceipt, String> {
     Optional<ReadReceipt> findByRoomIdAndUserId(String roomId, String userId);
     List<ReadReceipt> findByRoomId(String roomId);
 }
+
