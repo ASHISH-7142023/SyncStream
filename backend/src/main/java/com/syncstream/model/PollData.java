@@ -14,6 +14,9 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Stores state and vote counts for in-chat polls.
+ */
 public class PollData {
     private String question;
     
@@ -27,3 +30,4 @@ public class PollData {
     @Builder.Default
     private boolean multipleChoice = false;
 }
+
