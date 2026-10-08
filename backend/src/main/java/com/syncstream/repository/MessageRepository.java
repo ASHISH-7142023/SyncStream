@@ -9,6 +9,9 @@ import org.springframework.data.mongodb.core.query.TextCriteria;
 
 import java.util.List;
 
+/**
+ * Data access layer for chat messages and history.
+ */
 public interface MessageRepository extends MongoRepository<Message, String> {
     Page<Message> findByRoomId(String roomId, Pageable pageable);
     List<Message> findByRoomIdAndSequenceNumberGreaterThanOrderBySequenceNumberAsc(String roomId, Long sequenceNumber);
@@ -26,3 +29,4 @@ public interface MessageRepository extends MongoRepository<Message, String> {
     
     List<Message> findByRoomIdAndPinnedTrueOrderByCreatedAtDesc(String roomId);
 }
+
