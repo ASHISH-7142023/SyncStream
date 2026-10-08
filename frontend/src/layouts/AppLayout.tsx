@@ -14,6 +14,9 @@ interface Room {
   isDirectMessage?: boolean;
 }
 
+/**
+ * Authenticated layout wrapper providing global modals and presence data.
+ */
 const AppLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -103,3 +106,4 @@ const AppLayout: React.FC = () => {
 };
 
 export default AppLayout;
+
