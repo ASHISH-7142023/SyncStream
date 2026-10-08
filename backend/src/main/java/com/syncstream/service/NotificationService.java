@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+/**
+ * Service for generating and dispatching user notifications.
+ */
 public class NotificationService {
 
     @Autowired
@@ -77,3 +80,4 @@ public class NotificationService {
         notificationRepository.saveAll(unread);
     }
 }
+
