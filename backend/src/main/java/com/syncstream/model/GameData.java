@@ -12,6 +12,9 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Holds state information for active in-room mini-games.
+ */
 public class GameData {
     private String gameType; // e.g., "TICTACTOE"
     
@@ -28,3 +31,4 @@ public class GameData {
     private String winnerId; // null if no winner, "DRAW" if draw, else userId
     private boolean isGameOver;
 }
+
