@@ -27,6 +27,9 @@ const features = [
   }
 ];
 
+/**
+ * Marketing and information page for SyncStream.
+ */
 const AboutPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#09090B] text-white selection:bg-[#7C3AED]/30 relative overflow-hidden flex flex-col">
@@ -147,3 +150,4 @@ function SparklesIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export default AboutPage;
+
