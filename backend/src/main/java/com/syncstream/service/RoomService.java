@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+/**
+ * Service for room management, access control, and metadata.
+ */
 public class RoomService {
 
     @Autowired
@@ -287,3 +290,4 @@ public class RoomService {
         return roomRepository.save(room);
     }
 }
+
