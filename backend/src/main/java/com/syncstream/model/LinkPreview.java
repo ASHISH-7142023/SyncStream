@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Represents generated rich-link preview metadata for messages.
+ */
 public class LinkPreview {
     private String url;
     private String title;
@@ -16,3 +19,4 @@ public class LinkPreview {
     private String imageUrl;
     private String siteName;
 }
+
