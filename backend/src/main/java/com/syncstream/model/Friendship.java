@@ -14,6 +14,9 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Entity tracking the friendship status between two users.
+ */
 public class Friendship {
     @Id
     private String id;
@@ -27,3 +30,4 @@ public class Friendship {
     private Instant createdAt;
     private Instant updatedAt;
 }
+
