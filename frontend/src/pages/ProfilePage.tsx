@@ -14,6 +14,9 @@ interface Room {
   description?: string;
 }
 
+/**
+ * Profile settings page for managing user avatars and themes.
+ */
 const ProfilePage: React.FC = () => {
   const { user, logout, updateProfile, updateSettings } = useAuth();
   const { addToast } = useToast();
@@ -1084,3 +1087,4 @@ const ProfilePage: React.FC = () => {
 };
 
 export default ProfilePage;
+
