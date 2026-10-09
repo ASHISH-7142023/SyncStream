@@ -15,7 +15,10 @@ interface ImageGalleryModalProps {
   onClose: () => void;
 }
 
-export const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({
+export /**
+ * Fullscreen lightbox for viewing high-resolution message images.
+ */
+const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({
   images,
   initialIndex,
   isOpen,
@@ -125,3 +128,4 @@ export const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({
     </div>
   );
 };
+
