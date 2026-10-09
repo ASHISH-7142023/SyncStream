@@ -11,7 +11,10 @@ interface E2EEAttachmentProps {
   sharedSecret: CryptoKey;
 }
 
-export const E2EEAttachment: React.FC<E2EEAttachmentProps> = ({
+export /**
+ * Component handling secure end-to-end encrypted file uploads and rendering.
+ */
+const E2EEAttachment: React.FC<E2EEAttachmentProps> = ({
   attachmentId,
   fileName,
   fileSize,
@@ -126,3 +129,4 @@ export const E2EEAttachment: React.FC<E2EEAttachmentProps> = ({
     </div>
   );
 };
+
