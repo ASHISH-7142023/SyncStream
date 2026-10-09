@@ -14,6 +14,9 @@ interface MentionAutocompleteProps {
   cursorPosition?: number;
 }
 
+/**
+ * Floating autocomplete list for tagging @users in chat input.
+ */
 const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({ input, members, onSelect, cursorPosition }) => {
   const [active, setActive] = useState(false);
   const [filteredMembers, setFilteredMembers] = useState<Member[]>([]);
@@ -103,3 +106,4 @@ const MentionAutocomplete: React.FC<MentionAutocompleteProps> = ({ input, member
 };
 
 export default MentionAutocomplete;
+
