@@ -13,6 +13,9 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
+/**
+ * Configuration for Redis caching and Pub/Sub message broker.
+ */
 public class RedisConfig {
 
     @Bean
@@ -97,3 +100,4 @@ public class RedisConfig {
         return new MessageListenerAdapter(subscriber, "handleReadReceiptMessage");
     }
 }
+
