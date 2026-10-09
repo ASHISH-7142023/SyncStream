@@ -57,7 +57,10 @@ const VideoStream: React.FC<{ stream: MediaStream; muted?: boolean; username: st
   );
 };
 
-export const VideoGrid: React.FC<VideoGridProps> = ({
+export /**
+ * Responsive CSS grid layout for WebRTC remote video streams.
+ */
+const VideoGrid: React.FC<VideoGridProps> = ({
   localStream,
   remoteStreams,
   isMicOn,
@@ -156,3 +159,4 @@ export const VideoGrid: React.FC<VideoGridProps> = ({
     </div>
   );
 };
+
