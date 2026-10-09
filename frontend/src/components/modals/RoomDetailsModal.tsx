@@ -25,6 +25,9 @@ interface RoomDetailsModalProps {
   memberCount: number;
 }
 
+/**
+ * Settings panel for a specific room (roles, invites, danger zone).
+ */
 const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, room, memberCount }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'roles' | 'webhooks' | 'members'>('overview');
   const [webhooks, setWebhooks] = useState<Webhook[]>([]);
@@ -372,3 +375,4 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
 };
 
 export default RoomDetailsModal;
+
