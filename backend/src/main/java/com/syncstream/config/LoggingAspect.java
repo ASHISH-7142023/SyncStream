@@ -11,6 +11,9 @@ import org.springframework.util.StopWatch;
 
 @Aspect
 @Component
+/**
+ * AOP Aspect for centralized request and performance logging.
+ */
 public class LoggingAspect {
 
     private static final Logger log = LoggerFactory.getLogger(LoggingAspect.class);
@@ -55,3 +58,4 @@ public class LoggingAspect {
         }
     }
 }
+
