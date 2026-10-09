@@ -17,6 +17,9 @@ const ICE_SERVERS = {
   ],
 };
 
+/**
+ * Custom hook managing the complex lifecycle of RTCPeerConnections.
+ */
 export const useWebRTC = ({ roomId, userId, username, getStompClient, sendWebRtcSignal }: UseWebRTCProps) => {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStreams, setRemoteStreams] = useState<Record<string, MediaStream>>({});
@@ -321,3 +324,4 @@ export const useWebRTC = ({ roomId, userId, username, getStompClient, sendWebRtc
     toggleScreenShare,
   };
 };
+
