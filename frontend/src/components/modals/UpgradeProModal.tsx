@@ -6,6 +6,9 @@ interface UpgradeProModalProps {
   onClose: () => void;
 }
 
+/**
+ * Pricing tiers and checkout flow modal for SyncStream Pro.
+ */
 const UpgradeProModal: React.FC<UpgradeProModalProps> = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Upgrade to Pro">
@@ -58,3 +61,4 @@ const UpgradeProModal: React.FC<UpgradeProModalProps> = ({ isOpen, onClose }) =>
 };
 
 export default UpgradeProModal;
+
