@@ -40,7 +40,10 @@ const markdownComponents: any = {
   }
 };
 
-export const ThreadPanel: React.FC<ThreadPanelProps> = ({ roomId, parentMessage, onClose }) => {
+export /**
+ * Slide-out panel for displaying and replying to message threads.
+ */
+const ThreadPanel: React.FC<ThreadPanelProps> = ({ roomId, parentMessage, onClose }) => {
   const { user } = useAuth();
   const { sendMessage, presenceUsers, messages } = useSocket();
   const [fetchedReplies, setFetchedReplies] = useState<any[]>([]);
@@ -188,3 +191,4 @@ export const ThreadPanel: React.FC<ThreadPanelProps> = ({ roomId, parentMessage,
     </aside>
   );
 };
+
