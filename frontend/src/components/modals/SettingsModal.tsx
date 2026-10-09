@@ -17,7 +17,10 @@ const THEME_COLORS = [
   { id: 'rose', label: 'Rose Accent', hex: '#e11d48' },
 ];
 
-export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
+export /**
+ * Global user preferences modal (Appearance, Notifications, Audio).
+ */
+const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const { user, updateSettings, updateProfile } = useAuth();
   
   const [activeTab, setActiveTab] = useState<'account' | 'voice'>('account');
@@ -257,3 +260,4 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     </div>
   );
 };
+
