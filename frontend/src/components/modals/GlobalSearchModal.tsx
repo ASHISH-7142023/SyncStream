@@ -11,7 +11,10 @@ interface GlobalSearchModalProps {
   onClose: () => void;
 }
 
-export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, onClose }) => {
+export /**
+ * Omni-search modal invoked via Ctrl+K for quick navigation.
+ */
+const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -166,3 +169,4 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
     </div>
   );
 };
+
