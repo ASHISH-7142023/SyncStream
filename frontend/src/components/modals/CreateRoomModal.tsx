@@ -8,6 +8,9 @@ interface CreateRoomModalProps {
   onSuccess: (room: any) => void;
 }
 
+/**
+ * Multi-step wizard modal for generating a new server or DM room.
+ */
 const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   isOpen,
   onClose,
@@ -548,3 +551,4 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 };
 
 export default CreateRoomModal;
+
