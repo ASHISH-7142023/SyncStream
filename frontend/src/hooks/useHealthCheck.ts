@@ -34,3 +34,4 @@ export const useHealthCheck = (pollingIntervalMs: number = 10000) => {
 
   return isBackendOnline;
 };
+
