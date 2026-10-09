@@ -8,7 +8,10 @@ interface WhiteboardProps {
   roomId: string;
 }
 
-export const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
+export /**
+ * Interactive collaborative canvas using WebSockets for stroke syncing.
+ */
+const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
@@ -265,3 +268,4 @@ export const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
     </div>
   );
 };
+
