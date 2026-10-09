@@ -14,6 +14,9 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSocketMessageBroker
+/**
+ * STOMP over WebSocket configuration and endpoint registration.
+ */
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Autowired
@@ -53,3 +56,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(authInterceptor);
     }
 }
+
