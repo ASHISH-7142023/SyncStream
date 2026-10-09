@@ -14,6 +14,9 @@ import java.util.Date;
 
 @Component
 @Slf4j
+/**
+ * Core utility class for JWT signing, verification, and claims extraction.
+ */
 public class JwtTokenProvider {
 
     private final String jwtSecret;
@@ -67,3 +70,4 @@ public class JwtTokenProvider {
         return false;
     }
 }
+
