@@ -15,6 +15,9 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 @Component
+/**
+ * Validates JWT tokens during initial STOMP WebSocket connection handshake.
+ */
 public class WebSocketAuthInterceptor implements ChannelInterceptor {
 
     @Autowired
@@ -48,3 +51,4 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
         return message;
     }
 }
+
