@@ -6,6 +6,9 @@ interface HelpModalProps {
   onClose: () => void;
 }
 
+/**
+ * Displays keyboard shortcuts and generic help documentation.
+ */
 const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
   // Prevent body scrolling when modal is open
   useEffect(() => {
@@ -152,3 +155,4 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
 };
 
 export default HelpModal;
+
