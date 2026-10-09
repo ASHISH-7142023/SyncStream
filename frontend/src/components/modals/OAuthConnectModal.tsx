@@ -7,6 +7,9 @@ interface OAuthConnectModalProps {
   provider: 'Google' | 'GitHub';
 }
 
+/**
+ * UI for linking third-party accounts (Discord, GitHub) to profile.
+ */
 const OAuthConnectModal: React.FC<OAuthConnectModalProps> = ({ isOpen, onClose, provider }) => {
   const [connecting, setConnecting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -78,3 +81,4 @@ const OAuthConnectModal: React.FC<OAuthConnectModalProps> = ({ isOpen, onClose, 
 };
 
 export default OAuthConnectModal;
+
