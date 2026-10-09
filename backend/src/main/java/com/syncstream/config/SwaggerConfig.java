@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+/**
+ * OpenAPI/Swagger configuration for API documentation generation.
+ */
 public class SwaggerConfig {
 
     @Bean
@@ -26,3 +29,4 @@ public class SwaggerConfig {
                                 .bearerFormat("JWT")));
     }
 }
+
