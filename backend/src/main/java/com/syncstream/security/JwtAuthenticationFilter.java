@@ -14,6 +14,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * Intercepts HTTP requests to validate JWT headers and set Spring Security context.
+ */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -53,3 +56,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 }
+
