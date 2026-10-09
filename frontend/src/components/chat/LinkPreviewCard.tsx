@@ -12,7 +12,10 @@ interface LinkPreviewCardProps {
   preview: LinkPreviewData;
 }
 
-export const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ preview }) => {
+export /**
+ * Renders a rich embed card for URLs found in chat messages.
+ */
+const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ preview }) => {
   if (!preview.title && !preview.imageUrl) return null;
 
   return (
@@ -49,3 +52,4 @@ export const LinkPreviewCard: React.FC<LinkPreviewCardProps> = ({ preview }) => 
     </a>
   );
 };
+
