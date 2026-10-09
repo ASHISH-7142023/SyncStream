@@ -7,6 +7,9 @@ interface CreatePollModalProps {
   onClose: () => void;
 }
 
+/**
+ * Modal for creating and configuring new chat polls.
+ */
 const CreatePollModal: React.FC<CreatePollModalProps> = ({ roomId, isOpen, onClose }) => {
   const { sendMessage } = useSocket();
   
@@ -184,3 +187,4 @@ const CreatePollModal: React.FC<CreatePollModalProps> = ({ roomId, isOpen, onClo
 };
 
 export default CreatePollModal;
+
