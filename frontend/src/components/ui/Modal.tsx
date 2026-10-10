@@ -10,6 +10,9 @@ interface ModalProps {
   maxWidth?: string;
 }
 
+/**
+ * Reusable accessible modal component with backdrop blur.
+ */
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, footer, maxWidth = 'max-w-md' }) => {
   useEffect(() => {
     if (isOpen) {
@@ -61,3 +64,4 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, footer,
 };
 
 export default Modal;
+
