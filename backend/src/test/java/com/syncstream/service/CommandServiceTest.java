@@ -16,7 +16,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class CommandServiceTest {
+public /**
+ * Unit tests for chat slash command parsing and execution.
+ */
+class CommandServiceTest {
 
     @Mock
     private NotificationService notificationService;
@@ -66,3 +69,4 @@ public class CommandServiceTest {
         assertTrue(result.isEmpty());
     }
 }
+
