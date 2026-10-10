@@ -16,7 +16,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class RoomServiceTest {
+public /**
+ * Unit tests for room creation, access control, and metadata.
+ */
+class RoomServiceTest {
 
     @Mock
     private RoomRepository roomRepository;
@@ -68,3 +71,4 @@ public class RoomServiceTest {
         verify(roomRepository, never()).delete(any(Room.class));
     }
 }
+
