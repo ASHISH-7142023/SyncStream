@@ -1,3 +1,4 @@
+/* SyncStream Global Styles */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Geist:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
@@ -402,4 +403,5 @@ html[data-theme="rose"] {
   --accent-purple: #e11d48;
   --accent-purple-light: #fb7185;
 }
+
 
