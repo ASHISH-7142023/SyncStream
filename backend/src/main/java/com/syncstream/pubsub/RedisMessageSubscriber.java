@@ -16,6 +16,9 @@ import java.util.Map;
 
 @Service
 @Slf4j
+/**
+ * Listens to Redis channels and forwards messages to local WebSockets.
+ */
 public class RedisMessageSubscriber {
 
     @Autowired
@@ -92,3 +95,4 @@ public class RedisMessageSubscriber {
         }
     }
 }
+
