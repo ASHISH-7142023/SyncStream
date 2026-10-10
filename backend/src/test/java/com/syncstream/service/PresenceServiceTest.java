@@ -23,7 +23,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class PresenceServiceTest {
+public /**
+ * Tests user online/offline status updates via WebSocket.
+ */
+class PresenceServiceTest {
 
     @Mock
     private RedisTemplate<String, Object> redisTemplate;
@@ -140,3 +143,4 @@ public class PresenceServiceTest {
         verify(redisTemplate).expire(presenceKey, 60L, TimeUnit.SECONDS);
     }
 }
+
