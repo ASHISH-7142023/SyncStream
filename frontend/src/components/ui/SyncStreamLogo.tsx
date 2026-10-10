@@ -18,3 +18,4 @@ export const SyncStreamLogo: React.FC<SyncStreamLogoProps> = ({
 };
 
 export default SyncStreamLogo;
+
