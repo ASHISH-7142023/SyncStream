@@ -22,7 +22,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class MessageServiceTest {
+public /**
+ * Validates message persistence, read receipts, and broadcasting.
+ */
+class MessageServiceTest {
 
     @Mock
     private MessageRepository messageRepository;
@@ -78,3 +81,4 @@ public class MessageServiceTest {
         verify(messageRepository, times(1)).save(any(Message.class));
     }
 }
+
