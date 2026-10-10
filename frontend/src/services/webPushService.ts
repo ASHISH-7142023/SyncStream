@@ -64,3 +64,4 @@ export const registerAndSubscribePush = async () => {
     console.error('Failed to subscribe to push notifications', error);
   }
 };
+
