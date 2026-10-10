@@ -27,3 +27,4 @@ export const emojiService = {
     return response.data;
   },
 };
+
