@@ -23,7 +23,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class FriendshipServiceTest {
+public /**
+ * Test suite covering friend request logic and graph updates.
+ */
+class FriendshipServiceTest {
 
     @Mock
     private FriendshipRepository friendshipRepository;
@@ -157,3 +160,4 @@ public class FriendshipServiceTest {
         assertEquals(requester.getUsername(), requests.get(0).getUser().getUsername());
     }
 }
+
