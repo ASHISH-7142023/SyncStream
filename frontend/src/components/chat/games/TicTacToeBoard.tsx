@@ -18,7 +18,10 @@ interface TicTacToeBoardProps {
   };
 }
 
-export const TicTacToeBoard: React.FC<TicTacToeBoardProps> = ({ roomId, messageId, gameData }) => {
+export /**
+ * Interactive real-time TicTacToe board synced via WebSockets.
+ */
+const TicTacToeBoard: React.FC<TicTacToeBoardProps> = ({ roomId, messageId, gameData }) => {
   const { user } = useAuth();
   const { sendGameMove } = useSocket();
 
@@ -97,3 +100,4 @@ export const TicTacToeBoard: React.FC<TicTacToeBoardProps> = ({ roomId, messageI
     </div>
   );
 };
+
