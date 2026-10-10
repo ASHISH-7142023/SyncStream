@@ -26,3 +26,4 @@ export const fileService = {
     return `${API_BASE_URL}/api/files/${fileId}`;
   }
 };
+
