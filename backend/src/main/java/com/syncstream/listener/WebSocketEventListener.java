@@ -18,6 +18,9 @@ import java.security.Principal;
 
 @Component
 @Slf4j
+/**
+ * Captures WebSocket connect/disconnect events for presence tracking.
+ */
 public class WebSocketEventListener {
 
     @Autowired
@@ -55,3 +58,4 @@ public class WebSocketEventListener {
         }
     }
 }
+
