@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+/**
+ * Publishes STOMP messages to Redis for multi-instance scaling.
+ */
 public class RedisMessagePublisher {
 
     @Autowired
@@ -27,3 +30,4 @@ public class RedisMessagePublisher {
         }
     }
 }
+
